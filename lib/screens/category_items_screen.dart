@@ -73,39 +73,66 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
           ),
         ),
       ),
-      body: SfDataGrid(
-        source: employeeDataSource,
-        columnWidthMode: ColumnWidthMode.fill,
-        columns: <GridColumn>[
-          GridColumn(
-              columnName: 'id',
-              label: Container(
-                  padding: EdgeInsets.all(16.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'ID',
-                  ))),
-          GridColumn(
-              columnName: 'name',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Name'))),
-          GridColumn(
-              columnName: 'designation',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Designation',
-                    overflow: TextOverflow.ellipsis,
-                  ))),
-          GridColumn(
-              columnName: 'salary',
-              label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Salary'))),
+      body: Stack(
+        children: [
+          SfDataGrid(
+            source: employeeDataSource,
+            columnWidthMode: ColumnWidthMode.fill,
+            columns: <GridColumn>[
+              GridColumn(
+                  columnName: 'id',
+                  label: Container(
+                      padding: EdgeInsets.all(16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'ID',
+                      ))),
+              GridColumn(
+                  columnName: 'name',
+                  label: Container(
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.center,
+                      child: Text('Name'))),
+              GridColumn(
+                  columnName: 'designation',
+                  label: Container(
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Designation',
+                        overflow: TextOverflow.ellipsis,
+                      ))),
+              GridColumn(
+                  columnName: 'salary',
+                  label: Container(
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.center,
+                      child: Text('Salary'))),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: BottomAppBar(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.attach_money),
+                    onPressed: () {},
+                  ),
+                  Text('Total Amount:',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  Text('100000',
+                    style: TextStyle(fontSize: 25),
+                  )
+
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -147,6 +174,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
 
     ];
   }
+
 }
 
 
@@ -170,6 +198,8 @@ class Employee {
   /// Salary of an employee.
   final int salary;
 }
+
+
 
 /// An object to set the employee collection data source to the datagrid. This
 /// is used to map the employee data to the datagrid widget.

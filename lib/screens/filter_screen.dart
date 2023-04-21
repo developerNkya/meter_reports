@@ -5,9 +5,9 @@ import 'package:grocery_app/styles/colors.dart';
 import 'package:dropdown_button2/src/dropdown_button2.dart';
 import 'package:flutter/services.dart';
 
+import 'package:flutter_date_pickers/flutter_date_pickers.dart' as date_picker;
 
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_date_pickers/flutter_date_pickers.dart' as dp;
+
 
 
 
@@ -46,24 +46,6 @@ class _FilterScreenState extends State<FilterScreen> {
 
 
   String? selectedValue;
-  //  DateTime fromDate;
-  //  DateTime toDate;
-  //
-  // final fromDatePeriod = dp.DatePeriod(
-  //   dp.EraMode.AD,
-  //   DateTime.now().subtract(Duration(days: 30)),
-  //   DateTime.now(),
-  // );
-  // final toDatePeriod = dp.DatePeriod(
-  //   dp.EraMode.AD,
-  //   DateTime.now(),
-  //   DateTime.now().add(Duration(days: 30)),
-  // );
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,14 +176,19 @@ class _FilterScreenState extends State<FilterScreen> {
             SizedBox(height: 30),
 
             getLabel("Date"),
+
+            //date comes here:::
             SizedBox(height: 15),
             OptionItem(text: "Individual Collection"),
-            SizedBox(height: 15),
-            OptionItem(text: "Cocacola"),
-            SizedBox(height: 15),
-            OptionItem(text: "Ifad"),
-            SizedBox(height: 15),
-            OptionItem(text: "Kazi Formas"),
+            date_picker.DayPicker.single(
+              selectedDate: DateTime.now(),
+              onChanged: (date) {
+                // handle the selected date
+              },
+              firstDate: DateTime(2020),
+              lastDate: DateTime(2030),
+            ),
+
             Spacer(),
             AppButton(
               label: "Apply Filter",
