@@ -18,22 +18,22 @@ var demoItems = [
       id: 1,
       name: "Stations",
       description: "View Stations",
-      imagePath: "assets/images/grocery_images/banana.png"),
+      imagePath: "assets/images/grocery_images/station.png"),
   GroceryItem(
       id: 2,
       name: "Receipt Reports",
       description: "All receipts",
-      imagePath: "assets/images/grocery_images/apple.png"),
+      imagePath: "assets/images/grocery_images/receipts1.png"),
   GroceryItem(
       id: 3,
       name: "Z Report",
       description: "view Z report summary",
-      imagePath: "assets/images/grocery_images/pepper.png"),
+      imagePath: "assets/images/grocery_images/report_z.jpg"),
   GroceryItem(
       id: 4,
       name: "Settings",
       description: "Manage profile settings",
-      imagePath: "assets/images/grocery_images/pepper.png"),
+      imagePath: "assets/images/grocery_images/settings_1.png"),
 ];
 
 var exclusiveOffers = [demoItems[0],demoItems[1]];

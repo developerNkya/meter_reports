@@ -9,18 +9,18 @@ class CategoryItem {
 var categoryItemsDemo = [
   CategoryItem(
     name: "Receipts Reports",
-    imagePath: "assets/images/categories_images/fruit.png",
+    imagePath: "assets/images/grocery_images/receipts1.png",
   ),
   CategoryItem(
     name: "Z Report",
-    imagePath: "assets/images/categories_images/meat.png",
+    imagePath: "assets/images/grocery_images/report_z.jpg",
   ),
   CategoryItem(
     name: "Change Price",
-    imagePath: "assets/images/categories_images/bakery.png",
+    imagePath: "assets/images/grocery_images/receipts1.png",
   ),
   CategoryItem(
     name: "Summary",
-    imagePath: "assets/images/categories_images/dairy.png",
+    imagePath: "assets/images/grocery_images/receipts1.png",
   ),
 ];

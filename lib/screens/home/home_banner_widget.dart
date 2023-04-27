@@ -20,7 +20,7 @@ class HomeBanner extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: Image.asset(
-              "assets/images/banner_image.png",
+              "assets/images/truck_1.png",
             ),
           ),
           Spacer(),
