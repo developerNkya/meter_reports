@@ -8,6 +8,7 @@ import 'package:grocery_app/widgets/item_counter_widget.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:anim_search_bar/anim_search_bar.dart';
 
+import '../home/cartegories_station.dart';
 import 'favourite_toggle_icon_widget.dart';
 
 
@@ -117,7 +118,7 @@ class _view_stations_pageState extends State<view_stations_page> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            station_cartegories()
+                                            cartegories_station()
                                     ),
                                   );
                                 },
