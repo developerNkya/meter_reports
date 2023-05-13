@@ -6,13 +6,6 @@ import 'package:dropdown_button2/src/dropdown_button2.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_date_pickers/flutter_date_pickers.dart' as date_picker;
-
-
-
-
-
-
-
 List _elements = [
   {'name': 'John', 'group': 'Station'},
   {'name': 'Will', 'group': 'Station'},
@@ -70,135 +63,138 @@ class _FilterScreenState extends State<FilterScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: Container(
-        width: double.maxFinite,
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
-        decoration: BoxDecoration(
-          color: Color(0xFFF2F3F2),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            getLabel("Stations"),
+      body: Stack(
+        children: [
+          Container(
+            width: double.maxFinite,
+            padding: EdgeInsets.symmetric(horizontal: 25),
+            decoration: BoxDecoration(
+              color: Color(0xFFF2F3F2),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                getLabel("Stations"),
 
-            //create logic to fetch stations:::
-            DropdownButtonHideUnderline(
-              child: DropdownButton2(
-                isExpanded: true,
-                hint: Row(
-                  children: const [
-                    Icon(
-                      Icons.list,
-                      size: 16,
-                      color: Colors.white,
+                //create logic to fetch stations:::
+                DropdownButtonHideUnderline(
+                  child: DropdownButton2(
+                    isExpanded: true,
+                    hint: Row(
+                      children: const [
+                        Icon(
+                          Icons.list,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Select Item',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
+                    items: items
+                        .map((item) => DropdownMenuItem<String>(
+                      value: item,
                       child: Text(
-                        'Select Item',
-                        style: TextStyle(
+                        item,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
+                    ))
+                        .toList(),
+                    value: selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedValue = value as String;
+                      });
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      height: 50,
+                      width: 160,
+                      padding: const EdgeInsets.only(left: 14, right: 14),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: Colors.black26,
+                        ),
+                        color: Colors.green,
+                      ),
+                      elevation: 2,
                     ),
-                  ],
-                ),
-                items: items
-                    .map((item) => DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    iconStyleData: const IconStyleData(
+                      icon: Icon(
+                        Icons.arrow_forward_ios_outlined,
+                      ),
+                      iconSize: 14,
+                      iconEnabledColor: Colors.yellow,
+                      iconDisabledColor: Colors.grey,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ))
-                    .toList(),
-                value: selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue = value as String;
-                  });
-                },
-                buttonStyleData: ButtonStyleData(
-                  height: 50,
-                  width: 160,
-                  padding: const EdgeInsets.only(left: 14, right: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: Colors.black26,
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 200,
+                      width: 200,
+                      padding: null,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        color: Colors.green,
+                      ),
+                      elevation: 8,
+                      offset: const Offset(-20, 0),
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all<double>(6),
+                        thumbVisibility: MaterialStateProperty.all<bool>(true),
+                      ),
                     ),
-                    color: Colors.green,
-                  ),
-                  elevation: 2,
-                ),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.arrow_forward_ios_outlined,
-                  ),
-                  iconSize: 14,
-                  iconEnabledColor: Colors.yellow,
-                  iconDisabledColor: Colors.grey,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: 200,
-                  padding: null,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.green,
-                  ),
-                  elevation: 8,
-                  offset: const Offset(-20, 0),
-                  scrollbarTheme: ScrollbarThemeData(
-                    radius: const Radius.circular(40),
-                    thickness: MaterialStateProperty.all<double>(6),
-                    thumbVisibility: MaterialStateProperty.all<bool>(true),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40,
+                      padding: EdgeInsets.only(left: 14, right: 14),
+                    ),
                   ),
                 ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                  padding: EdgeInsets.only(left: 14, right: 14),
+                SizedBox(height: 30),
+
+                getLabel("Date"),
+
+                //date comes here:::
+                SizedBox(height: 15),
+                date_picker.DayPicker.single(
+                  selectedDate: DateTime.now(),
+                  onChanged: (date) {
+                    // handle the selected date
+                  },
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
                 ),
-              ),
+
+                Spacer(),
+                AppButton(
+                  label: "Apply Filter",
+                  fontWeight: FontWeight.w600,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
             ),
-            SizedBox(height: 30),
-
-            getLabel("Date"),
-
-            //date comes here:::
-            SizedBox(height: 15),
-            OptionItem(text: "Individual Collection"),
-            date_picker.DayPicker.single(
-              selectedDate: DateTime.now(),
-              onChanged: (date) {
-                // handle the selected date
-              },
-              firstDate: DateTime(2020),
-              lastDate: DateTime(2030),
-            ),
-
-            Spacer(),
-            AppButton(
-              label: "Apply Filter",
-              fontWeight: FontWeight.w600,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/station_list.dart';
+import 'package:grocery_app/screens/home/home_screen.dart';
 import 'package:grocery_app/screens/home/station_list_item_card_widget.dart';
 import 'package:grocery_app/screens/home/stations_banner.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
@@ -14,26 +15,40 @@ import '../category_items_screen.dart';
 import 'grocery_featured_Item_widget.dart';
 import 'home_banner_widget.dart';
 
-class cartegories_station extends StatelessWidget {
+class cartegories_station extends StatefulWidget {
+  @override
+  State<cartegories_station> createState() => _cartegories_stationState();
+}
+
+class _cartegories_stationState extends State<cartegories_station> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          child: SingleChildScrollView(
-            child: Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  padded(subTitle("Cartegories")),
-                  getHorizontalItemSlider(station_cartegory1),
-                  getHorizontalItemSlider(station_cartegory2),
-                ],
+    return  WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Container(
+            child: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    padded(subTitle("Cartegories")),
+                    getHorizontalItemSlider(station_cartegory1),
+                    getHorizontalItemSlider(station_cartegory2),
+                  ],
+                ),
               ),
             ),
           ),

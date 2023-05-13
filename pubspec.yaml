@@ -9,6 +9,7 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
+
   flutter:
     sdk: flutter
 
@@ -21,6 +22,11 @@ dependencies:
   animated_custom_dropdown: ^1.5.0
   dropdown_button2: ^2.1.0
   flutter_date_pickers: ^0.4.2
+  flutter_session:
+  http: ^0.12.0
+  sticky_grouped_list: ^3.1.0
+  google_fonts:
+  cool_alert: ^2.0.1
 
 dev_dependencies:
   flutter_test:
