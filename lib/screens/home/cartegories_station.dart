@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/models/station_list.dart';
+import 'package:grocery_app/screens/changePrice.dart';
 import 'package:grocery_app/screens/home/home_screen.dart';
 import 'package:grocery_app/screens/home/station_list_item_card_widget.dart';
 import 'package:grocery_app/screens/home/stations_banner.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
 import 'package:grocery_app/screens/product_details/view_stations_page.dart';
+import 'package:grocery_app/screens/summary.dart';
+import 'package:grocery_app/screens/z_report.dart';
 import 'package:grocery_app/styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
@@ -107,6 +110,27 @@ class _cartegories_stationState extends State<cartegories_station> {
             builder: (context) =>
              CategoryItemsScreen()
       ));
+    } else if (item_chosed == 2) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  z_report()
+          ));
+    }else if (item_chosed == 3) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  changePrice()
+          ));
+    }else if (item_chosed == 4) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  summary()
+          ));
     }
   }
 

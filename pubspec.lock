@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  avatar_glow:
+    dependency: "direct main"
+    description:
+      name: avatar_glow
+      sha256: "3627f6f97d1f10d3c1996ae108d3488eabaf68c0cf0c3eac7e7c746a3812881d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -445,6 +453,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.2+3"
+  simple_form_builder:
+    dependency: "direct main"
+    description:
+      name: simple_form_builder
+      sha256: a50e1086e5a6a90790ffdf1b868df44996ed2aea195c31ce9ec083de66301e7d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.20"
   sky_engine:
     dependency: transitive
     description: flutter

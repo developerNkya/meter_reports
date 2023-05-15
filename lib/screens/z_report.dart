@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
@@ -12,18 +13,19 @@ import '../APIS/station_receipts.dart';
 import 'filter_screen.dart';
 import 'package:intl/intl.dart';
 
-//receipts section
-class CategoryItemsScreen extends StatefulWidget {
+//z_report section
+class z_report extends StatefulWidget {
   @override
-  State<CategoryItemsScreen> createState() => _CategoryItemsScreenState();
+  State<z_report> createState() => _z_reportState();
 }
 
-class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
+class _z_reportState extends State<z_report> {
 
   List<Employee> employees = <Employee>[];
   late EmployeeDataSource employeeDataSource = EmployeeDataSource(employeeData: employees);
   List<Element> _elements = <Element>[];
   bool _isLoading = true;
+  final String imagePath = "assets/images/grey.jpg";
 
   @override
   void initState() {
@@ -43,19 +45,26 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
       var dateFrom = "2021-10-11";
       var dateTo ="2024-10-21";
       //call receipt api:::
-      String userReceipts = await  fetchStationReceiptReport(auth,dateFrom,dateTo);
+      String zReports = await zReport(auth,dateFrom,dateTo);
       // String userStations1 = await userStations(auth,user_id.toString() );
-      Map<String, dynamic> response = jsonDecode(userReceipts);
-      Map<String, dynamic> parsedResponse = json.decode(userReceipts);
+      Map<String, dynamic> response = jsonDecode(zReports);
+      Map<String, dynamic> parsedResponse = json.decode(zReports);
 
       List<dynamic> dataList = parsedResponse['data'];
 
       List<Map<String, dynamic>> objectsList = dataList.map((data) {
-        String date = data['DATE'].toString();
-        String time = data['TIME'].toString();
-        String fuelGrade = data['FUEL_GRADE'].toString();
-        String unit = 'ltr';
-        int amount = data['AMOUNT'] ;
+        String date = data['DAILYTOTALAMOUNT'].toString();
+        String time = data['GROSS'].toString();
+        String fuelGrade = data['NETTAMOUNT_E'].toString();
+        String unit = 'TAXAMOUNT_E';
+       int amount = 0;
+
+        try {
+          amount = double.parse(data['PMTAMOUNT_CASH'].toString()).toInt();
+
+        } catch (e) {
+          print('Invalid amount value: ${data['PMTAMOUNT_CASH']}');
+        }
 
         return {
           'date': date,
@@ -90,96 +99,98 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
   }
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          leading: GestureDetector(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            padding: EdgeInsets.only(left: 25),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        actions: [
+          GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+
             },
             child: Container(
-              padding: EdgeInsets.only(left: 25),
+              padding: EdgeInsets.only(right: 25),
               child: Icon(
-                Icons.arrow_back_ios,
+                Icons.newspaper,
                 color: Colors.black,
               ),
             ),
           ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-              },
-              child: Container(
-                padding: EdgeInsets.only(right: 25),
-                child: Icon(
-                  Icons.graphic_eq,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-          title: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 25,
-            ),
-            child: AppText(
-              text: "Receipts",
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
+        ],
+        title: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 25,
+          ),
+          child: AppText(
+            text: "Z-Report",
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
-        body:
-        Column(
+      ),
+      body:
+      Container(
+        child: Column(
           children: [
             Expanded(
               child: _elements.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : SfDataGrid(
-              source: employeeDataSource,
-              columnWidthMode: ColumnWidthMode.fill,
-              columns: <GridColumn>[
-                GridColumn(
-                    columnName: 'DATE',
-                    label: Container(
-                        padding: EdgeInsets.all(16.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'DATE',
-                        ))),
-                GridColumn(
-                    columnName: 'TIME',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text('TIME'))),
-                GridColumn(
-                    columnName: 'FUEL GRADE',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'FUEL GRADE',
-                          overflow: TextOverflow.ellipsis,
-                        ))),
-                GridColumn(
-                    columnName: 'CITY',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text('CITY'))),
-                GridColumn(
-                    columnName: 'AMOUNT',
-                    label: Container(
-                        padding: EdgeInsets.all(8.0),
-                        alignment: Alignment.center,
-                        child: Text('AMOUNT'))),
+                source: employeeDataSource,
+                columnWidthMode: ColumnWidthMode.fill,
+                columns: <GridColumn>[
+                  GridColumn(
+                      columnName: 'DAILY',
+                      label: Container(
+                          padding: EdgeInsets.all(16.0),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'DAILY',
+                          ))),
+                  GridColumn(
+                      columnName: 'GROSS',
+                      label: Container(
+                          padding: EdgeInsets.all(8.0),
+                          alignment: Alignment.center,
+                          child: Text('GROSS'))),
+                  GridColumn(
+                      columnName: 'NET_AMT',
+                      label: Container(
+                          padding: EdgeInsets.all(8.0),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'NET_AMT',
+                            overflow: TextOverflow.ellipsis,
+                          ))),
+                  GridColumn(
+                      columnName: 'TAX_AMT',
+                      label: Container(
+                          padding: EdgeInsets.all(8.0),
+                          alignment: Alignment.center,
+                          child: Text('TAX_AMT'))),
+                  GridColumn(
+                      columnName: 'AMOUNT',
+                      label: Container(
+                          padding: EdgeInsets.all(8.0),
+                          alignment: Alignment.center,
+                          child: Text('AMOUNT'))),
 
-              ],
-            ),
+                ],
+              ),
             ),
             Positioned(
               left: 0,
@@ -218,7 +229,8 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
             ),
           ],
         ),
-      );
+      ),
+    );
   }
 
   void onItemClicked(BuildContext context, GroceryItem groceryItem) {

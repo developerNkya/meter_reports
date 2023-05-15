@@ -22,6 +22,7 @@ Future<String> login(String email, String password) async {
     await FlutterSession().set('username', username);
     await FlutterSession().set('access_token', accessToken);
     await FlutterSession().set('user_id', userId);
+    await FlutterSession().set('user_password', password);
 
     return 'Login success';
   } else {
