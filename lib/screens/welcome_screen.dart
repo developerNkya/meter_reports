@@ -52,7 +52,7 @@ class WelcomeScreen extends StatelessWidget {
   }
 
   Widget icon() {
-    String iconPath = "assets/icons/app_icon.svg";
+    String iconPath = "";
     return SvgPicture.asset(
       iconPath,
       width: 48,

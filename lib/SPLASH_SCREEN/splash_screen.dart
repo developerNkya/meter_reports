@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 Widget splashScreenIcon() {
-  String iconPath = "assets/icons/splash_screen_icon.svg";
+  String iconPath = "assets/icons/icon12.png";
   return SvgPicture.asset(
     iconPath,
   );

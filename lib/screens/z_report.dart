@@ -43,7 +43,14 @@ class _z_reportState extends State<z_report> {
 
     if(auth != null){
       var dateFrom = "2021-10-11";
-      var dateTo ="2024-10-21";
+      // Get the current date
+      DateTime currentDate = DateTime.now();
+
+      // Format the current date to match the desired format
+      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+
+      // Assign the formatted date to the variable
+      var dateTo = formattedDate;
       //call receipt api:::
       String zReports = await zReport(auth,dateFrom,dateTo);
       // String userStations1 = await userStations(auth,user_id.toString() );
@@ -142,93 +149,71 @@ class _z_reportState extends State<z_report> {
           ),
         ),
       ),
-      body:
-      Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: _elements.isEmpty
-                  ? Center(child: CircularProgressIndicator())
-                  : SfDataGrid(
-                source: employeeDataSource,
-                columnWidthMode: ColumnWidthMode.fill,
-                columns: <GridColumn>[
-                  GridColumn(
-                      columnName: 'DAILY',
-                      label: Container(
-                          padding: EdgeInsets.all(16.0),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'DAILY',
-                          ))),
-                  GridColumn(
-                      columnName: 'GROSS',
-                      label: Container(
-                          padding: EdgeInsets.all(8.0),
-                          alignment: Alignment.center,
-                          child: Text('GROSS'))),
-                  GridColumn(
-                      columnName: 'NET_AMT',
-                      label: Container(
-                          padding: EdgeInsets.all(8.0),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'NET_AMT',
-                            overflow: TextOverflow.ellipsis,
-                          ))),
-                  GridColumn(
-                      columnName: 'TAX_AMT',
-                      label: Container(
-                          padding: EdgeInsets.all(8.0),
-                          alignment: Alignment.center,
-                          child: Text('TAX_AMT'))),
-                  GridColumn(
-                      columnName: 'AMOUNT',
-                      label: Container(
-                          padding: EdgeInsets.all(8.0),
-                          alignment: Alignment.center,
-                          child: Text('AMOUNT'))),
-
-                ],
-              ),
+      body: Stack(
+        children: [
+          _isLoading
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
+              : SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: [
+                DataColumn(label: Text('DAILY')),
+                DataColumn(label: Text('GROSS')),
+                DataColumn(label: Text('NET_AMT')),
+                DataColumn(label: Text('TAX_AMT')),
+                DataColumn(label: Text('AMOUNT')),
+              ],
+              rows: _elements.map((element) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(element.date)),
+                    DataCell(Text(element.time)),
+                    DataCell(Text(element.fuelGrade)),
+                    DataCell(Text(element.unit)),
+                    DataCell(Text(element.amount.toString())),
+                  ],
+                );
+              }).toList(),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                height: 60,
-                child: BottomAppBar(
-                  color: Colors.green,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.attach_money),
-                        onPressed: () {},
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 60,
+              child: BottomAppBar(
+                color: Colors.green,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.attach_money),
+                      onPressed: () {},
+                    ),
+                    Text('Total Amount:',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25),
+                    ),
+                    Text(
+                      NumberFormat('#,###').format(
+                          calculateTotalAmount()
                       ),
-                      Text('Total Amount:',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25),
-                      ),
-                      Text(
-                        NumberFormat('#,###').format(
-                            calculateTotalAmount()
-                        ),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25),
 
-                      )
+                    )
 
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

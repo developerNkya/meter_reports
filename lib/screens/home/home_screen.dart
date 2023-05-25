@@ -20,11 +20,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
+import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
-
-
-
-//HomeScreen
+// HomeScreen
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -33,7 +32,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Element> _elements =<Element>[];
+  List<Element> _elements = <Element>[];
+  List<String> imageList = [
+    'https://images.unsplash.com/photo-1591768793355-74d04bb6608f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=872&q=80',
+    'https://images.unsplash.com/photo-1649728424169-cac7ae0157b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80',
+     'https://images.unsplash.com/photo-1678903434882-d8bc7782b953?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80'    // Add more image URLs here
+  ];
 
   @override
   void initState() {
@@ -41,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchStations();
   }
 
-  void fetchStations() async{
+  void fetchStations() async {
     var username = await FlutterSession().get('username');
     var password = await FlutterSession().get('user_password');
     var user_id = await FlutterSession().get('user_id');
@@ -49,25 +53,24 @@ class _HomeScreenState extends State<HomeScreen> {
     //getting the auth key:::
     String auth = await authentication(username, password.toString());
 
-    if(auth != null){
-      String userStations1 = await userStations(auth,user_id.toString() );
+    if (auth != null) {
+      String userStations1 = await userStations(auth, user_id.toString());
       Map<String, dynamic> response = jsonDecode(userStations1);
       List<dynamic> stations = response['stations'];
 
-      List<String> stationNames = stations.map((station) => station['name'].toString()).toList();
+      List<String> stationNames =
+      stations.map((station) => station['name'].toString()).toList();
 
       print(stationNames);
 
-      //  adding to element::
-
+      //  adding to element:::
 
       setState(() {
         //Your code
         for (String stationName in stationNames) {
-          _elements.add(Element(stationName,Icons.local_gas_station));
+          _elements.add(Element(stationName, Icons.local_gas_station));
         }
       });
-
     }
 
     //getting the station names:::
@@ -82,60 +85,56 @@ class _HomeScreenState extends State<HomeScreen> {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        body:Center(
+        body: Center(
           child: Column(
             children: [
-          SizedBox(
-                    height: 32,
-                  ),
-                  padded(HomeBanner()),
-                  SizedBox(
-                    height:20,
-                  ),
+              SizedBox(
+                height: 32,
+              ),
+              padded(HomeBanner()),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AvatarGlow(
-                    glowColor: Colors.blue,
-                    endRadius: 60.0,
-                    duration: Duration(milliseconds: 2000),
-                    repeat: true,
-                    showTwoGlows: true,
-                    repeatPauseDuration: Duration(milliseconds: 100),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.blue,
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 40,
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200, // Adjust the height as per your needs
+                        autoPlay: true, // Enable automatic slide transition
+                        enlargeCenterPage: true, // Increase the size of the center image
+                        aspectRatio: 16 / 9, // Adjust the aspect ratio as per your images
+                        autoPlayCurve: Curves.fastOutSlowIn, // Animation curve
+                        enableInfiniteScroll: true, // Allow infinite scrolling
+                        autoPlayInterval: Duration(seconds: 3), // Duration between slide transitions
+                        autoPlayAnimationDuration: Duration(milliseconds: 800), // Animation duration
+                        viewportFraction: 0.8, // Fraction of the viewport to occupy
                       ),
+                      items: imageList.map((imageUrl) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 5.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                              ),
+                              child: Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
-                  SizedBox(width: 16),
-
-                  FutureBuilder(
-                    future: _fetchname(),
-                    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        final username = snapshot.data;
-                       return Text(
-                           "Welcome,\n "+ username,
-                           style: TextStyle(fontSize: 23)
-                       );
-                      }
-                    },
-                  ),
-
                 ],
               ),
-
+              SizedBox(height: 16),
               padded(subTitle("Your Stations")),
-
               Expanded(
                 child: groupList(),
               ),
@@ -145,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-    Widget subTitle(String text) {
+
+  Widget subTitle(String text) {
     return Row(
       children: [
         Text(
@@ -195,7 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(builder: (context) => cartegories_station()),
             );
-
           },
         ),
       ),
@@ -212,25 +211,22 @@ class _HomeScreenState extends State<HomeScreen> {
         elements: _elements,
         order: StickyGroupedListOrder.ASC,
         groupBy: (Element element) => DateTime.now(),
-        groupComparator: (DateTime value1, DateTime value2) => value2.compareTo(value1),
-        itemComparator: (Element element1, Element element2) => element1.name.compareTo(element2.name),
+        groupComparator: (DateTime value1, DateTime value2) =>
+            value2.compareTo(value1),
+        itemComparator: (Element element1, Element element2) =>
+            element1.name.compareTo(element2.name),
         floatingHeader: true,
         groupSeparatorBuilder: _getGroupSeparator,
         itemBuilder: _getItem,
       );
     }
-
   }
 
-  Future<dynamic> _fetchname() async{
+  Future<dynamic> _fetchname() async {
     dynamic username = await FlutterSession().get('username');
     return username;
   }
-
-
-
 }
-
 
 class Element {
   String name;
