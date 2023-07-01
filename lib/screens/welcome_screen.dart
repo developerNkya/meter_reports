@@ -70,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
           color: Colors.white,
         ),
         AppText(
-          text: "to FAS Solution",
+          text: "to FUMAS",
           fontSize: 48,
           fontWeight: FontWeight.w600,
           color: Colors.white,

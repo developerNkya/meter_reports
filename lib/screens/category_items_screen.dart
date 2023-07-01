@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
@@ -56,7 +57,15 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
         String time = data['TIME'].toString();
         String fuelGrade = data['FUEL_GRADE'].toString();
         String unit = 'ltr';
-        int amount = data['AMOUNT'];
+        int amount = 0;
+
+
+        try {
+          amount = double.parse(data['AMOUNT'].toString()).toInt();
+
+        } catch (e) {
+          print('Invalid amount value: ${data['AMOUNT']}');
+        }
 
         return {
           'date': date,
@@ -82,6 +91,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
 
         _isLoading = false;
       });
+
     }
   }
 
