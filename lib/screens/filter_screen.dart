@@ -4,20 +4,18 @@ import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/styles/colors.dart';
 import 'package:dropdown_button2/src/dropdown_button2.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter_date_pickers/flutter_date_pickers.dart' as date_picker;
+
 List _elements = [
   {'name': 'John', 'group': 'Station'},
   {'name': 'Will', 'group': 'Station'},
   {'name': 'Beth', 'group': 'Station'},
   {'name': 'John', 'group': 'Station'},
   {'name': 'Will', 'group': 'Station'},
-
-
 ];
 
 List<String> items = ['Option 1', 'Option 2', 'Option 3'];
-
 
 class FilterScreen extends StatefulWidget {
   @override
@@ -36,9 +34,8 @@ class _FilterScreenState extends State<FilterScreen> {
     'Item8',
   ];
 
-
-
   String? selectedValue;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,20 +171,21 @@ class _FilterScreenState extends State<FilterScreen> {
 
                 //date comes here:::
                 SizedBox(height: 15),
-                date_picker.DayPicker.single(
-                  selectedDate: DateTime.now(),
-                  onChanged: (date) {
-                    // handle the selected date
-                  },
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                ),
+                // date_picker.DayPicker.single(
+                //   selectedDate: DateTime.now(),
+                //   onChanged: (date) {
+                //     // handle the selected date
+                //   },
+                //   firstDate: DateTime(2020),
+                //   lastDate: DateTime(2030),
+                // ),
 
                 Spacer(),
                 AppButton(
                   label: "Apply Filter",
                   fontWeight: FontWeight.w600,
                   onPressed: () {
+                    _saveFilterValues(selectedValue);
                     Navigator.pop(context);
                   },
                 )
@@ -207,8 +205,11 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
+  Future<void> _saveFilterValues(String? selectedValue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedValue', selectedValue ?? '');
+  }
 }
-
 
 class OptionItem extends StatefulWidget {
   final String text;

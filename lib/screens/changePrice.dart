@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
@@ -14,19 +13,19 @@ import '../APIS/changePrice.dart';
 import '../APIS/station_receipts.dart';
 import 'filter_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 //z_report section
 class changePrice extends StatefulWidget {
   @override
   State<changePrice> createState() => changePriceState();
-
 }
 
 class changePriceState extends State<changePrice> {
-
   List<Employee> employees = <Employee>[];
-  late EmployeeDataSource employeeDataSource = EmployeeDataSource(employeeData: employees);
+  late EmployeeDataSource employeeDataSource =
+  EmployeeDataSource(employeeData: employees);
   List<Element> _elements = <Element>[];
 
   final _formKey = GlobalKey<FormState>();
@@ -39,8 +38,8 @@ class changePriceState extends State<changePrice> {
   @override
   void initState() {
     super.initState();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,9 +62,7 @@ class changePriceState extends State<changePrice> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-
-            },
+            onTap: () {},
             child: Container(
               padding: EdgeInsets.only(right: 25),
               child: Icon(
@@ -99,121 +96,114 @@ class changePriceState extends State<changePrice> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
-                    child:Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child:                            TextFormField(
-                                controller: _field1Controller,
-                                decoration: InputDecoration(
-                                  labelText: 'UNLEADED',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter a value';
-                                  }
-                                  return null;
-                                },
-                              ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-
-                            SizedBox(height: 8.0),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8.0),
+                            child: TextFormField(
+                              controller: _field1Controller,
+                              decoration: InputDecoration(
+                                labelText: 'UNLEADED',
+                                border: OutlineInputBorder(),
                               ),
-                              child:TextFormField(
-                                controller: _field2Controller,
-                                decoration: InputDecoration(
-                                  labelText: 'DIESEL',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter a value';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-
-                            SizedBox(height: 8.0),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: TextFormField(
-                                controller: _field3Controller,
-                                decoration: InputDecoration(
-                                  labelText: 'KEROSENE',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter a value';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-
-                            SizedBox(height: 8.0),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: TextFormField(
-                                controller: _field4Controller,
-                                decoration: InputDecoration(
-                                  labelText: 'CNG',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter a value';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 16.0),
-
-
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-// All fields are valid, perform your submission logic here
-                                  String field1 = _field1Controller.text;
-                                  String field2 = _field2Controller.text;
-                                  String field3 = _field3Controller.text;
-                                  String field4 = _field4Controller.text;
-
-                                  changePrice1(field1, field2, field3, field4);
-
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a value';
                                 }
+                                return null;
                               },
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                              ),
-                              child: Text('Submit'),
                             ),
-
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: TextFormField(
+                              controller: _field2Controller,
+                              decoration: InputDecoration(
+                                labelText: 'DIESEL',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a value';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: TextFormField(
+                              controller: _field3Controller,
+                              decoration: InputDecoration(
+                                labelText: 'KEROSENE',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a value';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: TextFormField(
+                              controller: _field4Controller,
+                              decoration: InputDecoration(
+                                labelText: 'CNG',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a value';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 16.0),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                // All fields are valid, perform your submission logic here
+                                String field1 = _field1Controller.text;
+                                String field2 = _field2Controller.text;
+                                String field3 = _field3Controller.text;
+                                String field4 = _field4Controller.text;
+                                changePrice1(field1, field2, field3, field4);
+                              }
+                            },
+                            style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all<Color>(
+                                  Colors.green),
+                            ),
+                            child: Text('Submit'),
+                          ),
+                        ],
                       ),
                     ),
-
+                  ),
                 ),
               ),
             ),
@@ -234,12 +224,12 @@ class changePriceState extends State<changePrice> {
       ),
     );
   }
+
   List<Employee> getEmployeeData() {
     List<Employee> employeeData = [];
-
     _elements.forEach((element) {
       Employee employee = Employee(
-        element.date ,
+        element.date,
         element.time,
         element.fuelGrade,
         element.unit,
@@ -259,18 +249,25 @@ class changePriceState extends State<changePrice> {
     return totalAmount;
   }
 
-  void changePrice1(unleaded,diesel,kerosene,cng)async{
-    var username = await FlutterSession().get('username');
-    var password = await FlutterSession().get('user_password');
-    var user_id = await FlutterSession().get('user_id');
+  void changePrice1(unleaded, diesel, kerosene, cng) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var username = prefs.getString('username');
+    var password = prefs.getString('user_password');
+   var user_id = prefs.getString('user_id');
 
     //getting the auth key:::
-    String auth = await authentication(username, password.toString());
+    String auth = await authentication(username!, password.toString());
 
-    if(auth != null){
+    if (auth != null) {
       //call receipt api:::
-      String changePrice = await changePrice2(auth,unleaded,diesel,kerosene,cng);
-    //  show message:::
+      String changePrice = await changePrice2(
+        auth,
+        unleaded,
+        diesel,
+        kerosene,
+        cng,
+      );
+      //  show message:::
       CoolAlert.show(
         context: context,
         type: CoolAlertType.success,
@@ -279,29 +276,29 @@ class changePriceState extends State<changePrice> {
         loopAnimation: false,
         onConfirmBtnTap: () {
           //clearing the textfields:::
-          _field1Controller.text ='';
+          _field1Controller.text = '';
           _field2Controller.text = '';
           _field3Controller.text = '';
-           _field4Controller.text = '';
-
+          _field4Controller.text = '';
         },
       );
     }
 
     //getting the station names:::
   }
-
-
 }
-
-
-// }
 
 /// Custom business object class which contains properties to hold the detailed
 /// information about the employee which will be rendered in datagrid.
 class Employee {
   /// Creates the employee class with required details.
-  Employee(this.id, this.name, this.designation, this.qty,this.amount);
+  Employee(
+      this.id,
+      this.name,
+      this.designation,
+      this.qty,
+      this.amount,
+      );
 
   /// Id of an employee.
   final String id;
@@ -317,8 +314,6 @@ class Employee {
   final int amount;
 }
 
-
-
 /// An object to set the employee collection data source to the datagrid. This
 /// is used to map the employee data to the datagrid widget.
 class EmployeeDataSource extends DataGridSource {
@@ -328,8 +323,7 @@ class EmployeeDataSource extends DataGridSource {
         .map<DataGridRow>((e) => DataGridRow(cells: [
       DataGridCell<String>(columnName: 'id', value: e.id),
       DataGridCell<String>(columnName: 'name', value: e.name),
-      DataGridCell<String>(
-          columnName: 'designation', value: e.designation),
+      DataGridCell<String>(columnName: 'designation', value: e.designation),
       DataGridCell<String>(columnName: 'salary', value: e.qty),
       DataGridCell<int>(columnName: 'amount', value: e.amount),
     ]))
@@ -344,15 +338,15 @@ class EmployeeDataSource extends DataGridSource {
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((e) {
-          return Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8.0),
-            child: Text(e.value.toString()),
-          );
-        }).toList());
+      cells: row.getCells().map<Widget>((e) {
+        return Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(8.0),
+          child: Text(e.value.toString()),
+        );
+      }).toList(),
+    );
   }
-
 }
 
 class Element {
@@ -363,6 +357,7 @@ class Element {
   final int amount;
 
   Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
+
   @override
   String toString() {
     return '($date, $time, $fuelGrade, $unit, $amount)';

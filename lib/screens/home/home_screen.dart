@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/APIS/authentication.dart';
 import 'package:grocery_app/APIS/userStations.dart';
 import 'package:grocery_app/models/grocery_item.dart';
@@ -17,13 +17,8 @@ import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'grocery_featured_Item_widget.dart';
 import 'home_banner_widget.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
-import 'package:sticky_grouped_list/sticky_grouped_list.dart';
-import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-// HomeScreen
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -36,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> imageList = [
     'https://images.unsplash.com/photo-1591768793355-74d04bb6608f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=872&q=80',
     'https://images.unsplash.com/photo-1649728424169-cac7ae0157b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80',
-     'https://images.unsplash.com/photo-1678903434882-d8bc7782b953?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80'    // Add more image URLs here
+    'https://images.unsplash.com/photo-1678903434882-d8bc7782b953?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80' // Add more image URLs here
   ];
 
   @override
@@ -46,12 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void fetchStations() async {
-    var username = await FlutterSession().get('username');
-    var password = await FlutterSession().get('user_password');
-    var user_id = await FlutterSession().get('user_id');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var username = prefs.getString('username');
+    var password = prefs.getString('user_password');
+    var user_id = prefs.getString('user_id');
 
-    //getting the auth key:::
-    String auth = await authentication(username, password.toString());
+    //getting the auth key
+    String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
       String userStations1 = await userStations(auth, user_id.toString());
@@ -63,17 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
       print(stationNames);
 
-      //  adding to element:::
-
+      // adding to element
       setState(() {
-        //Your code
         for (String stationName in stationNames) {
           _elements.add(Element(stationName, Icons.local_gas_station));
         }
       });
     }
-
-    //getting the station names:::
   }
 
   @override
@@ -220,11 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: _getItem,
       );
     }
-  }
-
-  Future<dynamic> _fetchname() async {
-    dynamic username = await FlutterSession().get('username');
-    return username;
   }
 }
 

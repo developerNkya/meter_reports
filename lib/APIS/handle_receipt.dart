@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
- fetchStationReceiptReport(String access_token,String dateFrom,String dateTo) async {
+handle_receipt(String access_token,String id) async {
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $access_token',
@@ -11,14 +11,11 @@ import 'package:http/http.dart' as http;
 
   var request = http.Request(
     'POST',
-    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/station-receipt-report'),
+    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/receipt'),
   );
 
   request.body = json.encode({
-    "company_id": 1,
-    "station_id": 1,
-    "date_from": "$dateFrom",
-    "date_to": "$dateTo"
+    "receipt_id": id,
   });
 
   request.headers.addAll(headers);

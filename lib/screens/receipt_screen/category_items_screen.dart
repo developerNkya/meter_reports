@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
+import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
-import '../APIS/authentication.dart';
-import '../APIS/station_receipts.dart';
+import '../../APIS/authentication.dart';
+import '../../APIS/station_receipts.dart';
 
 class CategoryItemsScreen extends StatefulWidget {
   @override
@@ -28,12 +31,13 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
   }
 
   void stationReceipt() async {
-    var username = await FlutterSession().get('username');
-    var password = await FlutterSession().get('user_password');
-    var user_id = await FlutterSession().get('user_id');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var username = prefs.getString('username');
+    var password = prefs.getString('user_password');
+    var user_id = prefs.getString('user_id');
 
     //getting the auth key:::
-    String auth = await authentication(username, password.toString());
+    String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
       var dateFrom = "2021-10-11";
@@ -56,12 +60,17 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
         String date = data['DATE'].toString();
         String time = data['TIME'].toString();
         String fuelGrade = data['FUEL_GRADE'].toString();
+
+
         String unit = 'ltr';
+        //changed here
         int amount = 0;
+        int id = 0;
 
 
         try {
           amount = double.parse(data['AMOUNT'].toString()).toInt();
+          id = double.parse(data['id'].toString()).toInt();
 
         } catch (e) {
           print('Invalid amount value: ${data['AMOUNT']}');
@@ -73,6 +82,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
           'fuelGrade': fuelGrade,
           'unit': unit,
           'amount': amount,
+          'id' : id,
         };
       }).toList();
 
@@ -84,6 +94,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
             obj['fuelGrade'],
             obj['unit'],
             obj['amount'],
+            obj['id']
           );
 
           _elements.add(element);
@@ -91,7 +102,6 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
 
         _isLoading = false;
       });
-
     }
   }
 
@@ -118,16 +128,22 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
         actions: [
           GestureDetector(
             onTap: () {
+              //move to set date page:::
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => choose_receiptScreen()),
+              );
             },
             child: Container(
               padding: EdgeInsets.only(right: 25),
               child: Icon(
-                Icons.graphic_eq,
+                Icons.date_range,
                 color: Colors.black,
               ),
             ),
           ),
         ],
+        //receipts page::
         title: Container(
           padding: EdgeInsets.symmetric(
             horizontal: 25,
@@ -148,6 +164,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
               : SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
+              showCheckboxColumn: false,
               columns: [
                 DataColumn(label: Text('Date')),
                 DataColumn(label: Text('Time')),
@@ -164,6 +181,44 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     DataCell(Text(element.unit)),
                     DataCell(Text(element.amount.toString())),
                   ],
+                  onSelectChanged: (selected) {
+                    if (selected != null && selected) {
+                      // onRowSelected(element);
+                      print(element.id);
+
+                      //  moving to the print receipt element::
+                      //   Navigator.pushReplacement(
+                      //     context,
+                      //     MaterialPageRoute(builder: (context) => ReceiptPage(receiptNumber: receiptNumber, zNumber: zNumber, receiptDate: receiptDate, pumpNumber: pumpNumber, nozzleNumber: nozzleNumber, fuelType: fuelType, unitPrice: unitPrice, amount: amount)),
+                      //   );
+
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => ReceiptPage(
+                      //       receiptNumber: '123333',
+                      //       zNumber: '2/333333',
+                      //       receiptDate: DateTime(2023, 4, 5, 4, 55, 44),
+                      //       pumpNumber: 2,
+                      //       nozzleNumber: 1,
+                      //       fuelType: 'DIESEL',
+                      //       unitPrice: 4.67,
+                      //       amount: 7.000,
+                      //     ),
+                      //   ),
+                      // );
+
+                      //
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          // builder: (context) => ReceiptScreen(),
+                          builder: (context) => CoolReceiptPage(id:element.id),
+                        ),
+                      );
+
+                    }
+                  },
                 );
               }).toList(),
             ),
@@ -236,11 +291,12 @@ class Element {
   final String fuelGrade;
   final String unit;
   final int amount;
+  final int id;
 
-  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
+  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount,this.id);
 
   @override
   String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount)';
+    return '($date, $time, $fuelGrade, $unit, $amount,$id)';
   }
 }

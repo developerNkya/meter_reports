@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_button.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
@@ -16,23 +16,17 @@ import 'favourite_toggle_icon_widget.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
-
-
-
-
-class view_stations_page extends StatefulWidget {
+class ViewStationsPage extends StatefulWidget {
   final GroceryItem groceryItem;
   final String? heroSuffix;
 
-  const view_stations_page(this.groceryItem, {this.heroSuffix});
+  const ViewStationsPage(this.groceryItem, {this.heroSuffix});
 
   @override
-  _view_stations_pageState createState() => _view_stations_pageState();
-
+  _ViewStationsPageState createState() => _ViewStationsPageState();
 }
 
-class _view_stations_pageState extends State<view_stations_page> {
+class _ViewStationsPageState extends State<ViewStationsPage> {
   late String username;
   late String accessToken;
   late int userId;
@@ -40,9 +34,6 @@ class _view_stations_pageState extends State<view_stations_page> {
 
   TextEditingController textController = TextEditingController();
   late Future<List<Station>> _futureStations;
-
-
-
 
   @override
   void initState() {
@@ -52,85 +43,81 @@ class _view_stations_pageState extends State<view_stations_page> {
     _futureStations = fetchStations();
   }
 
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  getImageHeaderWidget(),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:25),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              widget.groceryItem.name,
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: AppText(
-                              text: widget.groceryItem.description,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xff7C7C7C),
-                            ),
-                          ),
-
-                        ],
+        child: Column(
+          children: <Widget>[
+            getImageHeaderWidget(),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: Column(
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        widget.groceryItem.name,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: AppText(
+                        text: widget.groceryItem.description,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff7C7C7C),
                       ),
                     ),
-                  ),
-                //  here
-                  FutureBuilder<List<Station>>(
-                    future: _futureStations,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey, width: 1.0),
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          ),
-                          height:  height,
-                          child: ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final station = snapshot.data![index];
-
-                              return GestureDetector(
-                                onTap: () {
-                                  print('Clicked on station ${station.name}');
-                                //  moving into the station::
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => cartegories_station()),
-                                  );
-                                },
-                                child: ListTile(
-                                  title: Text(station.name),
-                                  subtitle: Text(station.name),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      }
-
-                      return CircularProgressIndicator();
-                    },
-                  ),
-
-                ],
+                  ],
+                ),
               ),
             ),
+            //  here
+            FutureBuilder<List<Station>>(
+              future: _futureStations,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1.0),
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    ),
+                    height: height,
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final station = snapshot.data![index];
 
+                        return GestureDetector(
+                          onTap: () {
+                            print('Clicked on station ${station.name}');
+                            //  moving into the station::
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => cartegories_station()),
+                            );
+                          },
+                          child: ListTile(
+                            title: Text(station.name),
+                            subtitle: Text(station.name),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
 
+                return CircularProgressIndicator();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -167,79 +154,19 @@ class _view_stations_pageState extends State<view_stations_page> {
     );
   }
 
-  Widget getProductDataRowWidget(String label, {Widget? customWidget}) {
-    return Container(
-      margin: EdgeInsets.only(
-        top: 20,
-        bottom: 20,
-      ),
-      child: Row(
-        children: [
-          AppText(text: label, fontWeight: FontWeight.w600, fontSize: 16),
-          Spacer(),
-          if (customWidget != null) ...[
-            customWidget,
-            SizedBox(
-              width: 20,
-            )
-          ],
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 20,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget nutritionWidget() {
-    return Container(
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Color(0xffEBEBEB),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: AppText(
-        text: "100gm",
-        fontWeight: FontWeight.w600,
-        fontSize: 12,
-        color: Color(0xff7C7C7C),
-      ),
-    );
-  }
-
-  Widget ratingWidget() {
-    Widget starIcon() {
-      return Icon(
-        Icons.star,
-        color: Color(0xffF3603F),
-        size: 20,
-      );
-    }
-
-    return Row(
-      children: [
-        starIcon(),
-        starIcon(),
-        starIcon(),
-        starIcon(),
-        starIcon(),
-      ],
-    );
-  }
-
   Future<List<Station>> fetchStations() async {
-    final username = await FlutterSession().get('username');
-    final accessToken = await FlutterSession().get('access_token');
-    final userId = await FlutterSession().get('user_id');
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final accessToken = sharedPreferences.getString('access_token');
+    final userId = sharedPreferences.getInt('user_id');
 
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
-      'Cookie': '_csrf-backend=746607a72cf031411f7c453649c5638b7ca0662237abaac41db371d2ba6b2799a%3A2%3A%7Bi%3A0%3Bs%3A13%3A%22_csrf-backend%22%3Bi%3A1%3Bs%3A32%3A%223KMZ1u9B55vDbbaW9fCkKUQXAYdvVWUe%22%3B%7D'
+      'Cookie':
+      '_csrf-backend=746607a72cf031411f7c453649c5638b7ca0662237abaac41db371d2ba6b2799a%3A2%3A%7Bi%3A0%3Bs%3A13%3A%22_csrf-backend%22%3Bi%3A1%3Bs%3A32%3A%223KMZ1u9B55vDbbaW9fCkKUQXAYdvVWUe%22%3B%7D'
     };
-    var request = http.Request(
-        'POST', Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/user-stations'));
+    var request = http.Request('POST',
+        Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/user-stations'));
     request.body = json.encode({
       "user_id": userId
     });
@@ -263,18 +190,8 @@ class _view_stations_pageState extends State<view_stations_page> {
         print('Name: ${station.name}');
       }
       return stations;
-
     } else {
       throw Exception(response.reasonPhrase);
     }
   }
-
-
-
-
 }
-
-
-
-//sample calling function for ststions:::
-

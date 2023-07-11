@@ -14,7 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
 import 'package:grocery_app/widgets/search_bar_widget.dart';
 
-import '../category_items_screen.dart';
+import '../receipt_screen/category_items_screen.dart';
 import 'grocery_featured_Item_widget.dart';
 import 'home_banner_widget.dart';
 
@@ -115,7 +115,7 @@ class _cartegories_stationState extends State<cartegories_station> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  z_report()
+                  ZReport()
           ));
     }else if (item_chosed == 3) {
       Navigator.push(
@@ -129,7 +129,7 @@ class _cartegories_stationState extends State<cartegories_station> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  summary()
+                  Summary()
           ));
     }
   }

@@ -21,9 +21,7 @@ dependencies:
   syncfusion_flutter_datagrid: ^21.1.39
   animated_custom_dropdown: ^1.5.0
   dropdown_button2: ^2.1.0
-  flutter_date_pickers: ^0.4.2
-  flutter_session:
-  http: ^0.12.0
+  http:
   sticky_grouped_list: ^3.1.0
   google_fonts:
   cool_alert: ^2.0.1
@@ -31,6 +29,32 @@ dependencies:
   avatar_glow: ^2.0.2
   flutter_editable_table: ^1.1.1
   carousel_slider: ^4.0.0
+  intl: ^0.17.0
+  shared_preferences: ^2.0.10
+  qr_flutter:
+  pdf:
+  printing: ^5.5.0
+  path_provider:
+  flutter_datetime_picker:
+  fp_bt_printer: ^0.0.3
+  blue_thermal_printer: ^1.1.1
+  esc_pos_utils:
+  omni_datetime_picker: ^1.0.7
+  gsform:
+  time_picker_widget:
+  fluttertoast: ^8.0.8
+  provider:
+  bluetooth_thermal_printer: ^0.0.6
+  bluetooth_print:
+
+  esc_pos_printer: ^4.0.0
+
+  esc_pos_utils_plus:
+  print_bluetooth_thermal:
+  flutter_html:
+
+
+
 
 
 
@@ -45,6 +69,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/
     - assets/images/
     - assets/images/categories_images/
     - assets/images/grocery_images/
@@ -53,9 +78,14 @@ flutter:
     - assets/icons/account_icons/
     - assets/fonts/
 
+
   fonts:
     - family: Gilroy
       fonts:
         - asset: assets/fonts/gilroy/Gilroy-Regular.ttf
         - asset: assets/fonts/gilroy/Gilroy-SemiBold.ttf
         - asset: assets/fonts/gilroy/Gilroy-Bold.otf
+
+    - family: Receipt
+      fonts:
+      - asset: assets/fonts/fake_receipt.otf

@@ -6,53 +6,54 @@ import 'package:grocery_app/screens/dashboard/dashboard_screen.dart';
 import 'package:grocery_app/screens/home/home_screen.dart';
 import 'package:grocery_app/styles/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-
-//welcome screen:
+// Welcome screen:
 class WelcomeScreen extends StatelessWidget {
   final String imagePath = "assets/images/welcome_image.png";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.primaryColor,
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
-            ),
+      backgroundColor: AppColors.primaryColor,
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 30),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
           ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Spacer(),
-                icon(),
-                SizedBox(
-                  height: 20,
-                ),
-                welcomeTextWidget(),
-                SizedBox(
-                  height: 10,
-                ),
-                sloganText(),
-                SizedBox(
-                  height: 40,
-                ),
-                getButton(context),
-                SizedBox(
-                  height: 40,
-                )
-              ],
-            ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Spacer(),
+              icon(),
+              SizedBox(
+                height: 20,
+              ),
+              welcomeTextWidget(),
+              SizedBox(
+                height: 10,
+              ),
+              sloganText(),
+              SizedBox(
+                height: 40,
+              ),
+              getButton(context),
+              SizedBox(
+                height: 40,
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget icon() {
-    String iconPath = "";
+    String iconPath = ""; // Provide the icon path here
     return SvgPicture.asset(
       iconPath,
       width: 48,
@@ -99,15 +100,22 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  void onGetStartedClicked(BuildContext context) {
-    Navigator.of(context).pushReplacement(new MaterialPageRoute(
-      builder: (BuildContext context) {
+  void onGetStartedClicked(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-        // return HomeScreen();
-        return loginPage();
-
-
-      },
-    ));
+    if (isLoggedIn) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (BuildContext context) => DashboardScreen(),
+        ),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (BuildContext context) => LoginPage(),
+        ),
+      );
+    }
   }
 }

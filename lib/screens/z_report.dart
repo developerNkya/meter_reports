@@ -1,28 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../APIS/authentication.dart';
 import '../APIS/station_receipts.dart';
 import 'filter_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-//z_report section
-class z_report extends StatefulWidget {
+// z_report section
+class ZReport extends StatefulWidget {
   @override
-  State<z_report> createState() => _z_reportState();
+  State<ZReport> createState() => _ZReportState();
 }
 
-class _z_reportState extends State<z_report> {
-
+class _ZReportState extends State<ZReport> {
   List<Employee> employees = <Employee>[];
-  late EmployeeDataSource employeeDataSource = EmployeeDataSource(employeeData: employees);
+  late EmployeeDataSource employeeDataSource =
+  EmployeeDataSource(employeeData: employees);
   List<Element> _elements = <Element>[];
   bool _isLoading = true;
   final String imagePath = "assets/images/grey.jpg";
@@ -31,17 +29,18 @@ class _z_reportState extends State<z_report> {
   void initState() {
     super.initState();
     stationReceipt();
-
   }
-  void stationReceipt() async{
-    var username = await FlutterSession().get('username');
-    var password = await FlutterSession().get('user_password');
-    var user_id = await FlutterSession().get('user_id');
+
+  void stationReceipt() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var username = prefs.getString('username');
+    var password = prefs.getString('user_password');
+   var user_id = prefs.getString('user_id');
 
     //getting the auth key:::
-    String auth = await authentication(username, password.toString());
+    String auth = await authentication(username!, password.toString());
 
-    if(auth != null){
+    if (auth != null) {
       var dateFrom = "2021-10-11";
       // Get the current date
       DateTime currentDate = DateTime.now();
@@ -52,8 +51,8 @@ class _z_reportState extends State<z_report> {
       // Assign the formatted date to the variable
       var dateTo = formattedDate;
       //call receipt api:::
-      String zReports = await zReport(auth,dateFrom,dateTo);
-      // String userStations1 = await userStations(auth,user_id.toString() );
+      String zReports = await zReport(auth, dateFrom, dateTo);
+      // String userStations1 = await userStations(auth, user_id.toString());
       Map<String, dynamic> response = jsonDecode(zReports);
       Map<String, dynamic> parsedResponse = json.decode(zReports);
 
@@ -64,11 +63,10 @@ class _z_reportState extends State<z_report> {
         String time = data['GROSS'].toString();
         String fuelGrade = data['NETTAMOUNT_E'].toString();
         String unit = 'TAXAMOUNT_E';
-       int amount = 0;
+        int amount = 0;
 
         try {
           amount = double.parse(data['PMTAMOUNT_CASH'].toString()).toInt();
-
         } catch (e) {
           print('Invalid amount value: ${data['PMTAMOUNT_CASH']}');
         }
@@ -95,8 +93,8 @@ class _z_reportState extends State<z_report> {
 
           _elements.add(element);
         });
-
       });
+
       employees = getEmployeeData();
       employeeDataSource = EmployeeDataSource(employeeData: employees);
       _isLoading = false;
@@ -104,6 +102,7 @@ class _z_reportState extends State<z_report> {
 
     //getting the station names:::
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,9 +125,7 @@ class _z_reportState extends State<z_report> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-
-            },
+            onTap: () {},
             child: Container(
               padding: EdgeInsets.only(right: 25),
               child: Icon(
@@ -193,21 +190,14 @@ class _z_reportState extends State<z_report> {
                       icon: Icon(Icons.attach_money),
                       onPressed: () {},
                     ),
-                    Text('Total Amount:',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25),
+                    Text(
+                      'Total Amount:',
+                      style: TextStyle(color: Colors.white, fontSize: 25),
                     ),
                     Text(
-                      NumberFormat('#,###').format(
-                          calculateTotalAmount()
-                      ),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25),
-
+                      NumberFormat('#,###').format(calculateTotalAmount()),
+                      style: TextStyle(color: Colors.white, fontSize: 25),
                     )
-
                   ],
                 ),
               ),
@@ -229,12 +219,13 @@ class _z_reportState extends State<z_report> {
       ),
     );
   }
+
   List<Employee> getEmployeeData() {
     List<Employee> employeeData = [];
 
     _elements.forEach((element) {
       Employee employee = Employee(
-        element.date ,
+        element.date,
         element.time,
         element.fuelGrade,
         element.unit,
@@ -253,18 +244,13 @@ class _z_reportState extends State<z_report> {
     }
     return totalAmount;
   }
-
-
 }
-
-
-// }
 
 /// Custom business object class which contains properties to hold the detailed
 /// information about the employee which will be rendered in datagrid.
 class Employee {
   /// Creates the employee class with required details.
-  Employee(this.id, this.name, this.designation, this.qty,this.amount);
+  Employee(this.id, this.name, this.designation, this.qty, this.amount);
 
   /// Id of an employee.
   final String id;
@@ -279,8 +265,6 @@ class Employee {
   final String qty;
   final int amount;
 }
-
-
 
 /// An object to set the employee collection data source to the datagrid. This
 /// is used to map the employee data to the datagrid widget.
@@ -315,7 +299,6 @@ class EmployeeDataSource extends DataGridSource {
           );
         }).toList());
   }
-
 }
 
 class Element {
@@ -326,6 +309,7 @@ class Element {
   final int amount;
 
   Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
+
   @override
   String toString() {
     return '($date, $time, $fuelGrade, $unit, $amount)';
