@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_fast_forms/flutter_fast_forms.dart';
 import 'package:grocery_app/screens/receipt_screen/filtered_receipts.dart';
+import 'package:grocery_app/screens/z_report/filtered_zreport.dart';
 
 
 import 'package:lottie/lottie.dart';
@@ -32,14 +33,14 @@ import 'package:lottie/lottie.dart';
 
 
 // ignore: must_be_immutable
-class SingleSectionForm extends StatefulWidget {
-  SingleSectionForm({Key? key}) : super(key: key);
+class zreport_date extends StatefulWidget {
+  zreport_date({Key? key}) : super(key: key);
 
   @override
-  State<SingleSectionForm> createState() => _SingleSectionFormState();
+  State<zreport_date> createState() => _zreport_dateState();
 }
 
-class _SingleSectionFormState extends State<SingleSectionForm> {
+class _zreport_dateState extends State<zreport_date> {
   late GSForm form;
   String selectedTime = '';
 
@@ -291,7 +292,7 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
       //  pass to filtered receipts::
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>FilteredReceipts(fromDate: fromDate,fromTime: fromTime,toDate: toDate,toTime: toTime)),
+        MaterialPageRoute(builder: (context) =>filtered_zreport(fromDate: fromDate,fromTime: fromTime,toDate: toDate,toTime: toTime)),
       );
 
     } else {

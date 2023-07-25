@@ -1,29 +1,32 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/z_report.dart';
+import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
+import 'package:grocery_app/screens/z_report/choose_zreport_date.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
+import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import '../APIS/authentication.dart';
-import '../APIS/station_receipts.dart';
-import 'filter_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-// z_report section
+import '../../APIS/authentication.dart';
+import '../../APIS/station_receipts.dart';
+
 class ZReport extends StatefulWidget {
   @override
-  State<ZReport> createState() => _ZReportState();
+  _ZReportState createState() => _ZReportState();
 }
 
 class _ZReportState extends State<ZReport> {
-  List<Employee> employees = <Employee>[];
-  late EmployeeDataSource employeeDataSource =
-  EmployeeDataSource(employeeData: employees);
-  List<Element> _elements = <Element>[];
+  List<Element> _elements = [];
   bool _isLoading = true;
-  final String imagePath = "assets/images/grey.jpg";
+  double _kSize = 100;
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _ZReportState extends State<ZReport> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-   var user_id = prefs.getString('user_id');
+    var user_id = prefs.getString('user_id');
 
     //getting the auth key:::
     String auth = await authentication(username!, password.toString());
@@ -51,56 +54,47 @@ class _ZReportState extends State<ZReport> {
       // Assign the formatted date to the variable
       var dateTo = formattedDate;
       //call receipt api:::
-      String zReports = await zReport(auth, dateFrom, dateTo);
-      // String userStations1 = await userStations(auth, user_id.toString());
-      Map<String, dynamic> response = jsonDecode(zReports);
-      Map<String, dynamic> parsedResponse = json.decode(zReports);
+      String user_zReport= await zReport(auth, dateFrom, dateTo);
+      // String userStations1 = await userStations(auth,user_id.toString() );
+      Map<String, dynamic> parsedResponse = json.decode(user_zReport);
 
       List<dynamic> dataList = parsedResponse['data'];
 
       List<Map<String, dynamic>> objectsList = dataList.map((data) {
-        String date = data['DAILYTOTALAMOUNT'].toString();
-        String time = data['GROSS'].toString();
-        String fuelGrade = data['NETTAMOUNT_E'].toString();
-        String unit = 'TAXAMOUNT_E';
-        int amount = 0;
+        // String znumber = data['znumber'].toString();
+        // String ticket = data['TICKETSFISCAL'].toString();
+        // String net_amount = data['NETTAMOUNT_E'].toString();
+
+        int znumber = 0;
+        int ticket = 0;
+        int net_amount = 0;
 
         try {
-          amount = double.parse(data['PMTAMOUNT_CASH'].toString()).toInt();
+          znumber = double.parse(data['znumber'].toString()).toInt();
+          ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
+          net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
+
         } catch (e) {
-          print('Invalid amount value: ${data['PMTAMOUNT_CASH']}');
+          print('Invalid amount value: ${data['AMOUNT']}');
         }
 
         return {
-          'date': date,
-          'time': time,
-          'fuelGrade': fuelGrade,
-          'unit': unit,
-          'amount': amount,
+          'znumber': znumber,
+          'ticket': ticket,
+          'net_amount': net_amount,
         };
       }).toList();
 
       setState(() {
-        //Your code
         objectsList.forEach((obj) {
-          Element element = Element(
-            obj['date'],
-            obj['time'],
-            obj['fuelGrade'],
-            obj['unit'],
-            obj['amount'],
+          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount']
           );
-
           _elements.add(element);
         });
+
+        _isLoading = false;
       });
-
-      employees = getEmployeeData();
-      employeeDataSource = EmployeeDataSource(employeeData: employees);
-      _isLoading = false;
     }
-
-    //getting the station names:::
   }
 
   @override
@@ -125,16 +119,24 @@ class _ZReportState extends State<ZReport> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              //move to set date page:::
+              Navigator.pushReplacement(
+                context,
+                // MaterialPageRoute(builder: (context) => choose_receiptScreen()),
+                MaterialPageRoute(builder: (context) => zreport_date()),
+              );
+            },
             child: Container(
               padding: EdgeInsets.only(right: 25),
               child: Icon(
-                Icons.newspaper,
+                Icons.date_range,
                 color: Colors.black,
               ),
             ),
           ),
         ],
+        //receipts page::
         title: Container(
           padding: EdgeInsets.symmetric(
             horizontal: 25,
@@ -146,33 +148,76 @@ class _ZReportState extends State<ZReport> {
           ),
         ),
       ),
-      body: Stack(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+//
+          : Column(
         children: [
-          _isLoading
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              : SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: [
-                DataColumn(label: Text('DAILY')),
-                DataColumn(label: Text('GROSS')),
-                DataColumn(label: Text('NET_AMT')),
-                DataColumn(label: Text('TAX_AMT')),
-                DataColumn(label: Text('AMOUNT')),
-              ],
-              rows: _elements.map((element) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(element.date)),
-                    DataCell(Text(element.time)),
-                    DataCell(Text(element.fuelGrade)),
-                    DataCell(Text(element.unit)),
-                    DataCell(Text(element.amount.toString())),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    DataTable(
+                      showCheckboxColumn: false,
+                      columns: [
+                        DataColumn(label: Text('znumber')),
+                        DataColumn(label: Text('ticket')),
+                        DataColumn(label: Text('net_amount')),
+                      ],
+                      rows: _elements.map((element) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(element.znumber.toString())),
+                            DataCell(Text(element.ticket.toString())),
+                            DataCell(Text(element.net_amount.toString())),
+                          ],
+                          onSelectChanged: (selected) {
+                            if (selected != null && selected) {
+                              // onRowSelected(element);
+                              // print(element.id);
+
+                              //  moving to the print receipt element::
+                              //   Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(builder: (context) => ReceiptPage(receiptNumber: receiptNumber, zNumber: zNumber, receiptDate: receiptDate, pumpNumber: pumpNumber, nozzleNumber: nozzleNumber, fuelType: fuelType, unitPrice: unitPrice, amount: amount)),
+                              //   );
+
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => ReceiptPage(
+                              //       receiptNumber: '123333',
+                              //       zNumber: '2/333333',
+                              //       receiptDate: DateTime(2023, 4, 5, 4, 55, 44),
+                              //       pumpNumber: 2,
+                              //       nozzleNumber: 1,
+                              //       fuelType: 'DIESEL',
+                              //       unitPrice: 4.67,
+                              //       amount: 7.000,
+                              //     ),
+                              //   ),
+                              // );
+
+                              //
+                              // Navigator.pushReplacement(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     // builder: (context) => ReceiptScreen(),
+                              //     builder: (context) =>
+                              //         CoolReceiptPage(id: element.id),
+                              //   ),
+                              // );
+                            }
+                          },
+                        );
+                      }).toList(),
+                    ),
                   ],
-                );
-              }).toList(),
+                ),
+              ),
             ),
           ),
           Positioned(
@@ -182,22 +227,31 @@ class _ZReportState extends State<ZReport> {
             child: Container(
               height: 60,
               child: BottomAppBar(
-                color: Colors.green,
+
+                color: Colors.black54,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.attach_money),
+                      icon: Icon(Icons.attach_money,
+                          color: Colors.green
+                      ),
                       onPressed: () {},
                     ),
                     Text(
                       'Total Amount:',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
                     ),
                     Text(
                       NumberFormat('#,###').format(calculateTotalAmount()),
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    )
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -205,7 +259,16 @@ class _ZReportState extends State<ZReport> {
           ),
         ],
       ),
+
     );
+  }
+
+  int calculateTotalAmount() {
+    int totalAmount = 0;
+    for (var element in _elements) {
+      totalAmount += element.net_amount;
+    }
+    return totalAmount;
   }
 
   void onItemClicked(BuildContext context, GroceryItem groceryItem) {
@@ -219,99 +282,21 @@ class _ZReportState extends State<ZReport> {
       ),
     );
   }
-
-  List<Employee> getEmployeeData() {
-    List<Employee> employeeData = [];
-
-    _elements.forEach((element) {
-      Employee employee = Employee(
-        element.date,
-        element.time,
-        element.fuelGrade,
-        element.unit,
-        element.amount,
-      );
-      employeeData.add(employee);
-    });
-    print(employeeData);
-    return employeeData;
-  }
-
-  int calculateTotalAmount() {
-    int totalAmount = 0;
-    for (var element in _elements) {
-      totalAmount += element.amount;
-    }
-    return totalAmount;
-  }
 }
 
 /// Custom business object class which contains properties to hold the detailed
 /// information about the employee which will be rendered in datagrid.
-class Employee {
-  /// Creates the employee class with required details.
-  Employee(this.id, this.name, this.designation, this.qty, this.amount);
-
-  /// Id of an employee.
-  final String id;
-
-  /// Name of an employee.
-  final String name;
-
-  /// Designation of an employee.
-  final String designation;
-
-  /// Salary of an employee.
-  final String qty;
-  final int amount;
-}
-
-/// An object to set the employee collection data source to the datagrid. This
-/// is used to map the employee data to the datagrid widget.
-class EmployeeDataSource extends DataGridSource {
-  /// Creates the employee data source class with required details.
-  EmployeeDataSource({required List<Employee> employeeData}) {
-    _employeeData = employeeData
-        .map<DataGridRow>((e) => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'id', value: e.id),
-      DataGridCell<String>(columnName: 'name', value: e.name),
-      DataGridCell<String>(
-          columnName: 'designation', value: e.designation),
-      DataGridCell<String>(columnName: 'salary', value: e.qty),
-      DataGridCell<int>(columnName: 'amount', value: e.amount),
-    ]))
-        .toList();
-  }
-
-  List<DataGridRow> _employeeData = [];
-
-  @override
-  List<DataGridRow> get rows => _employeeData;
-
-  @override
-  DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((e) {
-          return Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8.0),
-            child: Text(e.value.toString()),
-          );
-        }).toList());
-  }
-}
-
 class Element {
-  final String date;
-  final String time;
-  final String fuelGrade;
-  final String unit;
-  final int amount;
+  final int znumber;
+  final int ticket;
+  final int net_amount;
 
-  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
+
+  Element(
+      this.znumber, this.ticket, this.net_amount);
 
   @override
   String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount)';
+    return '($znumber, $ticket, $net_amount)';
   }
 }

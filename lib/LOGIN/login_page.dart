@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController1 = TextEditingController();
   final TextEditingController passwordController1 = TextEditingController();
-  final String imagePath = "assets/images/welcome_image.png";
+  final String imagePath = "assets/images/bg3.jpg";
   bool _isLoading = false;
 
   @override
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: MediaQuery.of(context).size.height / 1.5,
                       width: MediaQuery.of(context).size.width / 1.1,
                       decoration: BoxDecoration(
-                        color: Style.white,
+                        color: Style.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(22),
                       ),
                       child: Padding(
@@ -76,17 +76,19 @@ class _LoginPageState extends State<LoginPage> {
                         child: Column(
                           children: [
                             CircleAvatar(
-                              backgroundColor: Colors.black,
+                              backgroundColor: Colors.blue.withOpacity(0.5),
                               radius: 45,
-                              child: Icon(
-                                Icons.person,
-                                size: 65,
+                              child: IconButton(
+                                  icon: Image.asset('assets/icons/person_lg.png'),
+                                onPressed: () {  },
+                                iconSize: 65,
+                                // size: 65,
                               ),
                             ),
                             hSize(),
                             Text(
                               "Login",
-                              style: GoogleFonts.acme(
+                              style: GoogleFonts.aldrich(
                                   letterSpacing: .5,
                                   fontSize: 23,
                                   color: Style.black),
@@ -123,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                                 height: MediaQuery.of(context).size.height / 14.7,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.green,
+                                    primary: Colors.black45,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     ),
@@ -161,7 +163,6 @@ class _LoginPageState extends State<LoginPage> {
                                         loopAnimation: false,
                                       );
                                     }
-
                                     await Future.delayed(Duration(seconds: 3));
 
                                     setState(() {
@@ -232,7 +233,7 @@ class Style {
   static Color white = Colors.white;
   static Color black = Colors.black;
   static Color grey = Colors.grey;
-  static Color darkBlue = Colors.green.shade800;
+  static Color darkBlue = Colors.black45;
 }
 
 Widget hSize() {

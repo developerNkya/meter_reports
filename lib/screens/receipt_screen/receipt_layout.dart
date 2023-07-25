@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/handle_receipt.dart';
 import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,35 +33,35 @@ class Element {
   final String? taxOffice;
 
   Element(
-      this.id,
-      this.date,
-      this.time,
-      this.fuelGrade,
-      this.amount,
-      this.dc,
-      this.gc,
-      this.zNum,
-      this.rctvNum,
-      this.qty,
-      this.nozzle,
-      this.name,
-      this.address,
-      this.mobile,
-      this.tin,
-      this.vrn,
-      this.serial,
-      this.uin,
-      this.regid,
-      this.taxOffice,
-      );
+    this.id,
+    this.date,
+    this.time,
+    this.fuelGrade,
+    this.amount,
+    this.dc,
+    this.gc,
+    this.zNum,
+    this.rctvNum,
+    this.qty,
+    this.nozzle,
+    this.name,
+    this.address,
+    this.mobile,
+    this.tin,
+    this.vrn,
+    this.serial,
+    this.uin,
+    this.regid,
+    this.taxOffice,
+  );
 
   @override
   String toString() {
     return 'Element(id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
   }
 }
-class CoolReceiptPage extends StatefulWidget {
 
+class CoolReceiptPage extends StatefulWidget {
   final int? id;
 
   CoolReceiptPage({
@@ -77,8 +78,11 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   List<Element> _elements = [];
   bool _isLoading = true;
   var receipt_data;
-  @override
+  double _kSize = 100;
+  final String tra_img = "assets/images/tra_img3.png";
 
+
+  @override
   void initState() {
     super.initState();
     stationReceipt();
@@ -104,39 +108,38 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
       print(receipt_data['id']);
 
       setState(() {
-      Element element = Element(
-        receipt_data['id'],
-        receipt_data['DATE'],
-        receipt_data['TIME'],
-        receipt_data['FUEL_GRADE'],
-        receipt_data['AMOUNT'],
-        receipt_data['DC'],
-        receipt_data['GC'],
-        receipt_data['ZNUM'],
-        receipt_data['RCTVNUM'],
-        receipt_data['QTY'],
-        receipt_data['NOSSEL'],
-        receipt_data['name'],
-        receipt_data['address'],
-        receipt_data['mobile'],
-        receipt_data['tin'],
-        receipt_data['vrn'],
-        receipt_data['serial'],
-        receipt_data['uin'],
-        receipt_data['regid'],
-        receipt_data['taxoffice'],
-      );
+        Element element = Element(
+          receipt_data['id'],
+          receipt_data['DATE'],
+          receipt_data['TIME'],
+          receipt_data['FUEL_GRADE'],
+          receipt_data['AMOUNT'],
+          receipt_data['DC'],
+          receipt_data['GC'],
+          receipt_data['ZNUM'],
+          receipt_data['RCTVNUM'],
+          receipt_data['QTY'],
+          receipt_data['NOSSEL'],
+          receipt_data['name'],
+          receipt_data['address'],
+          receipt_data['mobile'],
+          receipt_data['tin'],
+          receipt_data['vrn'],
+          receipt_data['serial'],
+          receipt_data['uin'],
+          receipt_data['regid'],
+          receipt_data['taxoffice'],
+        );
 
-      _elements.add(element);
+        _elements.add(element);
 
-      print('--------------------------------');
-      print(_elements);
+        print('--------------------------------');
+        print(_elements);
 
-      _isLoading = false;
+        _isLoading = false;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -192,10 +195,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
             },
             child: Container(
               padding: EdgeInsets.only(right: 25),
-              child: Icon(
-                Icons.print,
-                color: Colors.black,
-              ),
+              child: MyBlinkingButton(elements: _elements),
             ),
           ),
         ],
@@ -203,174 +203,185 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
           padding: EdgeInsets.symmetric(horizontal: 25),
           child: AppText(
             text: "Receipts",
-             fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
       ),
-      body:   _isLoading
+      body: _isLoading
           ? Center(
-          child: CircularProgressIndicator()) // Show loading indicator
-          :Material(
-        child: Container(
-          color: Colors.green,
-          child: Center(
-            child: Container(
-              height: 600,
-              width: 350,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(16.0)),
-              ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Text(
-                              'START OF LEGAL RECEIPT',
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                 fontWeight: FontWeight.bold,
- fontFamily: 'Receipt',
-
-
+              child: Container(
+                  height: 50,
+                  child: LoadingAnimationWidget.twistingDots(
+                      leftDotColor: Colors.black54,
+                      rightDotColor: Colors.lightBlue,
+                      size: _kSize)))
+          // ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          : Material(
+              child: Container(
+                color: Colors.black54,
+                child: Center(
+                  child: Container(
+                    height: 600,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Container(
+                                padding: EdgeInsets.all(16.0),
+                                width:
+                                    400, // Set a fixed width for horizontal scrolling
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    Text(
+                                      'START OF LEGAL RECEIPT',
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Receipt',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    Image.asset(
+                                        tra_img,
+                                        height:120
+                                    ),
+                                    SizedBox(height: 16.0),
+                                    Text(
+                                      'FUMAS\nMobile: 6777\nTin ${_elements[0].tin ?? 'N/A'}\nVRN: ${_elements[0].vrn ?? 'N/A'}\nSERIAL NO: ${_elements[0].serial ?? 'N/A'}\nUIN:${_elements[0].uin ?? 'N/A'}\nTAX OFFICE: ${_elements[0].taxOffice ?? 'N/A'}',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontFamily: 'Receipt',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 15.0),
+                                    const MySeparator(color: Colors.grey),
+                                    SizedBox(height: 15.0),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'RECEIPT NUMBER:',
+                                      rightColumn:
+                                          '${_elements[0].id ?? 'N/A'}',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'Z NO:',
+                                      rightColumn:
+                                          '${_elements[0].zNum ?? 'N/A'}',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn:
+                                          'DATE: ${_elements[0].date ?? 'N/A'}',
+                                      rightColumn:
+                                          'TIME: ${_elements[0].date ?? 'N/A'}',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn:
+                                          'TIME: ${_elements[0].date ?? 'N/A'}',
+                                      rightColumn:
+                                          'TIME: ${_elements[0].date ?? 'N/A'}',
+                                    ),
+                                    SizedBox(height: 15.0),
+                                    const MySeparator(color: Colors.grey),
+                                    SizedBox(height: 15.0),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'PUMP:',
+                                      rightColumn: '2',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'NOZZLE:',
+                                      rightColumn: '1',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'UNLEADED:',
+                                      rightColumn: '0',
+                                    ),
+                                    SizedBox(height: 15.0),
+                                    const MySeparator(color: Colors.grey),
+                                    SizedBox(height: 15.0),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'TOTAL EXCL TAX: ',
+                                      rightColumn: '0.000',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'TOTAL TAX:',
+                                      rightColumn: '0',
+                                    ),
+                                    _buildRowWithColumns(
+                                      leftColumn: 'TOTAL INCL TAX:',
+                                      rightColumn: '0',
+                                    ),
+                                    SizedBox(height: 15.0),
+                                    const MySeparator(color: Colors.grey),
+                                    SizedBox(height: 15.0),
+                                    Text(
+                                      'RECEIPT VERIFICATION CODE',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontFamily: 'Receipt',
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    Text(
+                                      '3HH4JJ493JJJJ',
+                                      style: TextStyle(
+                                        fontSize: 24.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Receipt',
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 32.0),
+                                    Text(
+                                      'SAMPLE QR CODE',
+                                      style: TextStyle(
+                                          fontSize: 16.0,
+                                          fontFamily: 'Receipt'),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 8.0),
+                                  ],
+                                ),
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 16.0),
-                            Icon(
-                              Icons.receipt,
-                              size: 48.0,
-                            ),
-                            SizedBox(height: 16.0),
-                            Text(
-                              'FUMAS\nMobile: 6777\nTin ${_elements[0].tin ?? 'N/A'}\nVRN: ${_elements[0].vrn ?? 'N/A'}\nSERIAL NO: ${_elements[0].serial ?? 'N/A'}\nUIN:${_elements[0].uin ?? 'N/A'}\nTAX OFFICE: ${_elements[0].taxOffice ?? 'N/A'}',
-                              style: TextStyle(
-                                   fontSize: 16.0,
- fontFamily: 'Receipt',
-
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 15.0),
-                            const MySeparator(color: Colors.grey),
-                            SizedBox(height: 15.0),
-
-                            _buildRowWithColumns(
-                              leftColumn: 'RECEIPT NUMBER:',
-                              rightColumn: '${_elements[0].id ?? 'N/A'}',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'Z NO:',
-                              rightColumn: '${_elements[0].zNum ?? 'N/A'}',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'DATE: ${_elements[0].date ?? 'N/A'}',
-                              rightColumn: 'TIME: ${_elements[0].date ?? 'N/A'}',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'TIME: ${_elements[0].date ?? 'N/A'}',
-                              rightColumn: 'TIME: ${_elements[0].date ?? 'N/A'}',
-                            ),
-                            SizedBox(height: 15.0),
-                            const MySeparator(color: Colors.grey),
-                            SizedBox(height: 15.0),
-                            _buildRowWithColumns(
-                              leftColumn: 'PUMP:',
-                              rightColumn: '2',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'NOZZLE:',
-                              rightColumn: '1',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'UNLEADED:',
-                              rightColumn: '0',
-                            ),
-                            SizedBox(height: 15.0),
-                            const MySeparator(color: Colors.grey),
-                            SizedBox(height: 15.0),
-                            _buildRowWithColumns(
-                              leftColumn: 'TOTAL EXCL TAX: ',
-                              rightColumn: '0.000',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'TOTAL TAX:',
-                              rightColumn: '0',
-                            ),
-                            _buildRowWithColumns(
-                              leftColumn: 'TOTAL INCL TAX:',
-                              rightColumn: '0',
-                            ),
-
-                            SizedBox(height: 15.0),
-                            const MySeparator(color: Colors.grey),
-                            SizedBox(height: 15.0),
-
-                            Text(
-                              'RECEIPT VERIFICATION CODE',
-                              style: TextStyle(
-                                 fontSize: 16.0,
- fontFamily: 'Receipt',
-                                 fontWeight: FontWeight.bold,
-
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              '3HH4JJ493JJJJ',
-                              style: TextStyle(
-                                fontSize: 24.0,
-                                 fontWeight: FontWeight.bold,
- fontFamily: 'Receipt',
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 32.0),
-                            Text(
-                              'SAMPLE QR CODE',
-                              style: TextStyle( fontSize: 16.0,
- fontFamily: 'Receipt'),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 8.0),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
-
-  Widget _buildRowWithColumns({required String leftColumn, required String rightColumn}) {
+  Widget _buildRowWithColumns(
+      {required String leftColumn, required String rightColumn}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           leftColumn,
-          style: TextStyle( fontSize: 16.0,
- fontFamily: 'Receipt'),
+          style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
         ),
         Text(
           rightColumn,
           style: TextStyle(
-             fontSize: 16.0,
- fontFamily: 'Receipt',
-             fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            fontFamily: 'Receipt',
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
@@ -378,9 +389,73 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   }
 }
 
+class MyBlinkingButton extends StatefulWidget {
+  final List<Element> elements;
+  const MyBlinkingButton({Key? key, required this.elements}) : super(key: key);
+  @override
+  _MyBlinkingButtonState createState() => _MyBlinkingButtonState();
+}
 
+class _MyBlinkingButtonState extends State<MyBlinkingButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
 
+  @override
+  void initState() {
+    _animationController =
+        new AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animationController.repeat(reverse: true);
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _animationController,
+      child: MaterialButton(
+        onPressed: () {},
+        child: IconButton(
+            icon: Image.asset('assets/icons/print_3.png'),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReceiptScreen(
+                    id: widget.elements[0].id,
+                    date: widget.elements[0].date,
+                    time: widget.elements[0].time,
+                    fuelGrade: widget.elements[0].fuelGrade,
+                    amount: widget.elements[0].amount,
+                    dc: widget.elements[0].dc,
+                    gc: widget.elements[0].gc,
+                    zNum: widget.elements[0].zNum,
+                    rctvNum: widget.elements[0].rctvNum,
+                    qty: widget.elements[0].qty,
+                    nozzle: widget.elements[0].nozzle,
+                    name: widget.elements[0].name,
+                    address: widget.elements[0].address,
+                    mobile: widget.elements[0].mobile,
+                    tin: widget.elements[0].tin,
+                    vrn: widget.elements[0].vrn,
+                    serial: widget.elements[0].serial,
+                    uin: widget.elements[0].uin,
+                    regid: widget.elements[0].regid,
+                    taxOffice: widget.elements[0].taxOffice,
+                  ),
+                ),
+              );
+            }),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+}
 
 class MySeparator extends StatelessWidget {
   const MySeparator({Key? key, this.height = 1, this.color = Colors.black})
@@ -413,9 +488,3 @@ class MySeparator extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

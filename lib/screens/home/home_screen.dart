@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'https://images.unsplash.com/photo-1649728424169-cac7ae0157b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80',
     'https://images.unsplash.com/photo-1678903434882-d8bc7782b953?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80' // Add more image URLs here
   ];
-
+  final String imagePath = "assets/images/bg3.jpg";
   @override
   void initState() {
     super.initState();
@@ -65,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _elements.add(Element(stationName, Icons.local_gas_station));
         }
       });
+
     }
   }
 
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        body: Center(
+        body: Container(
           child: Column(
             children: [
               SizedBox(

@@ -52,6 +52,17 @@ dependencies:
   esc_pos_utils_plus:
   print_bluetooth_thermal:
   flutter_html:
+  flutter_dialogs:
+  lottie:
+  video_player:
+  flutter_fast_forms:
+  loading_animation_widget:
+  flutter_glow:
+  circular_clip_route:
+
+
+
+
 
 
 

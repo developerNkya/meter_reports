@@ -1,409 +1,318 @@
-
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:grocery_app/APIS/handle_receipt.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../APIS/authentication.dart';
-import '../../common_widgets/app_text.dart';
-
-class Element {
-final int id;
-final String date;
-final String time;
-final String fuelGrade;
-final int amount;
-final String dc;
-final String gc;
-final String zNum;
-final String rctvNum;
-final String qty;
-final String nozzle;
-final String? name;
-final String? address;
-final String? mobile;
-final String? tin;
-final String? vrn;
-final String? serial;
-final String? uin;
-final String? regid;
-final String? taxOffice;
-
-Element(
-this.id,
-this.date,
-this.time,
-this.fuelGrade,
-this.amount,
-this.dc,
-this.gc,
-this.zNum,
-this.rctvNum,
-this.qty,
-this.nozzle,
-this.name,
-this.address,
-this.mobile,
-this.tin,
-this.vrn,
-this.serial,
-this.uin,
-this.regid,
-this.taxOffice,
-);
-
-@override
-String toString() {
-return 'Element(id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
-}
-}
-class CoolReceiptPage extends StatefulWidget {
-
-final int? id;
-
-CoolReceiptPage({
-this.id,
-});
-
-@override
-State<CoolReceiptPage> createState() => _CoolReceiptPageState();
-}
-
-class _CoolReceiptPageState extends State<CoolReceiptPage> {
-List<Element> _elements = [];
-bool _isLoading = true;
-var receipt_data;
-@override
-
-void initState() {
-super.initState();
-stationReceipt();
-}
-
-void stationReceipt() async {
-SharedPreferences prefs = await SharedPreferences.getInstance();
-var username = prefs.getString('username');
-var password = prefs.getString('user_password');
-
-// Getting the auth key
-String auth = await authentication(username!, password.toString());
-
-if (auth != null) {
-String userReceipts = await handle_receipt(auth, widget.id.toString());
-
-Map<String, dynamic> parsedResponse = json.decode(userReceipts);
-// List<dynamic> dataList = parsedResponse['data'];
-
-print('object');
-
-receipt_data = parsedResponse['data'];
-print(receipt_data['id']);
-
-setState(() {
-Element element = Element(
-receipt_data['id'],
-receipt_data['DATE'],
-receipt_data['TIME'],
-receipt_data['FUEL_GRADE'],
-receipt_data['AMOUNT'],
-receipt_data['DC'],
-receipt_data['GC'],
-receipt_data['ZNUM'],
-receipt_data['RCTVNUM'],
-receipt_data['QTY'],
-receipt_data['NOSSEL'],
-receipt_data['name'],
-receipt_data['address'],
-receipt_data['mobile'],
-receipt_data['tin'],
-receipt_data['vrn'],
-receipt_data['serial'],
-receipt_data['uin'],
-receipt_data['regid'],
-receipt_data['taxoffice'],
-);
-
-_elements.add(element);
-
-print('--------------------------------');
-print(_elements);
-
-_isLoading = false;
-});
-}
-}
-
-
-@override
-
-Widget build(BuildContext context) {
-return Scaffold(
-appBar: AppBar(
-backgroundColor: Colors.transparent,
-elevation: 0,
-centerTitle: true,
-automaticallyImplyLeading: false,
-leading: GestureDetector(
-onTap: () {
-Navigator.pop(context);
-},
-child: Container(
-padding: EdgeInsets.only(left: 25),
-child: Icon(
-Icons.arrow_back_ios,
-color: Colors.black,
-),
-),
-),
-actions: [
-GestureDetector(
-onTap: () {
-//move to set date page:::
-Navigator.pushReplacement(
-context,
-MaterialPageRoute(builder: (context) => ReceiptScreen(
-id: _elements[0].id,
-date: _elements[0].date,
-time: _elements[0].time,
-fuelGrade: _elements[0].fuelGrade,
-amount: _elements[0].amount,
-dc: _elements[0].dc,
-gc: _elements[0].gc,
-zNum: _elements[0].zNum,
-rctvNum: _elements[0].rctvNum,
-qty: _elements[0].qty,
-nozzle: _elements[0].nozzle,
-name: _elements[0].name,
-address: _elements[0].address,
-mobile: _elements[0].mobile,
-tin: _elements[0].tin,
-vrn: _elements[0].vrn,
-serial: _elements[0].serial,
-uin: _elements[0].uin,
-regid: _elements[0].regid,
-taxOffice: _elements[0].taxOffice,
-
-)),
-);
-},
-child: Container(
-padding: EdgeInsets.only(right: 25),
-child: Icon(
-Icons.print,
-color: Colors.black,
-),
-),
-),
-],
-//receipts page::
-title: Container(
-padding: EdgeInsets.symmetric(
-horizontal: 25,
-),
-child: AppText(
-text: "Receipts",
-fontWeight: FontWeight.bold,
-fontSize: 20,
-),
-),
-),
-body:  _isLoading
-? Center(
-child: CircularProgressIndicator()) // Show loading indicator
-    : SingleChildScrollView(
-child:  Container(
-padding: EdgeInsets.all(16.0),
-child:   Column(
-crossAxisAlignment: CrossAxisAlignment.stretch,
-children:
-<Widget>[
-Text(
-'START OF LEGAL RECEIPT',
-style: TextStyle(
-fontSize: 18.0,
-fontWeight: FontWeight.bold,
-),
-textAlign: TextAlign.center,
-),
-SizedBox(height: 16.0),
-Icon(
-Icons.receipt,
-size: 48.0,
-),
-SizedBox(height: 16.0),
-Text(
-'FUMAS\nMobile: 6777\nTin ${_elements[0].tin ?? 'N/A'}\nVRN: ${_elements[0].vrn ?? 'N/A'}\nSERIAL NO: ${_elements[0].serial ?? 'N/A'}\nUIN:${_elements[0].uin ?? 'N/A'}\nTAX OFFICE: ${_elements[0].taxOffice ?? 'N/A'}',
-style: TextStyle(fontSize: 16.0),
-textAlign: TextAlign.center,
-),
-SizedBox(height: 32.0),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'RECEIPT NUMBER:',
-rightColumn: '${_elements[0].id ?? 'N/A'}',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'Z NO:',
-rightColumn: '${_elements[0].zNum ?? 'N/A'}',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'DATE:',
-rightColumn: '${_elements[0].date ?? 'N/A'}',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'TIME:',
-rightColumn: '${_elements[0].time ?? 'N/A'}',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'PUMP:',
-rightColumn: '2',
-),
-_buildRowWithColumns(
-leftColumn: 'NOZZLE:',
-rightColumn: '1',
-),
-_buildRowWithColumns(
-leftColumn: 'UNLEADED:',
-rightColumn: '0',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'TOTAL EXCL TAX: ',
-rightColumn: '0.000',
-),
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'TOTAL TAX:',
-rightColumn: '0',
-),
-
-_buildDividerDots(),
-_buildRowWithColumns(
-leftColumn: 'TOTAL INCL TAX:',
-rightColumn: '0',
-),
-_buildDividerDots(),
-SizedBox(height: 32.0),
-Text(
-'RECEIPT VERIFICATION CODE',
-style: TextStyle(
-fontSize: 16.0,
-fontWeight: FontWeight.bold,
-),
-textAlign: TextAlign.center,
-),
-SizedBox(height: 8.0),
-Text(
-'3HH4JJ493JJJJ',
-style: TextStyle(
-fontSize: 24.0,
-fontWeight: FontWeight.bold,
-),
-textAlign: TextAlign.center,
-),
-SizedBox(height: 32.0),
-Text(
-'SAMPLE QR CODE',
-style: TextStyle(fontSize: 16.0),
-textAlign: TextAlign.center,
-),
-SizedBox(height: 8.0),
-// Container(
-//   width: 200.0,
-//   height: 200.0,
-//   color: Colors.grey,
-//   // child: Center(
-//   //   child:QrImage(
-//   //     data: 'https://example.com', // Replace with your link here
-//   //     version: QrVersions.auto,
-//   //     size: 200.0,
-//   //     backgroundColor: Colors.grey,
-//   //     foregroundColor: Colors.white,
-//   //   ),
-//   // ),
-// ),
-],
-),
-),
-),
-);
-}
-
-Widget _buildDividerDots() {
-return Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
-children: [
-Expanded(
-child: Divider(
-color: Colors.grey,
-height: 1.0,
-),
-),
-SizedBox(width: 8.0),
-Text(
-'•',
-style: TextStyle(
-fontSize: 20.0,
-fontWeight: FontWeight.bold,
-),
-),
-SizedBox(width: 8.0),
-Expanded(
-child: Divider(
-color: Colors.grey,
-height: 1.0,
-),
-),
-],
-);
-}
-
-Widget _buildRowWithColumns({required String leftColumn, required String rightColumn}) {
-return Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
-children: [
-Text(
-leftColumn,
-style: TextStyle(fontSize: 16.0),
-),
-Text(
-rightColumn,
-style: TextStyle(
-fontSize: 16.0,
-fontWeight: FontWeight.bold,
-),
-),
-],
-);
-}
-}
-
-void main() {
-runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-@override
-Widget build(BuildContext context) {
-return MaterialApp(
-title: 'Cool Receipt App',
-theme: ThemeData(
-primarySwatch: Colors.blue,
-),
-home: CoolReceiptPage(),
-);
-}
-}
-
-
-
-
-
-
-
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:grocery_app/LOGIN/loginPressed.dart';
+// import 'package:grocery_app/screens/home/home_screen.dart';
+// import 'package:cool_alert/cool_alert.dart';
+//
+// class LoginPage extends StatefulWidget {
+//   const LoginPage({Key? key}) : super(key: key);
+//
+//   @override
+//   State<LoginPage> createState() => _LoginPageState();
+// }
+//
+// class _LoginPageState extends State<LoginPage> {
+//   final TextEditingController emailController1 = TextEditingController();
+//   final TextEditingController passwordController1 = TextEditingController();
+//   final String imagePath = "assets/images/welcome_image.png";
+//   bool _isLoading = false;
+//
+//   @override
+//   void dispose() {
+//     emailController1.dispose();
+//     passwordController1.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final errorAlert = _buildButton(
+//       onTap: () {
+//         CoolAlert.show(
+//           context: context,
+//           type: CoolAlertType.error,
+//           title: 'Oops...',
+//           text: 'Sorry, something went wrong',
+//           loopAnimation: false,
+//         );
+//       },
+//       text: 'Error',
+//       color: Colors.red,
+//     );
+//
+//     return SafeArea(
+//       child: Scaffold(
+//         body: Container(
+//           child: Form(
+//             child: SingleChildScrollView(
+//               child: Stack(
+//                 alignment: Alignment.center,
+//                 children: [
+//                   Container(
+//                     height: MediaQuery.of(context).size.height,
+//                     width: MediaQuery.of(context).size.width,
+//                     decoration: BoxDecoration(
+//                       image: DecorationImage(
+//                         image: AssetImage(imagePath),
+//                         fit: BoxFit.cover,
+//                       ),
+//                     ),
+//                   ),
+//                   Center(
+//                     child: Container(
+//                       alignment: Alignment.center,
+//                       height: MediaQuery.of(context).size.height / 1.5,
+//                       width: MediaQuery.of(context).size.width / 1.1,
+//                       decoration: BoxDecoration(
+//                         color: Style.white,
+//                         borderRadius: BorderRadius.circular(22),
+//                       ),
+//                       child: Padding(
+//                         padding:
+//                         const EdgeInsets.only(top: 20, right: 8, left: 8),
+//                         child: Column(
+//                           children: [
+//                             CircleAvatar(
+//                               backgroundColor: Colors.black,
+//                               radius: 45,
+//                               child: Icon(
+//                                 Icons.person,
+//                                 size: 65,
+//                               ),
+//                             ),
+//                             hSize(),
+//                             Text(
+//                               "Login",
+//                               style: GoogleFonts.acme(
+//                                   letterSpacing: .5,
+//                                   fontSize: 23,
+//                                   color: Style.black),
+//                             ),
+//                             hSize(),
+//                             customTextEditingController(
+//                                 'Enter username',
+//                                 Icon(
+//                                   Icons.person,
+//                                   color: Style.grey,
+//                                 ),
+//                                 emailController1),
+//                             hSize(),
+//                             passwordController(
+//                                 'Enter Password',
+//                                 Icon(
+//                                   Icons.lock,
+//                                   color: Style.grey,
+//                                 ),
+//                                 passwordController1),
+//                             SizedBox(
+//                               height: 25,
+//                             ),
+//                             Row(
+//                               children: [
+//                                 Spacer(),
+//                               ],
+//                             ),
+//                             hSize(),
+//                             Padding(
+//                               padding: const EdgeInsets.symmetric(horizontal: 19),
+//                               child: SizedBox(
+//                                 width: MediaQuery.of(context).size.width,
+//                                 height: MediaQuery.of(context).size.height / 14.7,
+//                                 child: ElevatedButton(
+//                                   style: ElevatedButton.styleFrom(
+//                                     primary: Colors.green,
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(30),
+//                                     ),
+//                                   ),
+//                                   onPressed: _isLoading ? null : () async {
+//                                     setState(() {
+//                                       _isLoading = true;
+//                                     });
+//
+//                                     print('Loading...');
+//                                     // Check if password is correct
+//                                     String email = emailController1.text;
+//                                     String password = passwordController1.text;
+//                                     String response = await login(email, password);
+//                                     // Checking the response
+//                                     print(response);
+//
+//                                     if (response == "Login success") {
+//                                       // Store access token
+//                                       SharedPreferences prefs =
+//                                       await SharedPreferences.getInstance();
+//                                       await prefs.setString('accessToken', 'your_access_token');
+//
+//                                       Navigator.pushReplacement(
+//                                         context,
+//                                         MaterialPageRoute(
+//                                             builder: (context) => HomeScreen()),
+//                                       );
+//                                     } else if (response == "Login failure") {
+//                                       CoolAlert.show(
+//                                         context: context,
+//                                         type: CoolAlertType.error,
+//                                         title: 'Oops...',
+//                                         text: 'Sorry, Wrong credentials\n Try again',
+//                                         loopAnimation: false,
+//                                       );
+//                                     }
+//                                     await Future.delayed(Duration(seconds: 3));
+//
+//                                     setState(() {
+//                                       _isLoading = false;
+//                                     });
+//                                   },
+//                                   child: _isLoading
+//                                       ? CircularProgressIndicator()
+//                                       : Text(
+//                                     "Login",
+//                                     style: TextStyle(fontSize: 19),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                             hSize(),
+//                             SizedBox(height: 15),
+//                             Row(
+//                               mainAxisAlignment: MainAxisAlignment.center,
+//                               children: [
+//                                 Text(
+//                                   "Welcome back!..Kindly login to proceed",
+//                                   style:
+//                                   TextStyle(color: Style.black, fontSize: 15),
+//                                 ),
+//                               ],
+//                             )
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildButton(
+//       {VoidCallback? onTap, required String text, Color? color}) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 10.0),
+//       child: MaterialButton(
+//         color: color,
+//         minWidth: double.infinity,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(30.0),
+//         ),
+//         onPressed: onTap,
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 15.0),
+//           child: Text(
+//             text,
+//             style: const TextStyle(
+//               color: Colors.white,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class Style {
+//   static Color white = Colors.white;
+//   static Color black = Colors.black;
+//   static Color grey = Colors.grey;
+//   static Color darkBlue = Colors.green.shade800;
+// }
+//
+// Widget hSize() {
+//   return SizedBox(
+//     height: 8.5,
+//   );
+// }
+//
+// Widget customTextEditingController(
+//     String hint_text, Icon prefix_icon, TextEditingController emailController1) {
+//   return TextFormField(
+//     validator: (value) {
+//       if (value!.isEmpty) {
+//         return "Please Enter Your Email";
+//       }
+//       if (!RegExp(
+//           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+//           .hasMatch(value)) {
+//         return "Please enter a valid email address";
+//       } else {
+//         return null;
+//       }
+//     },
+//     controller: emailController1,
+//     style: TextStyle(color: Style.black),
+//     decoration: InputDecoration(
+//       hintText: hint_text,
+//       hintStyle: TextStyle(color: Style.grey),
+//       prefixIcon: prefix_icon,
+//       enabledBorder: OutlineInputBorder(
+//         borderSide: BorderSide(color: Style.grey),
+//         borderRadius: BorderRadius.circular(20.0),
+//       ),
+//       border: new OutlineInputBorder(
+//         borderRadius: BorderRadius.all(
+//           Radius.circular(20),
+//         ),
+//         borderSide: new BorderSide(color: Style.grey),
+//       ),
+//       focusedBorder: OutlineInputBorder(
+//         borderRadius: BorderRadius.all(
+//           Radius.circular(20),
+//         ),
+//         borderSide: BorderSide(width: 1, color: Style.grey),
+//       ),
+//     ),
+//   );
+// }
+//
+// Widget passwordController(
+//     String hint_text, Icon prefix_icon, TextEditingController passwordController1) {
+//   return TextFormField(
+//     validator: (value) {
+//       if (value!.isEmpty) {
+//         return "Please Enter Your Password";
+//       }
+//       return null;
+//     },
+//     obscureText: true,
+//     controller: passwordController1,
+//     style: TextStyle(color: Style.black),
+//     decoration: InputDecoration(
+//       hintText: hint_text,
+//       hintStyle: TextStyle(color: Style.grey),
+//       prefixIcon: prefix_icon,
+//       enabledBorder: OutlineInputBorder(
+//         borderSide: BorderSide(color: Style.grey),
+//         borderRadius: BorderRadius.circular(20.0),
+//       ),
+//       border: new OutlineInputBorder(
+//         borderRadius: BorderRadius.all(
+//           Radius.circular(20),
+//         ),
+//         borderSide: new BorderSide(color: Style.grey),
+//       ),
+//       focusedBorder: OutlineInputBorder(
+//         borderRadius: BorderRadius.all(
+//           Radius.circular(20),
+//         ),
+//         borderSide: BorderSide(width: 1, color: Style.grey),
+//       ),
+//     ),
+//   );
+// }

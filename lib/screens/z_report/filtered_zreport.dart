@@ -15,14 +15,14 @@ import 'package:intl/intl.dart';
 import '../../APIS/authentication.dart';
 import '../../APIS/station_receipts.dart';
 
-class FilteredReceipts extends StatefulWidget {
+class filtered_zreport extends StatefulWidget {
   final DateTime? fromDate;
   final TimeOfDay? fromTime;
   final TimeOfDay? toTime;
   final DateTime? toDate;
   double _kSize = 100;
 
-  FilteredReceipts({
+  filtered_zreport({
     this.fromDate,
     this.fromTime,
     this.toDate,
@@ -30,10 +30,10 @@ class FilteredReceipts extends StatefulWidget {
   });
 
   @override
-  _FilteredReceiptsState createState() => _FilteredReceiptsState();
+  _filtered_zreportState createState() => _filtered_zreportState();
 }
 
-class _FilteredReceiptsState extends State<FilteredReceipts> {
+class _filtered_zreportState extends State<filtered_zreport> {
   List<Element> _elements = [];
   bool _isLoading = true;
   double _kSize = 100;
@@ -107,12 +107,12 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
 
             objectsList.forEach((obj) {
               Element element = Element(
-                obj['date'],
-                obj['time'],
-                obj['fuelGrade'],
-                obj['unit'],
-                obj['amount'],
-                obj['id']
+                  obj['date'],
+                  obj['time'],
+                  obj['fuelGrade'],
+                  obj['unit'],
+                  obj['amount'],
+                  obj['id']
               );
 
               _elements.add(element);
@@ -187,7 +187,7 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
             horizontal: 25,
           ),
           child: AppText(
-            text: "Receipts",
+            text: "zreport",
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),

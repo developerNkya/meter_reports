@@ -1,31 +1,53 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:grocery_app/APIS/z_report.dart';
-import 'package:grocery_app/common_widgets/app_text.dart';
-import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import '../APIS/authentication.dart';
-import '../APIS/station_receipts.dart';
-import 'filter_screen.dart';
-import 'package:intl/intl.dart';
 
-//z_report section
+import 'package:flutter/material.dart';
+import 'package:grocery_app/APIS/handle_receipt.dart';
+import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
+import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../APIS/authentication.dart';
+import '../../common_widgets/app_text.dart';
+import '../APIS/retrieve_summary.dart';
+
+class Element {
+  final double summary;
+
+  Element(
+      this.summary
+
+
+      );
+
+  @override
+  String toString() {
+    return 'Element(id: $summary)';
+  }
+}
+
 class Summary extends StatefulWidget {
+  final int? id;
+
+  Summary({
+    this.id,
+  });
+
   @override
   State<Summary> createState() => _SummaryState();
 }
 
 class _SummaryState extends State<Summary> {
-  List<Employee> employees = <Employee>[];
-  late EmployeeDataSource employeeDataSource =
-  EmployeeDataSource(employeeData: employees);
-  List<Element> _elements = <Element>[];
+  final String imagePath = "assets/images/sample_qr.png";
+  final String tra_img = "assets/images/tra_img3.png";
+
+  List<Element> _elements = [];
   bool _isLoading = true;
-  final String imagePath = "assets/images/grey.jpg";
+  var receipt_data;
+  double _kSize = 100;
+  late double displayed_summary = 0.0;
+
 
   @override
   void initState() {
@@ -33,68 +55,64 @@ class _SummaryState extends State<Summary> {
     stationReceipt();
   }
 
-  void stationReceipt() async {
+   stationReceipt() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-   var user_id = prefs.getString('user_id');
 
-    //getting the auth key:::
+    // Getting the auth key
     String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
-      var dateFrom = "2021-10-11";
-      var dateTo = "2024-10-21";
-      //call receipt api:::
-      String zReports = await zReport(auth, dateFrom, dateTo);
-      // String userStations1 = await userStations(auth, user_id.toString());
-      Map<String, dynamic> response = jsonDecode(zReports);
-      Map<String, dynamic> parsedResponse = json.decode(zReports);
+      DateTime currentDate = DateTime.now();
+      // Format the current date to match the desired format
+      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
 
-      List<dynamic> dataList = parsedResponse['data'];
+      // Assign the formatted date to the variable
+      var dateTo = formattedDate;
+     double userSummary = await retireve_summary(auth,dateTo);
 
-      List<Map<String, dynamic>> objectsList = dataList.map((data) {
-        String date = data['DAILYTOTALAMOUNT'].toString();
-        String time = data['GROSS'].toString();
-        String fuelGrade = data['NETTAMOUNT_E'].toString();
-        String unit = 'TAXAMOUNT_E';
-        int amount = 0;
-
-        try {
-          amount = double.parse(data['PMTAMOUNT_CASH'].toString()).toInt();
-        } catch (e) {
-          print('Invalid amount value: ${data['PMTAMOUNT_CASH']}');
-        }
-
-        return {
-          'date': date,
-          'time': time,
-          'fuelGrade': fuelGrade,
-          'unit': unit,
-          'amount': amount,
-        };
-      }).toList();
+    print(userSummary);
 
       setState(() {
-        //Your code
-        objectsList.forEach((obj) {
-          Element element = Element(
-            obj['date'],
-            obj['time'],
-            obj['fuelGrade'],
-            obj['unit'],
-            obj['amount'],
-          );
-
-          _elements.add(element);
-        });
+        displayed_summary = userSummary;
+        _isLoading = false;
       });
-      employees = getEmployeeData();
-      employeeDataSource = EmployeeDataSource(employeeData: employees);
-      _isLoading = false;
-    }
 
-    //getting the station names:::
+
+
+//       List<Map<String, dynamic>> objectsList = dataList.map((data) {
+//
+//         int summary = 0;
+//
+//         try {
+//         summary = double.parse(data['summary'].toString()).toInt();
+// print(summary);
+//         } catch (e) {
+//           print('Invalid amount value: ${data['summary']}');
+//         }
+//
+//         return {
+//           'summary': summary,
+//         };
+//       }).toList();
+//
+//       print('object list');
+//       print(dataList);
+      // setState(() {
+      //   objectsList.forEach((obj) {
+      //     Element element = Element(obj['summary']);
+      //
+      //     _elements.add(element);
+      //   });
+      //
+      //   _isLoading = false;
+      // });
+
+
+      // return '123';
+
+    }
   }
 
   @override
@@ -119,190 +137,226 @@ class _SummaryState extends State<Summary> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              // Move to set date page
+            },
             child: Container(
               padding: EdgeInsets.only(right: 25),
               child: Icon(
-                Icons.newspaper,
-                color: Colors.black,
+                Icons.summarize_outlined,
+                color: Colors.black45
               ),
             ),
           ),
         ],
         title: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 25,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 25),
           child: AppText(
-            text: "summary",
+            text: "Summary",
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
       ),
-      body: Center(
-        child: _isLoading
-            ? CircularProgressIndicator()
-            : _elements.isEmpty
-            ? Text(
-          'No data',
-          style: TextStyle(fontSize: 20),
-        )
-            : SfDataGrid(
-          source: employeeDataSource,
-          columnWidthMode: ColumnWidthMode.fill,
-          columns: <GridColumn>[
-            GridTextColumn(
-                columnName: 'id',
-                label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('ID'),
-                )),
-            GridTextColumn(
-                columnName: 'name',
-                label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Name'),
-                )),
-            GridTextColumn(
-                columnName: 'designation',
-                label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Designation'),
-                )),
-            GridTextColumn(
-                columnName: 'salary',
-                label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Salary'),
-                )),
-            GridTextColumn(
-                columnName: 'amount',
-                label: Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  child: Text('Amount'),
-                )),
-          ],
+      body: _isLoading ? Center(child: CircularProgressIndicator())
+      :Material(
+        child: Container(
+          color: Colors.black54,
+          child: Center(
+            child: Container(
+              height: 600,
+              width: 400,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(16.0)),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Container(
+                          padding: EdgeInsets.all(16.0),
+                          width:
+                          400, // Set a fixed width for horizontal scrolling
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.stretch,
+                            children: <Widget>[
+
+                              SizedBox(height: 16.0),
+                              Image.asset(
+                                tra_img,
+                                 height:120
+                              ),
+                              SizedBox(height: 16.0),
+                              Text(
+                                'FUMAS \nP.O.O BOX:  \nMobile: 6777\nTin N/A}\nVRN: N/A\nSERIAL NO:N/A}\nUIN:N/A}\nTAX OFFICE:N/A}',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontFamily: 'Receipt',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 15.0),
+                              const MySeparator(color: Colors.grey),
+                              SizedBox(height: 40.0),
+                              // _buildRowWithColumns(
+                              //   leftColumn: '',
+                              //   rightColumn:'',
+                              //   middleColumn: '',
+                              // ),
+                              _buildRowWithColumns(
+                                leftColumn: 'TOTAL SUMMARY:',
+                                rightColumn:
+                                displayed_summary.toString() ?? '',
+                              ),
+
+                              SizedBox(height: 20.0), // Add some space between the summary and the image
+                              Center(
+                                child: Image.asset(
+                                  imagePath,
+                                  height: 150, // Set the desired height for the image
+                                  width: 150, // Set the desired width for the image
+                                ),
+                              ),
+
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void onItemClicked(BuildContext context, GroceryItem groceryItem) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProductDetailsScreen(
-          groceryItem,
-          heroSuffix: "explore_screen",
+  Widget _buildRowWithColumns(
+      {required String leftColumn, required String rightColumn}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          leftColumn,
+          style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
         ),
+        Text(
+          rightColumn,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontFamily: 'Receipt',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  // fetchSummary() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   var username = prefs.getString('username');
+  //   var password = prefs.getString('user_password');
+  //
+  //   String auth = await authentication(username!, password.toString());
+  //
+  //   if (auth != null) {
+  //     DateTime currentDate = DateTime.now();
+  //     // Format the current date to match the desired format
+  //     String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+  //
+  //     // Assign the formatted date to the variable
+  //     var dateTo = formattedDate;
+  //     String userSummary = await retireve_summary(auth,dateTo);
+  //
+  //     print(userSummary);
+  //     // return '123';
+  //
+  //     return userSummary;
+  //
+  //   }
+  // }
+
+
+}
+
+class MyBlinkingButton extends StatefulWidget {
+  final List<Element> elements;
+  const MyBlinkingButton({Key? key, required this.elements}) : super(key: key);
+  @override
+  _MyBlinkingButtonState createState() => _MyBlinkingButtonState();
+}
+
+class _MyBlinkingButtonState extends State<MyBlinkingButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    _animationController =
+    new AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animationController.repeat(reverse: true);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _animationController,
+      child: MaterialButton(
+        onPressed: () {},
+        child: IconButton(
+            icon: Image.asset('assets/icons/print_3.png'),
+            color: Colors.black,
+            onPressed: () {
+            }),
       ),
     );
   }
 
-  List<Employee> getEmployeeData() {
-    List<Employee> employeeData = [];
-
-    _elements.forEach((element) {
-      Employee employee = Employee(
-        element.date,
-        element.time,
-        element.fuelGrade,
-        element.unit,
-        element.amount,
-      );
-      employeeData.add(employee);
-    });
-    print(employeeData);
-    return employeeData;
-  }
-
-  int calculateTotalAmount() {
-    int totalAmount = 0;
-    for (var element in _elements) {
-      totalAmount += element.amount;
-    }
-    return totalAmount;
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }
 
-/// Custom business object class which contains properties to hold the detailed
-/// information about the employee which will be rendered in datagrid.
-class Employee {
-  /// Creates the employee class with required details.
-  Employee(
-      this.id,
-      this.name,
-      this.designation,
-      this.qty,
-      this.amount,
-      );
-
-  /// Id of an employee.
-  final String id;
-
-  /// Name of an employee.
-  final String name;
-
-  /// Designation of an employee.
-  final String designation;
-
-  /// Salary of an employee.
-  final String qty;
-  final int amount;
-}
-
-/// An object to set the employee collection data source to the datagrid. This
-/// is used to map the employee data to the datagrid widget.
-class EmployeeDataSource extends DataGridSource {
-  /// Creates the employee data source class with required details.
-  EmployeeDataSource({required List<Employee> employeeData}) {
-    _employeeData = employeeData
-        .map<DataGridRow>((e) => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'id', value: e.id),
-      DataGridCell<String>(columnName: 'name', value: e.name),
-      DataGridCell<String>(
-          columnName: 'designation', value: e.designation),
-      DataGridCell<String>(columnName: 'salary', value: e.qty),
-      DataGridCell<int>(columnName: 'amount', value: e.amount),
-    ]))
-        .toList();
-  }
-
-  List<DataGridRow> _employeeData = [];
+class MySeparator extends StatelessWidget {
+  const MySeparator({Key? key, this.height = 1, this.color = Colors.black})
+      : super(key: key);
+  final double height;
+  final Color color;
 
   @override
-  List<DataGridRow> get rows => _employeeData;
-
-  @override
-  DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((e) {
-          return Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8.0),
-            child: Text(e.value.toString()),
-          );
-        }).toList());
-  }
-}
-
-class Element {
-  final String date;
-  final String time;
-  final String fuelGrade;
-  final String unit;
-  final int amount;
-
-  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
-
-  @override
-  String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount)';
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final boxWidth = constraints.constrainWidth();
+        const dashWidth = 10.0;
+        final dashHeight = height;
+        final dashCount = (boxWidth / (2 * dashWidth)).floor();
+        return Flex(
+          children: List.generate(dashCount, (_) {
+            return SizedBox(
+              width: dashWidth,
+              height: dashHeight,
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: color),
+              ),
+            );
+          }),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
+        );
+      },
+    );
   }
 }

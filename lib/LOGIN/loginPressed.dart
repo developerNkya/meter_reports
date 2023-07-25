@@ -30,6 +30,7 @@ Future<String> login(String email, String password) async {
 
     return 'Login success';
   } else {
-    return 'Login failure';
+    // return 'Login failure';
+    return response.body;
   }
 }

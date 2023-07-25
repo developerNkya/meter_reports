@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_glow/flutter_glow.dart';
 import 'package:grocery_app/styles/colors.dart';
 
 class AppButton extends StatelessWidget {
+
+
   final String label;
   final double roundness;
   final FontWeight fontWeight;
@@ -19,29 +22,32 @@ class AppButton extends StatelessWidget {
     this.onPressed,
   }) : super(key: key);
 
+
+
   @override
+
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
-      child: ElevatedButton(
+      child: GlowButton(
         onPressed: () {
           onPressed?.call();
         },
-        style: ElevatedButton.styleFrom(
-          visualDensity: VisualDensity.compact,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(roundness),
-          ),
-          elevation: 0,
-          backgroundColor: AppColors.primaryColor,
-          textStyle: TextStyle(
-            color: Colors.white,
-            fontFamily: Theme.of(context).textTheme.bodyText1?.fontFamily,
-            fontWeight: fontWeight,
-          ),
-          padding: padding,
-          minimumSize: const Size.fromHeight(50),
-        ),
+        // style: ElevatedButton.styleFrom(
+        //   visualDensity: VisualDensity.compact,
+        //   shape: RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.circular(roundness),
+        //   ),
+        //   elevation: 0,
+        //   backgroundColor: Colors.black45,
+        //   textStyle: TextStyle(
+        //     color: Colors.white,
+        //     fontFamily: Theme.of(context).textTheme.bodyText1?.fontFamily,
+        //     fontWeight: fontWeight,
+        //   ),
+        //   padding: padding,
+        //   minimumSize: const Size.fromHeight(50),
+        // ),
         child: Stack(
           fit: StackFit.passthrough,
           children: <Widget>[

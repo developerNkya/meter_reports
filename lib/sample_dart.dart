@@ -1,61 +1,75 @@
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
-// import 'package:flutter_session/flutter_session.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+// import 'package:grocery_app/APIS/z_report.dart';
 // import 'package:grocery_app/common_widgets/app_text.dart';
 // import 'package:grocery_app/models/grocery_item.dart';
 // import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-// import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
 // import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 // import '../APIS/authentication.dart';
 // import '../APIS/station_receipts.dart';
 // import 'filter_screen.dart';
 // import 'package:intl/intl.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 //
-// //receipts section
-// class CategoryItemsScreen extends StatefulWidget {
+// // z_report section
+// class ZReport extends StatefulWidget {
 //   @override
-//   State<CategoryItemsScreen> createState() => _CategoryItemsScreenState();
+//   State<ZReport> createState() => _ZReportState();
 // }
 //
-// class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
-//
+// class _ZReportState extends State<ZReport> {
 //   List<Employee> employees = <Employee>[];
-//   late EmployeeDataSource employeeDataSource = EmployeeDataSource(employeeData: employees);
+//   late EmployeeDataSource employeeDataSource =
+//   EmployeeDataSource(employeeData: employees);
 //   List<Element> _elements = <Element>[];
 //   bool _isLoading = true;
+//   final String imagePath = "assets/images/grey.jpg";
 //
 //   @override
 //   void initState() {
 //     super.initState();
 //     stationReceipt();
-//
 //   }
-//   void stationReceipt() async{
-//     var username = await FlutterSession().get('username');
-//     var password = await FlutterSession().get('user_password');
-//     var user_id = await FlutterSession().get('user_id');
+//
+//   void stationReceipt() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     var username = prefs.getString('username');
+//     var password = prefs.getString('user_password');
+//     var user_id = prefs.getString('user_id');
 //
 //     //getting the auth key:::
-//     String auth = await authentication(username, password.toString());
+//     String auth = await authentication(username!, password.toString());
 //
-//     if(auth != null){
+//     if (auth != null) {
 //       var dateFrom = "2021-10-11";
-//       var dateTo ="2024-10-21";
+//       // Get the current date
+//       DateTime currentDate = DateTime.now();
+//
+//       // Format the current date to match the desired format
+//       String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+//
+//       // Assign the formatted date to the variable
+//       var dateTo = formattedDate;
 //       //call receipt api:::
-//       String userReceipts = await  fetchStationReceiptReport(auth,dateFrom,dateTo);
-//       // String userStations1 = await userStations(auth,user_id.toString() );
-//       Map<String, dynamic> response = jsonDecode(userReceipts);
-//       Map<String, dynamic> parsedResponse = json.decode(userReceipts);
+//       String zReports = await zReport(auth, dateFrom, dateTo);
+//       // String userStations1 = await userStations(auth, user_id.toString());
+//       Map<String, dynamic> response = jsonDecode(zReports);
+//       Map<String, dynamic> parsedResponse = json.decode(zReports);
 //
 //       List<dynamic> dataList = parsedResponse['data'];
 //
 //       List<Map<String, dynamic>> objectsList = dataList.map((data) {
-//         String date = data['DATE'].toString();
-//         String time = data['TIME'].toString();
-//         String fuelGrade = data['FUEL_GRADE'].toString();
-//         String unit = 'ltr';
-//         int amount = data['AMOUNT'] ;
+//         String date = data['DAILYTOTALAMOUNT'].toString();
+//         String time = data['GROSS'].toString();
+//         String fuelGrade = data['NETTAMOUNT_E'].toString();
+//         String unit = 'TAXAMOUNT_E';
+//         int amount = 0;
+//
+//         try {
+//           amount = double.parse(data['PMTAMOUNT_CASH'].toString()).toInt();
+//         } catch (e) {
+//           print('Invalid amount value: ${data['PMTAMOUNT_CASH']}');
+//         }
 //
 //         return {
 //           'date': date,
@@ -79,8 +93,8 @@
 //
 //           _elements.add(element);
 //         });
-//
 //       });
+//
 //       employees = getEmployeeData();
 //       employeeDataSource = EmployeeDataSource(employeeData: employees);
 //       _isLoading = false;
@@ -88,6 +102,7 @@
 //
 //     //getting the station names:::
 //   }
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -110,12 +125,11 @@
 //         ),
 //         actions: [
 //           GestureDetector(
-//             onTap: () {
-//             },
+//             onTap: () {},
 //             child: Container(
 //               padding: EdgeInsets.only(right: 25),
 //               child: Icon(
-//                 Icons.graphic_eq,
+//                 Icons.newspaper,
 //                 color: Colors.black,
 //               ),
 //             ),
@@ -126,59 +140,39 @@
 //             horizontal: 25,
 //           ),
 //           child: AppText(
-//             text: "Receipts",
+//             text: "Z-Report",
 //             fontWeight: FontWeight.bold,
 //             fontSize: 20,
 //           ),
 //         ),
 //       ),
-//       body:
-//       Column(
+//       body: Stack(
 //         children: [
-//           Expanded(
-//             child: _elements.isEmpty
-//                 ? Center(child: CircularProgressIndicator())
-//                 : SfDataGrid(
-//               source: employeeDataSource,
-//               columnWidthMode: ColumnWidthMode.fill,
-//               columns: <GridColumn>[
-//                 GridColumn(
-//                     columnName: 'DATE',
-//                     label: Container(
-//                         padding: EdgeInsets.all(16.0),
-//                         alignment: Alignment.center,
-//                         child: Text(
-//                           'DATE',
-//                         ))),
-//                 GridColumn(
-//                     columnName: 'TIME',
-//                     label: Container(
-//                         padding: EdgeInsets.all(8.0),
-//                         alignment: Alignment.center,
-//                         child: Text('TIME'))),
-//                 GridColumn(
-//                     columnName: 'FUEL GRADE',
-//                     label: Container(
-//                         padding: EdgeInsets.all(8.0),
-//                         alignment: Alignment.center,
-//                         child: Text(
-//                           'FUEL GRADE',
-//                           overflow: TextOverflow.ellipsis,
-//                         ))),
-//                 GridColumn(
-//                     columnName: 'CITY',
-//                     label: Container(
-//                         padding: EdgeInsets.all(8.0),
-//                         alignment: Alignment.center,
-//                         child: Text('CITY'))),
-//                 GridColumn(
-//                     columnName: 'AMOUNT',
-//                     label: Container(
-//                         padding: EdgeInsets.all(8.0),
-//                         alignment: Alignment.center,
-//                         child: Text('AMOUNT'))),
-//
+//           _isLoading
+//               ? Center(
+//             child: CircularProgressIndicator(),
+//           )
+//               : SingleChildScrollView(
+//             scrollDirection: Axis.horizontal,
+//             child: DataTable(
+//               columns: [
+//                 DataColumn(label: Text('DAILY')),
+//                 DataColumn(label: Text('GROSS')),
+//                 DataColumn(label: Text('NET_AMT')),
+//                 DataColumn(label: Text('TAX_AMT')),
+//                 DataColumn(label: Text('AMOUNT')),
 //               ],
+//               rows: _elements.map((element) {
+//                 return DataRow(
+//                   cells: [
+//                     DataCell(Text(element.date)),
+//                     DataCell(Text(element.time)),
+//                     DataCell(Text(element.fuelGrade)),
+//                     DataCell(Text(element.unit)),
+//                     DataCell(Text(element.amount.toString())),
+//                   ],
+//                 );
+//               }).toList(),
 //             ),
 //           ),
 //           Positioned(
@@ -196,21 +190,14 @@
 //                       icon: Icon(Icons.attach_money),
 //                       onPressed: () {},
 //                     ),
-//                     Text('Total Amount:',
-//                       style: TextStyle(
-//                           color: Colors.white,
-//                           fontSize: 25),
+//                     Text(
+//                       'Total Amount:',
+//                       style: TextStyle(color: Colors.white, fontSize: 25),
 //                     ),
 //                     Text(
-//                       NumberFormat('#,###').format(
-//                           calculateTotalAmount()
-//                       ),
-//                       style: TextStyle(
-//                           color: Colors.white,
-//                           fontSize: 25),
-//
+//                       NumberFormat('#,###').format(calculateTotalAmount()),
+//                       style: TextStyle(color: Colors.white, fontSize: 25),
 //                     )
-//
 //                   ],
 //                 ),
 //               ),
@@ -232,12 +219,13 @@
 //       ),
 //     );
 //   }
+//
 //   List<Employee> getEmployeeData() {
 //     List<Employee> employeeData = [];
 //
 //     _elements.forEach((element) {
 //       Employee employee = Employee(
-//         element.date ,
+//         element.date,
 //         element.time,
 //         element.fuelGrade,
 //         element.unit,
@@ -256,18 +244,13 @@
 //     }
 //     return totalAmount;
 //   }
-//
-//
 // }
-//
-//
-// // }
 //
 // /// Custom business object class which contains properties to hold the detailed
 // /// information about the employee which will be rendered in datagrid.
 // class Employee {
 //   /// Creates the employee class with required details.
-//   Employee(this.id, this.name, this.designation, this.qty,this.amount);
+//   Employee(this.id, this.name, this.designation, this.qty, this.amount);
 //
 //   /// Id of an employee.
 //   final String id;
@@ -282,8 +265,6 @@
 //   final String qty;
 //   final int amount;
 // }
-//
-//
 //
 // /// An object to set the employee collection data source to the datagrid. This
 // /// is used to map the employee data to the datagrid widget.
@@ -318,7 +299,6 @@
 //           );
 //         }).toList());
 //   }
-//
 // }
 //
 // class Element {
@@ -329,6 +309,7 @@
 //   final int amount;
 //
 //   Element(this.date, this.time, this.fuelGrade, this.unit, this.amount);
+//
 //   @override
 //   String toString() {
 //     return '($date, $time, $fuelGrade, $unit, $amount)';

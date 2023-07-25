@@ -10,12 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Welcome screen:
 class WelcomeScreen extends StatelessWidget {
-  final String imagePath = "assets/images/welcome_image.png";
+  final String imagePath = "assets/images/bg3.jpg";
+
+  @override
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColor,
+      backgroundColor: Colors.black45,
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 30),
         decoration: BoxDecoration(
@@ -69,9 +72,10 @@ class WelcomeScreen extends StatelessWidget {
           fontSize: 48,
           fontWeight: FontWeight.w600,
           color: Colors.white,
+
         ),
         AppText(
-          text: "to FUMAS",
+          text: "to FAS",
           fontSize: 48,
           fontWeight: FontWeight.w600,
           color: Colors.white,

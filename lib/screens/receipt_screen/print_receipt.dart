@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:lottie/lottie.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:image/image.dart' as img;
+import 'package:video_player/video_player.dart';
 
+import '../../LOGIN/login_page.dart';
 import '../../common_widgets/app_text.dart';
 
 
@@ -72,6 +77,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
   String optionprinttype = "58 mm";
   List<String> options = ["58 mm", "80 mm"];
+  final String imagePath = "assets/images/print2.jpg";
+  VideoPlayerController controller = VideoPlayerController.asset('assets/animations/print3.mp4');
 
   @override
   void initState() {
@@ -133,12 +140,102 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Container(
+
             padding: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('info: $_info\n '),
-                Text(_msj),
+                // Container(
+                //   width: double.infinity,
+                //   height: 200, // Set the desired height for the image card
+                //   child: Card(
+                //     child: Image.asset(
+                //       imagePath,
+                //       fit: BoxFit.cover,
+                //     ),
+                //   ),
+                // ),
+
+                //logic begins
+                Card(
+                  // Define the shape of the card
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  // Define how the card's content should be clipped
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  // Define the child widget of the card
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      // Add padding around the row widget
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            // Add an image widget to display an image
+                            Image.asset(
+                              ImgSample.get("reading.png"),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            // Add some spacing between the image and the text
+                            Container(width: 20),
+                            // Add an expanded widget to take up the remaining horizontal space
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  // Add some spacing between the top of the card and the title
+                                  Container(height: 5),
+                                  // Add a title widget
+                                  Text(
+                                    "Status",
+                                    style: MyTextSample.title(context)!.copyWith(
+                                      color: MyColorsSample.grey_80,
+                                    ),
+                                  ),
+                                  // Add some spacing between the title and the subtitle
+                                  Container(height: 5),
+                                  // Add a subtitle widget
+                                  Text(
+                                    "Info:$_info\n",
+                                    style: MyTextSample.body1(context)!.copyWith(
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Text(
+                                    _msj,
+                                    style: MyTextSample.body1(context)!.copyWith(
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+
+                                  // Add some spacing between the subtitle and the text
+                                  Container(height: 10),
+                                  // Add a text widget to display some text
+                                  Text(
+                                    MyStringsSample.card_text,
+                                    maxLines: 2,
+                                    style: MyTextSample.subhead(context)!.copyWith(
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //logic ends
+                // Text('info: $_info\n '),
+                // Text(_msj),
                 Row(
                   children: [
                     Text("Type print"),
@@ -163,6 +260,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black54,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
                       onPressed: () {
                         this.getBluetoots();
                       },
@@ -177,42 +280,68 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             ),
                           ),
                           SizedBox(width: 5),
-                          Text(_progress ? _msjprogress : "Search"),
+                          Text(_progress ? _msjprogress : "Search",
+
+                          ),
                         ],
                       ),
                     ),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black54,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
                       onPressed: connected ? this.disconnect : null,
                       child: Text("Disconnect"),
                     ),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black54,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
                       onPressed: connected ? this.printTest : null,
                       child: Text("Print"),
                     ),
+
                   ],
                 ),
-                Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Colors.grey.withOpacity(0.3),
-                    ),
-                    child: ListView.builder(
-                      itemCount: items.length > 0 ? items.length : 0,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          onTap: () {
-                            String mac = items[index].macAdress;
-                            this.connect(mac);
-                          },
-                          title: Text('Name: ${items[index].name}'),
-                          subtitle: Text("macAddress: ${items[index].macAdress}"),
-                        );
-                      },
-                    )),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: Column(
+                    children: [
+                      Container(
+                          height: 200,
+
+                          child: ListView.builder(
+                            itemCount: items.length > 0 ? items.length : 0,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                onTap: () {
+                                  String mac = items[index].macAdress;
+                                  this.connect(mac);
+                                },
+                                title: Text('Name: ${items[index].name}'),
+                                subtitle: Text("macAddress: ${items[index].macAdress}"),
+                              );
+                            },
+                          )),
+
+
+
+                    ],
+                  ),
+                ),
                 SizedBox(height: 10),
 
                 SizedBox(height: 10),
+
               ],
             ),
           ),
@@ -292,19 +421,32 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       _progress = false;
     });
   }
-
   Future<void> disconnect() async {
+
     final bool status = await PrintBluetoothThermal.disconnect;
     setState(() {
       connected = false;
     });
     print("status disconnect $status");
+
+    // Navigator.pop(context); // Close the dialog after the disconnect operation
   }
 
+
   Future<void> printTest() async {
+
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
     //print("connection status: $conexionStatus");
     if (conexionStatus) {
+      //
+      // CoolAlert.show(
+      //   context: context,
+      //   type: CoolAlertType.loading,
+      //   title: 'Wait...',
+      //   text: 'Your receipt is being printed...',
+      //   loopAnimation: true,
+      // );
+
       List<int> ticket = await testTicket();
       final result = await PrintBluetoothThermal.writeBytes(ticket);
       print("print test result:  $result");
@@ -576,3 +718,105 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     }
   }
 }
+
+class MyTextSample{
+
+  static TextStyle? display4(BuildContext context){
+    return Theme.of(context).textTheme.displayLarge;
+  }
+
+  static TextStyle? display3(BuildContext context){
+    return Theme.of(context).textTheme.displayMedium;
+  }
+
+  static TextStyle? display2(BuildContext context){
+    return Theme.of(context).textTheme.displaySmall;
+  }
+
+  static TextStyle? display1(BuildContext context){
+    return Theme.of(context).textTheme.headlineMedium;
+  }
+
+  static TextStyle? headline(BuildContext context){
+    return Theme.of(context).textTheme.headlineSmall;
+  }
+
+  static TextStyle? title(BuildContext context){
+    return Theme.of(context).textTheme.titleLarge;
+  }
+
+  static TextStyle medium(BuildContext context){
+    return Theme.of(context).textTheme.titleMedium!.copyWith(
+      fontSize: 18,
+    );
+  }
+
+  static TextStyle? subhead(BuildContext context){
+    return Theme.of(context).textTheme.titleMedium;
+  }
+
+  static TextStyle? body2(BuildContext context){
+    return Theme.of(context).textTheme.bodyLarge;
+  }
+
+  static TextStyle? body1(BuildContext context){
+    return Theme.of(context).textTheme.bodyMedium;
+  }
+
+  static TextStyle? caption(BuildContext context){
+    return Theme.of(context).textTheme.bodySmall;
+  }
+
+  static TextStyle? button(BuildContext context){
+    return Theme.of(context).textTheme.labelLarge!.copyWith(
+        letterSpacing: 1
+    );
+  }
+
+  static TextStyle? subtitle(BuildContext context){
+    return Theme.of(context).textTheme.titleSmall;
+  }
+
+  static TextStyle? overline(BuildContext context){
+    return Theme.of(context).textTheme.labelSmall;
+  }
+}
+
+class MyColorsSample {
+  static const Color primary = Color(0xFF12376F);
+  static const Color primaryDark = Color(0xFF0C44A3);
+  static const Color primaryLight = Color(0xFF43A3F3);
+  static const Color green = Colors.green;
+  static Color black = const Color(0xFF000000);
+  static const Color accent = Color(0xFFFF4081);
+  static const Color accentDark = Color(0xFFF50057);
+  static const Color accentLight = Color(0xFFFF80AB);
+  static const Color grey_3 = Color(0xFFf7f7f7);
+  static const Color grey_5 = Color(0xFFf2f2f2);
+  static const Color grey_10 = Color(0xFFe6e6e6);
+  static const Color grey_20 = Color(0xFFcccccc);
+  static const Color grey_40 = Color(0xFF999999);
+  static const Color grey_60 = Color(0xFF666666);
+  static const Color grey_80 = Color(0xFF37474F);
+  static const Color grey_90 = Color(0xFF263238);
+  static const Color grey_95 = Color(0xFF1a1a1a);
+  static const Color grey_100_ = Color(0xFF0d0d0d);
+  static const Color transparent = Color(0x00f7f7f7);
+}
+class ImgSample {
+  static String get(String name){
+    return 'assets/images/print2.jpg';
+  }
+}
+
+class MyStringsSample {
+  static const String lorem_ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin"
+      "\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin";
+  static const String middle_lorem_ipsum = "Flutter is an open-source UI software development kit created by Google. It is used to develop cross-platform applications for Android, iOS, Linux, macOS, Windows, Google Fuchsia, and the web from a single codebase.";
+  static const String card_text = " " ;
+  final icon_text = Icons.ac_unit;
+}
+
+
+
+

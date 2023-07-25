@@ -24,6 +24,7 @@ class cartegories_station extends StatefulWidget {
 }
 
 class _cartegories_stationState extends State<cartegories_station> {
+  final String imagePath = "assets/images/bg3.jpg";
   @override
   Widget build(BuildContext context) {
     return  WillPopScope(
@@ -41,6 +42,7 @@ class _cartegories_stationState extends State<cartegories_station> {
               child: Center(
                 child: Column(
                   children: [
+
                     SizedBox(
                       height: 15,
                     ),
