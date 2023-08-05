@@ -35,6 +35,8 @@ class ReceiptScreen extends StatefulWidget {
   final String? uin;
   final String? regid;
   final String? taxOffice;
+  final String? pump;
+  final String? fuel_grade;
 
   ReceiptScreen({
     this.id,
@@ -57,6 +59,8 @@ class ReceiptScreen extends StatefulWidget {
     this.uin,
     this.regid,
     this.taxOffice,
+    this.pump,
+    this.fuel_grade
   });
 
   @override
@@ -503,13 +507,13 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // bytes += generator.text('Align left', styles: PosStyles(align: PosAlign.left));
     bytes += generator.text('**START OF LEGAL RECEIPT **', styles: PosStyles(align: PosAlign.center));
     bytes += generator.image(image!);
-    bytes += generator.text('FUMAS', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('MOBILE: ${widget.mobile ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('TIN: ${widget.tin ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('VRN: ${widget.vrn ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('SERIAL NO:${widget.serial ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('UIN:${widget.uin ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('TAX OFFICE: ${widget.taxOffice ?? 'N/A'}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('${widget.name}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('MOBILE: ${widget.mobile ?? ' '}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('TIN: ${widget.tin ?? ''}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('VRN: ${widget.vrn ?? ''}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('SERIAL NO:${widget.serial ?? ''}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('UIN:${widget.uin ?? ''}', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('TAX OFFICE: ${widget.taxOffice ?? ''}', styles: PosStyles(align: PosAlign.center));
 
     bytes += generator.text(
       '------------------------------------------',
@@ -527,7 +531,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '${widget.id ?? 'N/A'}',
+        text: '${widget.id ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -541,7 +545,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '${widget.zNum ?? 'N/A'}',
+        text: '${widget.zNum ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -550,12 +554,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //row3:
     bytes += generator.row([
       PosColumn(
-        text: 'DATE:${widget.date ?? 'N/A'}',
+        text: 'DATE:${widget.date ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: 'TIME ${widget.time ?? 'N/A'}',
+        text: 'TIME ${widget.time ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -571,7 +575,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //row4:
     bytes += generator.row([
       PosColumn(
-        text: 'PUMP:2 NOZZLE:1 ',
+        text: 'PUMP:${widget.pump} NOZZLE:${widget.nozzle} ',
         width: 6,
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -585,12 +589,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //row5::
     bytes += generator.row([
       PosColumn(
-        text: '${widget.fuelGrade ?? 'N/A'}',
+        text: '${widget.fuelGrade ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '0',
+        text: '${widget.fuelGrade ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -612,7 +616,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '0',
+        text: '${widget.amount}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -627,7 +631,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '0.000',
+        text: '0.00',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -641,7 +645,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text:  'N/A',
+        text:  '${widget.amount}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -657,7 +661,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
     bytes += generator.text('RECEIPT VERIFICATION CODE', styles: PosStyles(align: PosAlign.center));
 
-    bytes += generator.text('3HH4JJ493JJJJ', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('${widget.rctvNum}', styles: PosStyles(align: PosAlign.center));
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));
     bytes += generator.qrcode('https://virtual.tra.go.tz/efdmsRctVerify/5D278B362_180039');
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));

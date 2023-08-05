@@ -3,9 +3,16 @@ import 'dart:convert';
 
 import 'package:grocery_app/screens/changePrice.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 changePrice2(String access_token,String unleaded,String diesel,String kerosene,String cng)async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var stationId = prefs.getString('stationId');
+  var company_id = prefs.getString('company_id');
+  var user_id = prefs.getString('user_id');
+
+
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $access_token',
@@ -36,8 +43,8 @@ changePrice2(String access_token,String unleaded,String diesel,String kerosene,S
         "id": "4"
       }
     ],
-    "station_id": "1",
-    "user_id": "1"
+    "station_id": stationId,
+    "user_id": user_id
   });
   request.headers.addAll(headers);
 

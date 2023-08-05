@@ -225,10 +225,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     ),
                   ),
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
+                BottomAppBar(
                   child: Container(
                     height: 60,
                     child: BottomAppBar(

@@ -23,6 +23,12 @@ ResponseData parseResponseData(String responseBody) {
 }
 
 Future<String> userStations(String accessToken, String userId) async {
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var stationId = prefs.getString('stationId');
+  var company_id = prefs.getString('company_id');
+
+
   var headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $accessToken',

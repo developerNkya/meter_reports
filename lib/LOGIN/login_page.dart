@@ -149,6 +149,9 @@ class _LoginPageState extends State<LoginPage> {
                                       await SharedPreferences.getInstance();
                                       await prefs.setString('accessToken', 'your_access_token');
 
+                                      //querry for the station id and the station name:::
+
+
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(

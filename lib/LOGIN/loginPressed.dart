@@ -18,6 +18,7 @@ Future<String> login(String email, String password) async {
     final username = responseJson['username'];
     final accessToken = responseJson['access_token']['access_token'];
     final userId = responseJson['user_id'];
+    final company_id = responseJson['company_id'];
 
     // Getting SharedPreferences instance
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -28,9 +29,11 @@ Future<String> login(String email, String password) async {
     await prefs.setString('user_id', userId.toString());
     await prefs.setString('user_password', password);
 
+    await prefs.setString('company_id',company_id.toString());
+
     return 'Login success';
   } else {
-    // return 'Login failure';
-    return response.body;
+    return 'Login failure';
+    // return response.body;
   }
 }

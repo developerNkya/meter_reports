@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
+import 'package:grocery_app/screens/z_report/z_report_summary.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
@@ -14,6 +15,8 @@ import 'package:intl/intl.dart';
 
 import '../../APIS/authentication.dart';
 import '../../APIS/station_receipts.dart';
+import '../../APIS/z_report.dart';
+import 'choose_zreport_date.dart';
 
 class filtered_zreport extends StatefulWidget {
   final DateTime? fromDate;
@@ -37,6 +40,9 @@ class _filtered_zreportState extends State<filtered_zreport> {
   List<Element> _elements = [];
   bool _isLoading = true;
   double _kSize = 100;
+  var dateFrom = '';
+  var dateTo = '';
+
   @override
   void initState() {
     super.initState();
@@ -47,98 +53,60 @@ class _filtered_zreportState extends State<filtered_zreport> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
+    var user_id = prefs.getString('user_id');
 
-    // Getting the auth key
+    //getting the auth key:::
     String auth = await authentication(username!, password.toString());
 
-    // Get the current date
-    var dateFrom = widget.fromDate.toString();
+    if (auth != null) {
+      dateFrom = '${widget.fromDate}';
+      // Get the current date
 
-    // Get the current date
-    DateTime currentDate = widget.toDate as DateTime;
+        dateTo ='${widget.toDate}' ;
+      //call receipt api:::
+      var user_zReport= await zReport(auth, dateFrom, dateTo);
+      print(user_zReport);
+      // String userStations1 = await userStations(auth,user_id.toString() );
+      Map<String, dynamic> parsedResponse = json.decode(user_zReport);
 
-    // Format the current date to match the desired format
-    String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+      List<dynamic> dataList = parsedResponse['data'];
 
-    // Assign the formatted date to the variable
-    var dateTo = formattedDate;
+      List<Map<String, dynamic>> objectsList = dataList.map((data) {
+        // String znumber = data['znumber'].toString();
+        // String ticket = data['TICKETSFISCAL'].toString();
+        // String net_amount = data['NETTAMOUNT_E'].toString();
 
-    String userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
+        int znumber = 0;
+        int ticket = 0;
+        int net_amount = 0;
+        int z_id = 0;
 
-    if (userReceipts != null) {
-      if (userReceipts.isNotEmpty) {
-        Map<String, dynamic> parsedResponse = json.decode(userReceipts);
+        try {
+          znumber = double.parse(data['znumber'].toString()).toInt();
+          ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
+          net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
+          z_id = double.parse(data['id'].toString()).toInt();
 
-        // Check if data is available
-        if (parsedResponse.containsKey('data')) {
-          List<dynamic> dataList = parsedResponse['data'];
-
-          List<Map<String, dynamic>> objectsList = dataList.map((data) {
-            String date = data['DATE'].toString();
-            String time = data['TIME'].toString();
-            String fuelGrade = data['FUEL_GRADE'].toString();
-            int unit = 0;
-            int amount = 0;
-            int id = 0;
-
-            try {
-              amount = double.parse(data['AMOUNT'].toString()).toInt();
-              id = double.parse(data['id'].toString()).toInt();
-
-              print(id);
-
-
-            } catch (e) {
-              print('Invalid amount value: ${data['AMOUNT']}');
-            }
-
-            return {
-              'date': date,
-              'time': time,
-              'fuelGrade': fuelGrade,
-              'unit': unit,
-              'amount': amount,
-              'id' : id,
-            };
-          }).toList();
-
-          setState(() {
-            _elements.clear(); // Clear the elements list
-
-            objectsList.forEach((obj) {
-              Element element = Element(
-                  obj['date'],
-                  obj['time'],
-                  obj['fuelGrade'],
-                  obj['unit'],
-                  obj['amount'],
-                  obj['id']
-              );
-
-              _elements.add(element);
-            });
-
-            _isLoading = false;
-          });
-        } else {
-          // No data available
-          setState(() {
-            _isLoading = false;
-            _elements.clear(); // Clear the elements list
-          });
+        } catch (e) {
+          print('Invalid amount value: ${data['AMOUNT']}');
         }
-      } else {
-        // No data available
-        setState(() {
-          _isLoading = false;
-          _elements.clear(); // Clear the elements list
-        });
-      }
-    } else {
-      // Error occurred while fetching userReceipts, handle the error
+
+        return {
+          'znumber': znumber,
+          'ticket': ticket,
+          'net_amount': net_amount,
+          'z_id': z_id,
+        };
+      }).toList();
+
       setState(() {
+        objectsList.forEach((obj) {
+          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
+          );
+          _elements.add(element);
+        });
+
         _isLoading = false;
-        _elements.clear(); // Clear the elements list
       });
     }
   }
@@ -169,7 +137,8 @@ class _filtered_zreportState extends State<filtered_zreport> {
               //move to set date page:::
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SingleSectionForm()),
+                // MaterialPageRoute(builder: (context) => choose_receiptScreen()),
+                MaterialPageRoute(builder: (context) => zreport_date()),
               );
             },
             child: Container(
@@ -187,22 +156,16 @@ class _filtered_zreportState extends State<filtered_zreport> {
             horizontal: 25,
           ),
           child: AppText(
-            text: "zreport",
+            text: " Filtered Z-Report",
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
       ),
       body: _isLoading
-          ? Center(
-        child:  Center(
-            child: Container(
-                height: 50,
-                child: LoadingAnimationWidget.inkDrop(
-                    color: Colors.white,
-                    size: _kSize))),
-      )
-          :Column(
+          ? Center(child: CircularProgressIndicator())
+//
+          : Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
@@ -214,28 +177,25 @@ class _filtered_zreportState extends State<filtered_zreport> {
                     DataTable(
                       showCheckboxColumn: false,
                       columns: [
-                        DataColumn(label: Text('Date')),
-                        DataColumn(label: Text('Time')),
-                        DataColumn(label: Text('Fuel Grade')),
-                        DataColumn(label: Text('Unit')),
-                        DataColumn(label: Text('Amount')),
+                        DataColumn(label: Text('znumber')),
+                        DataColumn(label: Text('ticket')),
+                        DataColumn(label: Text('net_amount')),
                       ],
                       rows: _elements.map((element) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(element.date)),
-                            DataCell(Text(element.time)),
-                            DataCell(Text(element.fuelGrade)),
-                            DataCell(Text('ltr')),
-                            DataCell(Text(element.amount.toString())),
+                            DataCell(Text(element.znumber.toString())),
+                            DataCell(Text(element.ticket.toString())),
+                            DataCell(Text(element.net_amount.toString())),
                           ],
                           onSelectChanged: (selected) {
                             if (selected != null && selected) {
-                              // Handle row selection here
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => CoolReceiptPage(id: element.id),
+                                  // builder: (context) => ReceiptScreen(),
+                                  builder: (context) =>
+                                      z_report_summary(id: element.z_id,dateTo:dateTo,dateFrom:dateFrom.toString()),
                                 ),
                               );
                             }
@@ -248,20 +208,19 @@ class _filtered_zreportState extends State<filtered_zreport> {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+          BottomAppBar(
             child: Container(
               height: 60,
               child: BottomAppBar(
+
                 color: Colors.black54,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      color: Colors.green,
-                      icon: Icon(Icons.attach_money),
+                      icon: Icon(Icons.attach_money,
+                          color: Colors.green
+                      ),
                       onPressed: () {},
                     ),
                     Text(
@@ -285,13 +244,14 @@ class _filtered_zreportState extends State<filtered_zreport> {
           ),
         ],
       ),
+
     );
   }
 
   int calculateTotalAmount() {
     int totalAmount = 0;
     for (var element in _elements) {
-      totalAmount += element.amount;
+      totalAmount += element.net_amount;
     }
     return totalAmount;
   }
@@ -312,17 +272,18 @@ class _filtered_zreportState extends State<filtered_zreport> {
 /// Custom business object class which contains properties to hold the detailed
 /// information about the employee which will be rendered in datagrid.
 class Element {
-  final String date;
-  final String time;
-  final String fuelGrade;
-  final int unit;
-  final int amount;
-  final int id;
+  final int znumber;
+  final int ticket;
+  final int net_amount;
+  final int z_id;
 
-  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount,this.id);
+
+
+  Element(
+      this.znumber, this.ticket, this.net_amount,this.z_id);
 
   @override
   String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount,$id)';
+    return '($znumber, $ticket, $net_amount)';
   }
 }

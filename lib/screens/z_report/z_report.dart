@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:grocery_app/screens/z_report/choose_zreport_date.dart';
+import 'package:grocery_app/screens/z_report/z_report_summary.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
@@ -15,8 +16,8 @@ import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
-import '../../APIS/authentication.dart';
-import '../../APIS/station_receipts.dart';
+import '../../../APIS/authentication.dart';
+import '../../../APIS/station_receipts.dart';
 
 class ZReport extends StatefulWidget {
   @override
@@ -27,6 +28,10 @@ class _ZReportState extends State<ZReport> {
   List<Element> _elements = [];
   bool _isLoading = true;
   double _kSize = 100;
+
+  var dateFrom = '',dateTo = '';
+
+
 
   @override
   void initState() {
@@ -44,7 +49,7 @@ class _ZReportState extends State<ZReport> {
     String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
-      var dateFrom = "2021-10-11";
+       dateFrom = "2021-10-11";
       // Get the current date
       DateTime currentDate = DateTime.now();
 
@@ -52,7 +57,7 @@ class _ZReportState extends State<ZReport> {
       String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
 
       // Assign the formatted date to the variable
-      var dateTo = formattedDate;
+      dateTo = formattedDate;
       //call receipt api:::
       String user_zReport= await zReport(auth, dateFrom, dateTo);
       // String userStations1 = await userStations(auth,user_id.toString() );
@@ -69,10 +74,15 @@ class _ZReportState extends State<ZReport> {
         int ticket = 0;
         int net_amount = 0;
 
+        int z_id = 0;
+
         try {
           znumber = double.parse(data['znumber'].toString()).toInt();
           ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
           net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
+
+          z_id = double.parse(data['id'].toString()).toInt();
+
 
         } catch (e) {
           print('Invalid amount value: ${data['AMOUNT']}');
@@ -82,12 +92,13 @@ class _ZReportState extends State<ZReport> {
           'znumber': znumber,
           'ticket': ticket,
           'net_amount': net_amount,
+          'z_id': z_id,
         };
       }).toList();
 
       setState(() {
         objectsList.forEach((obj) {
-          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount']
+          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
           );
           _elements.add(element);
         });
@@ -176,40 +187,15 @@ class _ZReportState extends State<ZReport> {
                           ],
                           onSelectChanged: (selected) {
                             if (selected != null && selected) {
-                              // onRowSelected(element);
-                              // print(element.id);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  // builder: (context) => ReceiptScreen(),
+                                  builder: (context) =>
+                                      z_report_summary(id: element.z_id,dateTo:dateTo,dateFrom:dateFrom.toString()),
+                                ),
+                              );
 
-                              //  moving to the print receipt element::
-                              //   Navigator.pushReplacement(
-                              //     context,
-                              //     MaterialPageRoute(builder: (context) => ReceiptPage(receiptNumber: receiptNumber, zNumber: zNumber, receiptDate: receiptDate, pumpNumber: pumpNumber, nozzleNumber: nozzleNumber, fuelType: fuelType, unitPrice: unitPrice, amount: amount)),
-                              //   );
-
-                              // Navigator.pushReplacement(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => ReceiptPage(
-                              //       receiptNumber: '123333',
-                              //       zNumber: '2/333333',
-                              //       receiptDate: DateTime(2023, 4, 5, 4, 55, 44),
-                              //       pumpNumber: 2,
-                              //       nozzleNumber: 1,
-                              //       fuelType: 'DIESEL',
-                              //       unitPrice: 4.67,
-                              //       amount: 7.000,
-                              //     ),
-                              //   ),
-                              // );
-
-                              //
-                              // Navigator.pushReplacement(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     // builder: (context) => ReceiptScreen(),
-                              //     builder: (context) =>
-                              //         CoolReceiptPage(id: element.id),
-                              //   ),
-                              // );
                             }
                           },
                         );
@@ -220,14 +206,10 @@ class _ZReportState extends State<ZReport> {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+          BottomAppBar(
             child: Container(
               height: 60,
               child: BottomAppBar(
-
                 color: Colors.black54,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,10 +272,11 @@ class Element {
   final int znumber;
   final int ticket;
   final int net_amount;
+  final int z_id;
 
 
   Element(
-      this.znumber, this.ticket, this.net_amount);
+      this.znumber, this.ticket, this.net_amount,this.z_id);
 
   @override
   String toString() {

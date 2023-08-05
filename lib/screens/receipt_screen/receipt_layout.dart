@@ -31,6 +31,10 @@ class Element {
   final String? uin;
   final String? regid;
   final String? taxOffice;
+  final String? pump;
+  final String? fuel_grade;
+  final String? concatenated_time;
+
 
   Element(
     this.id,
@@ -53,11 +57,15 @@ class Element {
     this.uin,
     this.regid,
     this.taxOffice,
+    this.pump,
+    this.fuel_grade,
+    this.concatenated_time
+
   );
 
   @override
   String toString() {
-    return 'Element(id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
+    return 'Element(pump: $pump, id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
   }
 }
 
@@ -80,7 +88,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   var receipt_data;
   double _kSize = 100;
   final String tra_img = "assets/images/tra_img3.png";
-
+  late String concatenated_time;
 
   @override
   void initState() {
@@ -107,6 +115,9 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
       receipt_data = parsedResponse['data'];
       print(receipt_data['id']);
 
+       concatenated_time = receipt_data['TIME'].replaceAll(":", "");
+
+
       setState(() {
         Element element = Element(
           receipt_data['id'],
@@ -129,6 +140,9 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
           receipt_data['uin'],
           receipt_data['regid'],
           receipt_data['taxoffice'],
+          receipt_data['PUMP'],
+          receipt_data['FUEL_GRADE'],
+          concatenated_time
         );
 
         _elements.add(element);
@@ -189,6 +203,9 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                     uin: _elements[0].uin,
                     regid: _elements[0].regid,
                     taxOffice: _elements[0].taxOffice,
+                    pump: _elements[0].pump,
+
+
                   ),
                 ),
               );
@@ -259,7 +276,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     ),
                                     SizedBox(height: 16.0),
                                     Text(
-                                      'FUMAS\nMobile: 6777\nTin ${_elements[0].tin ?? 'N/A'}\nVRN: ${_elements[0].vrn ?? 'N/A'}\nSERIAL NO: ${_elements[0].serial ?? 'N/A'}\nUIN:${_elements[0].uin ?? 'N/A'}\nTAX OFFICE: ${_elements[0].taxOffice ?? 'N/A'}',
+                                      '${_elements[0].name ?? 'N/A'}\nMobile:${_elements[0].mobile ?? ''}\nTin ${_elements[0].tin ?? 'N/A'}\nVRN: ${_elements[0].vrn ?? 'N/A'}\nSERIAL NO: ${_elements[0].serial ?? 'N/A'}\nUIN:${_elements[0].uin ?? 'N/A'}\nTAX OFFICE: ${_elements[0].taxOffice ?? 'N/A'}',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontFamily: 'Receipt',
@@ -283,35 +300,27 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                       leftColumn:
                                           'DATE: ${_elements[0].date ?? 'N/A'}',
                                       rightColumn:
-                                          'TIME: ${_elements[0].date ?? 'N/A'}',
-                                    ),
-                                    _buildRowWithColumns(
-                                      leftColumn:
-                                          'TIME: ${_elements[0].date ?? 'N/A'}',
-                                      rightColumn:
-                                          'TIME: ${_elements[0].date ?? 'N/A'}',
+                                          'TIME: ${_elements[0].time ?? 'N/A'}',
                                     ),
                                     SizedBox(height: 15.0),
                                     const MySeparator(color: Colors.grey),
                                     SizedBox(height: 15.0),
                                     _buildRowWithColumns(
-                                      leftColumn: 'PUMP:',
-                                      rightColumn: '2',
+                                      leftColumn:
+                                      'PUMP: ${_elements[0].pump ?? '1'}'+' NOZZLE:${_elements[0].pump ?? 'N/A'}',
+                                      rightColumn:
+                                      '',
                                     ),
                                     _buildRowWithColumns(
-                                      leftColumn: 'NOZZLE:',
-                                      rightColumn: '1',
-                                    ),
-                                    _buildRowWithColumns(
-                                      leftColumn: 'UNLEADED:',
-                                      rightColumn: '0',
+                                      leftColumn: '${_elements[0].fuelGrade ?? 'N/A'}',
+                                      rightColumn: '',
                                     ),
                                     SizedBox(height: 15.0),
                                     const MySeparator(color: Colors.grey),
                                     SizedBox(height: 15.0),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL EXCL TAX: ',
-                                      rightColumn: '0.000',
+                                      rightColumn: '${_elements[0].amount ?? 'N/A'}',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL TAX:',
@@ -319,13 +328,13 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL INCL TAX:',
-                                      rightColumn: '0',
+                                      rightColumn: '${_elements[0].amount ?? 'N/A'}',
                                     ),
                                     SizedBox(height: 15.0),
                                     const MySeparator(color: Colors.grey),
                                     SizedBox(height: 15.0),
                                     Text(
-                                      'RECEIPT VERIFICATION CODE',
+                                      'RECEIPT VERIFICATION NUMBER',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontFamily: 'Receipt',
@@ -335,7 +344,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     ),
                                     SizedBox(height: 8.0),
                                     Text(
-                                      '3HH4JJ493JJJJ',
+                                      '${_elements[0].rctvNum ?? 'N/A'}',
                                       style: TextStyle(
                                         fontSize: 24.0,
                                         fontWeight: FontWeight.bold,
@@ -344,11 +353,23 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                       textAlign: TextAlign.center,
                                     ),
                                     SizedBox(height: 32.0),
+                                    Center(
+                                      child: QrImageView(
+                                        data: 'https://virtual.tra.go.tz/efdmsRctVerify/${_elements[0].rctvNum}_${concatenated_time}',
+                                        version: QrVersions.auto,
+                                        size: 200,
+                                        gapless: false,
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 15.0),
                                     Text(
-                                      'SAMPLE QR CODE',
+                                      '** END OF LEGAL RECEIPT **',
                                       style: TextStyle(
-                                          fontSize: 16.0,
-                                          fontFamily: 'Receipt'),
+                                        fontSize: 16.0,
+                                        fontFamily: 'Receipt',
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                     SizedBox(height: 8.0),
@@ -388,6 +409,8 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
     );
   }
 }
+
+
 
 class MyBlinkingButton extends StatefulWidget {
   final List<Element> elements;

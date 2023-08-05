@@ -28,7 +28,7 @@ class HomeBanner extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AppText(
-                text: "Fas Solution",
+                text: "Fummas Solution",
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),

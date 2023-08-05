@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_fast_forms/flutter_fast_forms.dart';
 import 'package:grocery_app/screens/receipt_screen/filtered_receipts.dart';
+import 'package:grocery_app/screens/summary/filtered_summary.dart';
 
 
 import 'package:lottie/lottie.dart';
@@ -32,14 +33,14 @@ import 'package:lottie/lottie.dart';
 
 
 // ignore: must_be_immutable
-class SingleSectionForm extends StatefulWidget {
-  SingleSectionForm({Key? key}) : super(key: key);
+class change_summary_date extends StatefulWidget {
+  change_summary_date({Key? key}) : super(key: key);
 
   @override
-  State<SingleSectionForm> createState() => _SingleSectionFormState();
+  State<change_summary_date> createState() => _change_summary_dateState();
 }
 
-class _SingleSectionFormState extends State<SingleSectionForm> {
+class _change_summary_dateState extends State<change_summary_date> {
   late GSForm form;
   String selectedTime = '';
 
@@ -184,10 +185,10 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
 
                       GSField.datePicker(
                         prefixWidget:Text(
-                        toDate != null && toTime != null
-                            ? '${toDate!.toString()} ${toTime!.format(context)}'
-                            : 'Select End Date and Time',
-                      ),
+                          toDate != null && toTime != null
+                              ? '${toDate!.toString()} ${toTime!.format(context)}'
+                              : 'Select End Date and Time',
+                        ),
                         tag: 'licenceExpireDate',
                         title: 'End date',
                         weight: 12,
@@ -286,13 +287,12 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
         toDate != null &&
         toTime != null) {
       // Process the selected date range
-      // print('Selected Date Range: ${fromDate.toString()} ${fromTime!.format(context)} - ${toDate.toString()} ${toTime!.format(context)}');
+      print('Selected Date Range: ${fromDate.toString()} ${fromTime!.format(context)} - ${toDate.toString()} ${toTime!.format(context)}');
 
-      print(fromDate.toString());
       //  pass to filtered receipts::
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>FilteredReceipts(fromDate: fromDate,fromTime: fromTime,toDate: toDate,toTime: toTime)),
+        MaterialPageRoute(builder: (context) =>filtered_summary(fromDate: fromDate,fromTime: fromTime,toDate: toDate,toTime: toTime)),
       );
 
     } else {

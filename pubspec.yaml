@@ -59,6 +59,10 @@ dependencies:
   loading_animation_widget:
   flutter_glow:
   circular_clip_route:
+  scaled_list:
+  flutter_neumorphic:
+
+
 
 
 

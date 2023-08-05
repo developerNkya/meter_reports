@@ -13,7 +13,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="FAS"
+        android:label="FUMMAS"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

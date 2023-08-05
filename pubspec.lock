@@ -358,6 +358,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0-beta.2"
+  flutter_neumorphic:
+    dependency: "direct main"
+    description:
+      name: flutter_neumorphic
+      sha256: "02606d937a3ceaa497b8a7c25f3efa95188bf93d77ebf0bd6552e432db4c2ec6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -840,6 +848,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  scaled_list:
+    dependency: "direct main"
+    description:
+      name: scaled_list
+      sha256: "42754e6140dcb7d4291a6fb170364e000b6da1cae304fab96f35c01fa8599058"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   scrollable_positioned_list:
     dependency: transitive
     description:

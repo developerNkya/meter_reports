@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/APIS/date_converter.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,7 +64,7 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
     // Assign the formatted date to the variable
     var dateTo = formattedDate;
 
-    String userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
+    var userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
 
     if (userReceipts != null) {
       if (userReceipts.isNotEmpty) {
@@ -248,20 +249,19 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+          BottomAppBar(
             child: Container(
               height: 60,
               child: BottomAppBar(
+
                 color: Colors.black54,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      color: Colors.green,
-                      icon: Icon(Icons.attach_money),
+                      icon: Icon(Icons.attach_money,
+                          color: Colors.green
+                      ),
                       onPressed: () {},
                     ),
                     Text(
@@ -283,6 +283,41 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
               ),
             ),
           ),
+          // Positioned(
+          //   left: 0,
+          //   right: 0,
+          //   bottom: 0,
+          //   child: Container(
+          //     height: 60,
+          //     child: BottomAppBar(
+          //       color: Colors.black54,
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //         children: [
+          //           IconButton(
+          //             color: Colors.green,
+          //             icon: Icon(Icons.attach_money),
+          //             onPressed: () {},
+          //           ),
+          //           Text(
+          //             'Total Amount:',
+          //             style: TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 25,
+          //             ),
+          //           ),
+          //           Text(
+          //             NumberFormat('#,###').format(calculateTotalAmount()),
+          //             style: TextStyle(
+          //               color: Colors.white,
+          //               fontSize: 25,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
