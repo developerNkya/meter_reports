@@ -371,6 +371,18 @@ class changePriceState extends State<changePrice> {
                             text: 'Kindly fill all fields\n Please',
                             loopAnimation: false,
                           );
+                        }else if(double.tryParse(unleaded) == null||
+                            double.tryParse(kerosene) == null ||
+                            double.tryParse(diesel) == null ||
+                            double.tryParse(CNG) == null){
+
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.error,
+                            title: 'Oops...',
+                            text: 'All values should be numbers!\n Please',
+                            loopAnimation: false,
+                          );
                         } else {
                           changePrice1(unleaded, diesel, kerosene, CNG);
                         }

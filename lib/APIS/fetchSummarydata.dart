@@ -18,6 +18,7 @@ class SummaryObject {
   int length;
   String mobile;
 
+
   SummaryObject({
     required this.from,
     required this.to,
@@ -31,7 +32,8 @@ class SummaryObject {
     required this.totalAmountSum,
     required this.id,
     required this.length,
-    required this.mobile
+    required this.mobile,
+
   });
 
   // Define a method to convert the SummaryObject to a JSON map
@@ -49,7 +51,7 @@ class SummaryObject {
       'totalAmountSum': totalAmountSum,
       'id' : id,
       'length':length,
-      'mobile': mobile
+      'mobile': mobile,
     };
   }
 }

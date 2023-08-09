@@ -61,6 +61,8 @@ dependencies:
   circular_clip_route:
   scaled_list:
   flutter_neumorphic:
+  data_table_2: ^2.5.6
+
 
 
 
@@ -77,6 +79,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.11.0
+
+
 
 
 flutter:

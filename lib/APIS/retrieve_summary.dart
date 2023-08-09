@@ -16,6 +16,8 @@ class SummaryObject {
   int id;
   int length;
   String mobile;
+  String dateFrom;
+  String dateTo;
 
   SummaryObject({
     required this.from,
@@ -30,7 +32,9 @@ class SummaryObject {
     required this.totalAmountSum,
     required this.id,
     required this.length,
-    required this.mobile
+    required this.mobile,
+    required this.dateFrom,
+    required this.dateTo,
   });
 
   // Define a method to convert the SummaryObject to a JSON map
@@ -48,7 +52,9 @@ class SummaryObject {
       'totalAmountSum': totalAmountSum,
       'id' : id,
       'length':length,
-      'mobile': mobile
+      'mobile': mobile,
+      'dateFrom': dateFrom,
+      'dateTo': dateTo
     };
   }
 }
@@ -112,7 +118,8 @@ Future<String?> retrieve_summary(String access_token, String toDate) async {
     int id = dataList.isNotEmpty ? dataList[0]['id'] : '';
     int length = dataListLength;
     String mobile = dataList.isNotEmpty ? dataList[0]['mobile'] : '';
-
+    String dateFrom = '2021-10-11';
+    String dateTo = '$toDate';
 
 
     // Create the SummaryObject
@@ -129,7 +136,9 @@ Future<String?> retrieve_summary(String access_token, String toDate) async {
       totalAmountSum: totalAmountSum,
       id: id,
       length: dataListLength,
-      mobile:mobile
+      mobile:mobile,
+      dateFrom: dateFrom,
+      dateTo: dateTo
     );
 
     // Convert the SummaryObject to a JSON string
