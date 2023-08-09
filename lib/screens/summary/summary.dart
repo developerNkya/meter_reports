@@ -52,7 +52,7 @@ class _SummaryState extends State<Summary> {
   late String toValue,mobile;
   late String name,address,tin,vrn,serial,uin,taxoffice;
    late String totalAmountSum;
-   late int dataListLength;
+   late int dataListLength,id;
 
 
 
@@ -105,6 +105,7 @@ class _SummaryState extends State<Summary> {
       totalAmountSum = formatter.format(summaryMap['totalAmountSum']);
       dataListLength = summaryMap['length'];
       mobile = summaryMap['mobile'];
+      id = summaryMap['id'];
 
       dateFrom = summaryMap['dateFrom'];
       // dateTo = summaryMap['dateTo'];
@@ -210,274 +211,140 @@ class _SummaryState extends State<Summary> {
                               SizedBox(height: 15.0),
                               const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
+                              Text(
+                                'CURRENT DATE TIME',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                              ),
+                              SizedBox(height: 10.0),
+                              _buildRowWithColumns(
+                                leftColumn: '${actualDate}',
+                                rightColumn: '${actualTime}',
+                              ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'Z NUMBER:',
-                                rightColumn: '',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'DATE:${actualDate}',
-                                rightColumn: '',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TIME:${actualTime}',
-                                rightColumn: '',
-                              ),
                               SizedBox(height: 15.0),
                               const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
-
-                              _buildRowWithColumns(
-                                leftColumn: 'DISCOUNTS',
-                                rightColumn: '0',
+                              Text(
+                                'REPORT BY DATE',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                               ),
-                              _buildRowWithColumns(
-                                leftColumn: 'SUBCHARGES',
-                                rightColumn: '0',
-                              ),
-
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
-
                               _buildRowWithColumns(
-                                leftColumn: 'TICKETS VOID:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TICKETS VOID TOTAL:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'CORRECTIONS:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
-
-                              _buildRowWithColumns(
-                                leftColumn: 'FIRST RECEIPT:',
+                                leftColumn: 'FROM',
                                 rightColumn: '${dateFrom}',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'LAST RECEIPT:',
+                                leftColumn: 'TO',
                                 rightColumn: '${to}',
                               ),
-                              _buildRowWithColumns(
-                                leftColumn: 'RECEIPTS ISSUED:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'UNLEADED:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'DIESEL:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'KEROSENE:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TOTAL:',
-                                rightColumn: '0',
-                              ),
+
                               SizedBox(height: 8.0),
                               const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
+
                               Text(
-                                'PAYMENTS REPORT',
+                                'DEFAUT TAX RATES',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                               ),
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
+                              SizedBox(height: 10.0),
                               _buildRowWithColumns(
-                                leftColumn: 'CASH:',
+                                leftColumn: 'A:',
                                 rightColumn: '0',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'CCARD:',
+                                leftColumn: 'B:',
                                 rightColumn: '0',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'CHEQUE:',
+                                leftColumn: 'C:',
                                 rightColumn: '0',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'EMONEY:',
+                                leftColumn: 'D:',
                                 rightColumn: '0',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'INVOICE:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TOTAL:',
+                                leftColumn: 'E:',
                                 rightColumn: '0',
                               ),
                               SizedBox(height: 8.0),
                               const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
                               Text(
-                                'VAT REPORT',
+                                'TURNOERS',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                               ),
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 5.0),
-                              Text(
-                                'VAT A (18.00%)',
-                                  style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16.0,)
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-                              SizedBox(height: 5.0),
-                              Text(
-                                  'VAT B (0.00%)',
-                                  style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16.0,)
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-
-                              SizedBox(height: 5.0),
-                              Text(
-                                  'VAT C (0.00%)',
-                                  style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16.0,)
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-
-                              SizedBox(height: 5.0),
-                              Text(
-                                  'VAT D (0.00%)',
-                                  style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16.0,)
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-
-                              SizedBox(height: 5.0),
-                              Text(
-                                  'VAT E (0.00%)',
-                                  style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16.0,)
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER:',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET AMOUNT:',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX AMOUNT:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
-
-                              Text(
-                                'DEFAULT TAX RATES',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
-                              ),
-
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
                               SizedBox(height: 10.0),
 
                               _buildRowWithColumns(
-                                leftColumn: 'TURNOVER(A+B+C+D+E):',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'NET SUM(A+B+C+D+E):',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'VAT (A+B+C+D+E):',
+                                leftColumn: 'TURNOVER TOTAL *A:',
                                 rightColumn: '0.00',
                               ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER (SR):',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER (EX):',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL:',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              SizedBox(height: 15.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
 
                               _buildRowWithColumns(
-                                leftColumn: 'DAILY TOTAL:',
+                                leftColumn: 'TAX *A:',
+                                rightColumn: '0.00',
+                              ),
+
+                              _buildRowWithColumns(
+                                leftColumn: 'TURNOVER TOTAL *B:',
+                                rightColumn: '0.00',
+                              ),
+                              _buildRowWithColumns(
+                                leftColumn: 'TAX *B:',
+                                rightColumn: '0.00',
+                              ),
+
+
+                              _buildRowWithColumns(
+                                leftColumn: 'TURNOVER TOTAL *C:',
+                                rightColumn: '0.00',
+                              ),
+                              _buildRowWithColumns(
+                                leftColumn: 'TAX *C:',
+                                rightColumn: '0.00',
+                              ),
+
+                              _buildRowWithColumns(
+                                leftColumn: 'TURNOVER TOTAL *D:',
+                                rightColumn: '0.00',
+                              ),
+                              _buildRowWithColumns(
+                                leftColumn: 'TAX *D:',
+                                rightColumn: '0.00',
+                              ),
+
+                              _buildRowWithColumns(
+                                leftColumn: 'TURNOVER TOTAL *E:',
+                                rightColumn: '0.00',
+                              ),
+                              _buildRowWithColumns(
+                                leftColumn: 'TAX *E:',
+                                rightColumn: '${totalAmountSum}',
+                              ),
+
+                              _buildRowWithColumns(
+                                leftColumn: 'NET(A+B+C+D+E):',
                                 rightColumn: '${totalAmountSum}',
                               ),
                               _buildRowWithColumns(
-                                leftColumn: 'GROSS:',
+                                leftColumn: 'TURNOVER(EX):',
                                 rightColumn: '0.00',
                               ),
-                              SizedBox(height: 15.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 23.0),
+                              _buildRowWithColumns(
+                                leftColumn: 'TURNOVER(S.R):',
+                                rightColumn: '0.00',
+                              ),
+                              _buildRowWithColumns(
+                                leftColumn: 'LEGAL RECEIPT:',
+                                rightColumn: '${dataListLength}',
+                              ),
 
+                              SizedBox(height: 20.0),
 
                               Text(
                                 '***END OF ZREPORT***',
