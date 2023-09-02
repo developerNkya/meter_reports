@@ -17,10 +17,10 @@ import '../../APIS/authentication.dart';
 import '../../APIS/station_receipts.dart';
 
 class FilteredReceipts extends StatefulWidget {
-  final DateTime? fromDate;
+  final String? fromDate;
   final TimeOfDay? fromTime;
   final TimeOfDay? toTime;
-  final DateTime? toDate;
+  final String?  toDate;
   double _kSize = 100;
 
   FilteredReceipts({
@@ -52,18 +52,12 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
     // Getting the auth key
     String auth = await authentication(username!, password.toString());
 
-    // Get the current date
+
     var dateFrom = widget.fromDate.toString();
 
-    // Get the current date
-    DateTime currentDate = widget.toDate as DateTime;
-
-    // Format the current date to match the desired format
-    String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
 
     // Assign the formatted date to the variable
-    var dateTo = formattedDate;
-
+    var dateTo = widget.toDate.toString();
     var userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
 
     if (userReceipts != null) {

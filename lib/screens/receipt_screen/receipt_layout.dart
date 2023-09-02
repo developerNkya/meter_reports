@@ -204,8 +204,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                     regid: _elements[0].regid,
                     taxOffice: _elements[0].taxOffice,
                     pump: _elements[0].pump,
-
-
+                    concatenated_time: concatenated_time
                   ),
                 ),
               );

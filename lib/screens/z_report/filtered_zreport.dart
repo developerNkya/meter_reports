@@ -19,10 +19,10 @@ import '../../APIS/z_report.dart';
 import 'choose_zreport_date.dart';
 
 class filtered_zreport extends StatefulWidget {
-  final DateTime? fromDate;
+  final String? fromDate;
   final TimeOfDay? fromTime;
   final TimeOfDay? toTime;
-  final DateTime? toDate;
+  final String? toDate;
   double _kSize = 100;
 
   filtered_zreport({
@@ -59,10 +59,12 @@ class _filtered_zreportState extends State<filtered_zreport> {
     String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
-      dateFrom = '${widget.fromDate}';
-      // Get the current date
 
-        dateTo ='${widget.toDate}' ;
+      var dateFrom = widget.fromDate.toString();
+
+      var dateTo = widget.toDate.toString();
+
+      print(dateFrom);
       //call receipt api:::
       var user_zReport= await zReport(auth, dateFrom, dateTo);
       print(user_zReport);

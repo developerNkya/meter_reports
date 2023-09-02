@@ -80,17 +80,21 @@ class _SummaryState extends State<Summary> {
 
 
     if (auth != null) {
+      // Get the current date
       DateTime currentDate = DateTime.now();
-      // Format the current date to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
-
+      // Set the time to the end of the day (23:59:59)
+      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+      // Format the end of day to match the desired format
+      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
       // Assign the formatted date to the variable
       var dateTo = formattedDate;
+
+
       String userSummary = await retrieve_summary(auth, dateTo) ?? '';
 // Decode the JSON string back into a map
       Map<String, dynamic> summaryMap = json.decode(userSummary);
 // Access the 'from' value from the map
-      var formatter = NumberFormat('#,##,000');
+      var formatter = NumberFormat('#,###,000');
 
       fromValue = summaryMap['from'];
       toValue = summaryMap['to'];

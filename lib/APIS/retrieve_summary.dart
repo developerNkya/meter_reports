@@ -99,11 +99,12 @@ Future<String?> retrieve_summary(String access_token, String toDate) async {
     double totalAmountSum = 0;
 
     for (var obj in dataList) {
-      // double dailyTotalAmount = double.parse(obj['TICKETSFISCAL']);
-      double dailyTotalAmount = obj['TICKETSFISCAL'].toDouble();
-
+      String dailyTotalAmountString = obj['DAILYTOTALAMOUNT'];
+      double dailyTotalAmount = double.parse(dailyTotalAmountString);
       totalAmountSum += dailyTotalAmount;
+
     }
+
 
     // Extract other required fields
     String from = "2021-10-11"; // Replace this with the actual 'from' value if available
@@ -144,7 +145,10 @@ Future<String?> retrieve_summary(String access_token, String toDate) async {
     // Convert the SummaryObject to a JSON string
     String summaryObjectJson = json.encode(summaryObject.toJson());
 
-    print(summaryObjectJson);
+    // print('----------------');
+    // print(dataList);
+    // print('----------------');
+
     return summaryObjectJson;
   }
 }

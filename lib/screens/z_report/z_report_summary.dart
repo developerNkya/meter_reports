@@ -80,7 +80,11 @@ class _z_report_summaryState extends State<z_report_summary> {
     if (auth != null) {
       DateTime currentDate = DateTime.now();
       // Format the current date to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+      // Set the time to the end of the day (23:59:59)
+      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+
+      // Format the end of day to match the desired format
+      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
 
       // Assign the formatted date to the variable
       var dateTo = formattedDate;

@@ -51,13 +51,15 @@ class _ZReportState extends State<ZReport> {
     if (auth != null) {
        dateFrom = "2021-10-11";
       // Get the current date
-      DateTime currentDate = DateTime.now();
+       // Get the current date
+       DateTime currentDate = DateTime.now();
+       // Set the time to the end of the day (23:59:59)
+       DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+       // Format the end of day to match the desired format
+       String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+       // Assign the formatted date to the variable
+       dateTo = formattedDate;
 
-      // Format the current date to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
-
-      // Assign the formatted date to the variable
-      dateTo = formattedDate;
       //call receipt api:::
       String user_zReport= await zReport(auth, dateFrom, dateTo);
       // String userStations1 = await userStations(auth,user_id.toString() );

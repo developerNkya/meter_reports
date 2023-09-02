@@ -159,28 +159,28 @@ class changePriceState extends State<changePrice> {
                     context,
                     fields: [
                       GSField.mobile(
-                        value: formValues['UNLEADED'] ?? '',
+                        value: formValues['UNLEADED'] ?? '0',
                         tag: 'UNLEADED',
                         title: 'UNLEADED',
                         weight: 6,
                         required: true,
                       ),
                       GSField.mobile(
-                        value: '',
+                        value:formValues['DIESEL'] ?? '0',
                         tag: 'DIESEL',
                         title: 'DIESEL',
                         weight: 6,
                         required: true,
                       ),
                       GSField.mobile(
-                        value: '',
+                        value: formValues['KEROSENE'] ?? '0',
                         tag: 'KEROSENE',
                         title: 'KEROSENE',
                         weight: 12,
                         required: true,
                       ),
                       GSField.mobile(
-                        value: '',
+                        value: formValues['CNG'] ?? '0',
                         tag: 'CNG',
                         title: 'CNG',
                         weight: 6,
@@ -384,7 +384,19 @@ class changePriceState extends State<changePrice> {
                             loopAnimation: false,
                           );
                         } else {
-                          changePrice1(unleaded, diesel, kerosene, CNG);
+                          CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.confirm,
+                            title: 'Info!',
+                            text: 'You are about to change Price',
+                            loopAnimation: false,
+                            confirmBtnText: 'Confirm',
+                            cancelBtnText: 'No',
+                            onConfirmBtnTap: () {
+                              _onConfirmButtonTap(unleaded,diesel,kerosene, CNG);
+                              Navigator.of(context).pop();
+                            },
+                          );
                         }
 
                         //  check if any fiels is empty:::
@@ -472,6 +484,21 @@ class changePriceState extends State<changePrice> {
     }
 
     //getting the station names:::
+  }
+
+ _onConfirmButtonTap(unleaded,diesel,kerosene,CNG) {
+    print('changing the price::');
+    changePrice1(unleaded, diesel, kerosene, CNG);
+    // Add your logic here for when the Okay button is tapped
+    CoolAlert.show(
+      context: context,
+      type: CoolAlertType.success,
+      title: 'Success...',
+      text: 'Price updated successfully',
+      loopAnimation: false,
+
+    );
+
   }
 }
 

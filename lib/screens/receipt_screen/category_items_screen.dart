@@ -45,11 +45,13 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
       var dateFrom = "2021-10-11";
       // Get the current date
       DateTime currentDate = DateTime.now();
-      // Format the current date to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
-
+      // Set the time to the end of the day (23:59:59)
+      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+      // Format the end of day to match the desired format
+      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
       // Assign the formatted date to the variable
       var dateTo = formattedDate;
+
       //call receipt api:::
       String userReceipts =
           await fetchStationReceiptReport(auth, dateFrom, dateTo);

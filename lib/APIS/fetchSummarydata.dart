@@ -98,8 +98,8 @@ fetchSummarydata(String access_token,String dateFrom,String dateTo) async {
     double totalAmountSum = 0;
 
     for (var obj in dataList) {
-      // double dailyTotalAmount = double.parse(obj['TICKETSFISCAL']);
-      double dailyTotalAmount = obj['TICKETSFISCAL'].toDouble();
+      String dailyTotalAmountString = obj['DAILYTOTALAMOUNT'];
+      double dailyTotalAmount = double.parse(dailyTotalAmountString);
       totalAmountSum += dailyTotalAmount;
     }
 

@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_fast_forms/flutter_fast_forms.dart';
 import 'package:grocery_app/screens/receipt_screen/filtered_receipts.dart';
 import 'package:grocery_app/screens/summary/filtered_summary.dart';
+import 'package:intl/intl.dart';
 
 
 import 'package:lottie/lottie.dart';
@@ -164,7 +165,7 @@ class _change_summary_dateState extends State<change_summary_date> {
                       GSField.datePicker(
                         prefixWidget:Text(
                           fromDate != null && fromTime != null
-                              ? '${fromDate!.toString()} ${fromTime!.format(context)}'
+                              ? '${fromDate!.toString().substring(0,10)} ${fromTime!.format(context)}'
                               : 'Select Start Date and Time',
                         ),
                         tag: 'licenceExpireDate',
@@ -186,7 +187,7 @@ class _change_summary_dateState extends State<change_summary_date> {
                       GSField.datePicker(
                         prefixWidget:Text(
                           toDate != null && toTime != null
-                              ? '${toDate!.toString()} ${toTime!.format(context)}'
+                              ? '${toDate!.toString().substring(0,10)} ${toTime!.format(context)}'
                               : 'Select End Date and Time',
                         ),
                         tag: 'licenceExpireDate',
@@ -287,12 +288,19 @@ class _change_summary_dateState extends State<change_summary_date> {
         toDate != null &&
         toTime != null) {
       // Process the selected date range
-      print('Selected Date Range: ${fromDate.toString()} ${fromTime!.format(context)} - ${toDate.toString()} ${toTime!.format(context)}');
+      String formattedFromDate = fromDate.toString().substring(0,10);
+      String formattedTime = timeConverter(fromTime);
+      String resulting_from_date = formattedFromDate + ' ' + formattedTime;
+
+      String formattedToDate = toDate.toString().substring(0,10);
+      String formattedToTime = timeConverter(toTime);
+      String resulting_to_date = formattedToDate + ' ' + formattedToTime;
+
 
       //  pass to filtered receipts::
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>filtered_summary(fromDate: fromDate,fromTime: fromTime,toDate: toDate,toTime: toTime)),
+        MaterialPageRoute(builder: (context) =>filtered_summary(fromDate: resulting_from_date,fromTime: fromTime,toDate: resulting_to_date,toTime: toTime)),
       );
 
     } else {
@@ -306,6 +314,14 @@ class _change_summary_dateState extends State<change_summary_date> {
         loopAnimation: false,
       );
     }
+  }
+
+  timeConverter(time){
+    DateTime dateTime = DateTime(0, 0, 0, time!.hour, time!.minute);
+    // Format the DateTime object in 24-hour format
+    String formattedTime = DateFormat('HH:mm:ss').format(dateTime);
+
+    return formattedTime;
   }
 }
 

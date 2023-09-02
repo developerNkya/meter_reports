@@ -32,10 +32,10 @@ class Element {
 }
 
 class filtered_summary extends StatefulWidget {
-  final DateTime? fromDate;
+  final String? fromDate;
   final TimeOfDay? fromTime;
   final TimeOfDay? toTime;
-  final DateTime? toDate;
+  final String? toDate;
   double _kSize = 100;
 
   filtered_summary({
@@ -58,7 +58,7 @@ class _filtered_summaryState extends State<filtered_summary> {
   late String fromValue;
   late String toValue,mobile,dateFrom,to;
   late String name,address,tin,vrn,serial,uin,taxoffice;
-  late double totalAmountSum;
+  late String totalAmountSum;
   late int dataListLength;
 
   var actualTime,actualDate;
@@ -76,20 +76,18 @@ class _filtered_summaryState extends State<filtered_summary> {
 
     // Getting the auth key
     String auth = await authentication(username!, password.toString());
+
     var now = DateTime.now();
     var formatterDate = DateFormat('dd-MM-yy');
     var formatterTime = DateFormat('hh:mm:ss');
     actualDate = formatterDate.format(now);
     actualTime = formatterTime.format(now);
+
+
     // Get the current date
     var dateFrom = widget.fromDate.toString();
-    // Get the current date
-    DateTime currentDate = widget.toDate as DateTime;
-    // Format the current date to match the desired format
-    String formattedDate = DateFormat('yyyy-MM-dd').format(currentDate);
+    var dateTo = widget.toDate.toString();
 
-    // Assign the formatted date to the variable
-    var dateTo = formattedDate;
 
     String filtered_summary = await fetchSummarydata(auth, dateFrom, dateTo) ?? '';
 
@@ -98,6 +96,9 @@ class _filtered_summaryState extends State<filtered_summary> {
 
       String value_from_api = summaryMap['from'];
       DateTime fromDate = DateTime.parse(value_from_api);
+
+      var formatter = NumberFormat('#,###,000');
+
        fromValue = DateFormat('yyyy-MM-dd').format(fromDate);
 
       toValue = summaryMap['to'];
@@ -108,7 +109,7 @@ class _filtered_summaryState extends State<filtered_summary> {
       serial = summaryMap['serial'];
       uin = summaryMap['uin'];
       taxoffice = summaryMap['taxoffice'];
-      totalAmountSum = summaryMap['totalAmountSum'];
+      totalAmountSum = formatter.format(summaryMap['totalAmountSum']);
       dataListLength = summaryMap['length'];
       mobile = summaryMap['mobile'];
 

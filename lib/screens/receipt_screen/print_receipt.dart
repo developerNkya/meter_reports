@@ -1,17 +1,37 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:image/image.dart' as img;
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../LOGIN/login_page.dart';
 import '../../common_widgets/app_text.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+
+import '../summary/filtered_summary.dart';
+
+
+
+
+
+
 
 
 class ReceiptScreen extends StatefulWidget {
@@ -37,6 +57,7 @@ class ReceiptScreen extends StatefulWidget {
   final String? taxOffice;
   final String? pump;
   final String? fuel_grade;
+  final String? concatenated_time;
 
   ReceiptScreen({
     this.id,
@@ -60,7 +81,8 @@ class ReceiptScreen extends StatefulWidget {
     this.regid,
     this.taxOffice,
     this.pump,
-    this.fuel_grade
+    this.fuel_grade,
+    this.concatenated_time
   });
 
   @override
@@ -113,17 +135,373 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
           ),
           actions: [
             GestureDetector(
-              onTap: () {
-                //move to set date page:::
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => choose_receiptScreen()),
-                // );
+              onTap: () async {
+                // Generate PDF content
+                final pdf = pw.Document();
+                //add new font::
+                final font = await rootBundle.load("assets/fonts/FAKERECE.ttf");
+                final ttf = pw.Font.ttf(font);
+                pdf.addPage(
+                  pw.Page(
+                    pageFormat: PdfPageFormat(14 * PdfPageFormat.cm, 30 * PdfPageFormat.cm, marginAll: 0.5 * PdfPageFormat.cm),
+                    build: (pw.Context context) {
+                      return pw.Container(
+                        padding: pw.EdgeInsets.all(16.0),
+                        width: 400,
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                          children: <pw.Widget>[
+                            pw.Text(
+                              'START OF LEGAL RECEIPT',
+                              style: pw.TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                              ),
+                              textAlign: pw.TextAlign.center,
+                            ),
+                            pw.SizedBox(height: 16.0),
+                            pw.Text(
+                              '${widget.name ?? 'N/A'}\nMobile:${widget.mobile ?? 'N/A'}\nTin:${widget.tin ?? 'N/A'}\nVRN:${widget.vrn ?? 'N/A'}\nSERIAL NO:${widget.serial ?? 'N/A'}\nUIN:${widget.uin ?? 'N/A'}\nTAX OFFICE:${widget.taxOffice ?? 'N/A'}',
+                              style: pw.TextStyle(
+                                fontSize: 16.0,
+                                  font:ttf
+                              ),
+                              textAlign: pw.TextAlign.center,
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            // Create a dotted line separator
+                            pw.Divider(
+                              height: 1.0,
+                              color: PdfColors.grey,
+                              // dash: 2,
+                            ),
+
+                            // pw.Container(
+                            //   child: MySeparator(color: Colors.grey),
+                            // ),
+
+
+                            // MySeparator(color: Colors.grey),
+                            // Build a row with two columns
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'RECEIPT NUMBER:',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+
+                                    ),
+
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.id ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //z-no
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'Z NO:',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.zNum ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                      // fontFami: 'Receipt',
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            //date and time
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'DATE:${widget.date ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'TIME: ${widget.time ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                      // fontFami: 'Receipt',
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            pw.Divider(
+                              height: 1.0,
+                              color: PdfColors.grey,
+                              // dash: 2,
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            //pump
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'PUMP: ${widget.pump ?? '1'}'+' NOZZLE:${widget.pump ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                      // fontFami: 'Receipt',
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //fuelgrade
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.fuelGrade ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            pw.Divider(
+                              height: 1.0,
+                              color: PdfColors.grey,
+                              // dash: 2,
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            //excl
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'TOTAL EXCL TAX:',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.amount ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //tax
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'TOTAL TAX:',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '0',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //incl tax
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'TOTAL INCL TAX:',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                        font:ttf
+                                    ),
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.amount ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.right,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            pw.Divider(
+                              height: 1.0,
+                              color: PdfColors.grey,
+                              // dash: 2,
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    'RECEIPT VERIFICATION NUMBER',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.center,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 8.0),
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '${widget.rctvNum ?? 'N/A'}',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.center,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 32.0),
+                            pw.Center(
+                              child: pw.BarcodeWidget(
+                                  data: 'https://virtual.tra.go.tz/efdmsRctVerify/${widget.rctvNum}_${widget.concatenated_time}',
+                                  barcode: pw.Barcode.qrCode(),
+                                  width: 140,
+                                  height: 100
+                              ),
+                            ),
+                            pw.SizedBox(height: 15.0),
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Expanded(
+                                  child: pw.Text(
+                                    '** END OF LEGAL RECEIPT **',
+                                    style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                        font:ttf
+                                    ),
+                                    textAlign: pw.TextAlign.center,
+                                    // fontFamily: 'Receipt',
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // ... Continue adding other widgets ...
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+
+
+
+
+
+                // Save the PDF to a temporary file
+                final output = await getTemporaryDirectory();
+                final file = File('${output.path}/receipt.pdf');
+                await file.writeAsBytes(await pdf.save());
+
+                // Open share dialog
+                Share.shareFiles(['${file.path}'],
+                    text: 'Share Receipt PDF',
+                    subject: 'Receipt PDF');
               },
               child: Container(
                 padding: EdgeInsets.only(right: 25),
                 child: Icon(
-                  Icons.print,
+                  Icons.share,
                   color: Colors.black,
                 ),
               ),
@@ -820,6 +1198,42 @@ class MyStringsSample {
   static const String card_text = " " ;
   final icon_text = Icons.ac_unit;
 }
+
+class MySeparator extends StatelessWidget {
+  const MySeparator({Key? key, this.height = 1, this.color = Colors.black})
+      : super(key: key);
+  final double height;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final boxWidth = constraints.constrainWidth();
+        const dashWidth = 10.0;
+        final dashHeight = height;
+        final dashCount = (boxWidth / (2 * dashWidth)).floor();
+        return Flex(
+          children: List.generate(dashCount, (_) {
+            return SizedBox(
+              width: dashWidth,
+              height: dashHeight,
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: color),
+              ),
+            );
+          }),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          direction: Axis.horizontal,
+        );
+      },
+    );
+  }
+}
+
+
+// Custom painter for the dashed line
+
 
 
 

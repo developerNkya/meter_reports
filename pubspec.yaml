@@ -33,7 +33,7 @@ dependencies:
   shared_preferences: ^2.0.10
   qr_flutter:
   pdf:
-  printing: ^5.5.0
+  printing:
   path_provider:
   flutter_datetime_picker:
   fp_bt_printer: ^0.0.3
@@ -62,6 +62,8 @@ dependencies:
   scaled_list:
   flutter_neumorphic:
   data_table_2: ^2.5.6
+  share:
+  syncfusion_flutter_pdf:
 
 
 
@@ -97,6 +99,10 @@ flutter:
     - assets/icons/
     - assets/icons/account_icons/
     - assets/fonts/
+    - assets/fonts/fake_receipt.otf
+    - assets/fonts/Receiptional_Receipt_Regular.ttf
+    - assets/fonts/FAKERECE.ttf
+
 
 
   fonts:
