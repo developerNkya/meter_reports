@@ -136,6 +136,13 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
           actions: [
             GestureDetector(
               onTap: () async {
+
+
+                String newDate = widget.zNum.toString().replaceAll('-', '');
+                String formattedAmount = widget.amount! % 1 == 0
+                    ? '${widget.amount!.toStringAsFixed(0)}.00'
+                    : widget.amount!.toStringAsFixed(2);
+
                 // Generate PDF content
                 final pdf = pw.Document();
                 //add new font::
@@ -152,7 +159,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                           children: <pw.Widget>[
                             pw.Text(
-                              'START OF LEGAL RECEIPT',
+                              '*** START OF LEGAL RECEIPT ***',
                               style: pw.TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: pw.FontWeight.bold,
@@ -226,7 +233,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.zNum ?? 'N/A'}',
+                                    '${widget.dc ?? 'N/A'}/${newDate ?? ''}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -279,7 +286,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               children: <pw.Widget>[
                                 pw.Expanded(
                                   child: pw.Text(
-                                    'PUMP: ${widget.pump ?? '1'}'+' NOZZLE:${widget.pump ?? 'N/A'}',
+                                    'PUMP: ${widget.pump ?? '2'}'+' NOZZLE: 1',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                       fontWeight: pw.FontWeight.bold,
@@ -306,7 +313,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               children: <pw.Widget>[
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.fuelGrade ?? 'N/A'}',
+                                    '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                       fontWeight: pw.FontWeight.bold,
@@ -314,17 +321,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                     ),
                                   ),
                                 ),
-                                pw.Expanded(
-                                  child: pw.Text(
-                                    '',
-                                    style: pw.TextStyle(
-                                      fontSize: 14.0,
-                                        font:ttf
-                                    ),
-                                    textAlign: pw.TextAlign.right,
-                                    // fontFamily: 'Receipt',
-                                  ),
-                                ),
+
                               ],
                             ),
                             pw.SizedBox(height: 15.0),
@@ -349,7 +346,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.amount ?? 'N/A'}',
+                                    '${formattedAmount ?? 'N/A'}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -375,7 +372,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '0',
+                                    '0.00',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -401,7 +398,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.amount ?? 'N/A'}',
+                                    '${formattedAmount ?? 'N/A'}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -464,7 +461,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               children: <pw.Widget>[
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '** END OF LEGAL RECEIPT **',
+                                    '*** END OF LEGAL RECEIPT ***',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -865,6 +862,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     final Uint8List bytesImg = data.buffer.asUint8List();
     img.Image? image = img.decodeImage(bytesImg);
 
+    String newDate = widget.zNum.toString().replaceAll('-', '');
+    String formattedAmount = widget.amount! % 1 == 0
+        ? '${widget.amount!.toStringAsFixed(0)}.00'
+        : widget.amount!.toStringAsFixed(2);
+
+
     if (Platform.isIOS) {
       // Resizes the image to half its original size and reduces the quality to 80%
       final resizedImage = img.copyResize(image!, width: image.width ~/ 1.3, height: image.height ~/ 1.3, interpolation: img.Interpolation.nearest);
@@ -883,7 +886,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // bytes += generator.text('Reverse text', styles: PosStyles(reverse: true));
     // bytes += generator.text('Underlined text', styles: PosStyles(underline: true), linesAfter: 1);
     // bytes += generator.text('Align left', styles: PosStyles(align: PosAlign.left));
-    bytes += generator.text('**START OF LEGAL RECEIPT **', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('*** START OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center));
     bytes += generator.image(image!);
     bytes += generator.text('${widget.name}', styles: PosStyles(align: PosAlign.center));
     bytes += generator.text('MOBILE: ${widget.mobile ?? ' '}', styles: PosStyles(align: PosAlign.center));
@@ -923,7 +926,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '${widget.zNum ?? ''}',
+        text: '${widget.dc ?? 'N/A'}/${newDate ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -957,24 +960,15 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         width: 6,
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
-      PosColumn(
-        text: '',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
-      ),
+
     ]);
 
     //row5::
     bytes += generator.row([
       PosColumn(
-        text: '${widget.fuelGrade ?? ''}',
+        text: '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
         width: 6,
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
-      ),
-      PosColumn(
-        text: '${widget.fuelGrade ?? ''}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
     ]);
 
@@ -994,7 +988,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '${widget.amount}',
+        text: '${formattedAmount ?? 'N/A'}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -1023,7 +1017,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text:  '${widget.amount}',
+        text:  '${formattedAmount ?? 'N/A'}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),
@@ -1043,7 +1037,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));
     bytes += generator.qrcode('https://virtual.tra.go.tz/efdmsRctVerify/5D278B362_180039');
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('** END OF LEGAL RECEIPT **', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center));
 
 
     //

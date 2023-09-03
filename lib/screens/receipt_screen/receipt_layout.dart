@@ -36,6 +36,7 @@ class Element {
   final String? concatenated_time;
 
 
+
   Element(
     this.id,
     this.date,
@@ -89,6 +90,8 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   double _kSize = 100;
   final String tra_img = "assets/images/tra_img3.png";
   late String concatenated_time;
+  late String? newDate;
+  late String? formattedAmount;
 
   @override
   void initState() {
@@ -116,7 +119,10 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
       print(receipt_data['id']);
 
        concatenated_time = receipt_data['TIME'].replaceAll(":", "");
-
+       newDate = receipt_data['ZNUM'].replaceAll('-', '');
+       formattedAmount =  receipt_data['AMOUNT']! % 1 == 0
+          ? '${ receipt_data['AMOUNT']!.toStringAsFixed(0)}.00'
+          :  receipt_data['AMOUNT']!.toStringAsFixed(2);
 
       setState(() {
         Element element = Element(
@@ -293,7 +299,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     _buildRowWithColumns(
                                       leftColumn: 'Z NO:',
                                       rightColumn:
-                                          '${_elements[0].zNum ?? 'N/A'}',
+                                          '${_elements[0].dc ?? 'N/A'}/${newDate ?? ''}',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn:
@@ -306,12 +312,12 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     SizedBox(height: 15.0),
                                     _buildRowWithColumns(
                                       leftColumn:
-                                      'PUMP: ${_elements[0].pump ?? '1'}'+' NOZZLE:${_elements[0].pump ?? 'N/A'}',
+                                      'PUMP: ${_elements[0].pump ?? '2'}'+' NOZZLE: 1',
                                       rightColumn:
                                       '',
                                     ),
                                     _buildRowWithColumns(
-                                      leftColumn: '${_elements[0].fuelGrade ?? 'N/A'}',
+                                      leftColumn: '${_elements[0].fuelGrade ?? 'N/A'} ${formattedAmount} X ${_elements[0].qty}',
                                       rightColumn: '',
                                     ),
                                     SizedBox(height: 15.0),
@@ -319,15 +325,15 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     SizedBox(height: 15.0),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL EXCL TAX: ',
-                                      rightColumn: '${_elements[0].amount ?? 'N/A'}',
+                                      rightColumn: '${formattedAmount ?? 'N/A'}',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL TAX:',
-                                      rightColumn: '0',
+                                      rightColumn: '0.00',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL INCL TAX:',
-                                      rightColumn: '${_elements[0].amount ?? 'N/A'}',
+                                      rightColumn: '${formattedAmount ?? 'N/A'}',
                                     ),
                                     SizedBox(height: 15.0),
                                     const MySeparator(color: Colors.grey),
@@ -363,7 +369,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
 
                                     SizedBox(height: 15.0),
                                     Text(
-                                      '** END OF LEGAL RECEIPT **',
+                                      '*** END OF LEGAL RECEIPT ***',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontFamily: 'Receipt',
