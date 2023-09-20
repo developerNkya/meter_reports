@@ -11,7 +11,7 @@ handle_receipt(String access_token,String id) async {
 
   var request = http.Request(
     'POST',
-    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/receipt'),
+    Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/receipt'),
   );
 
   request.body = json.encode({

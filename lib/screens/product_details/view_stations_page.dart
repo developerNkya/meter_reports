@@ -166,7 +166,7 @@ class _ViewStationsPageState extends State<ViewStationsPage> {
       '_csrf-backend=746607a72cf031411f7c453649c5638b7ca0662237abaac41db371d2ba6b2799a%3A2%3A%7Bi%3A0%3Bs%3A13%3A%22_csrf-backend%22%3Bi%3A1%3Bs%3A32%3A%223KMZ1u9B55vDbbaW9fCkKUQXAYdvVWUe%22%3B%7D'
     };
     var request = http.Request('POST',
-        Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/user-stations'));
+        Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/user-stations'));
     request.body = json.encode({
       "user_id": userId
     });

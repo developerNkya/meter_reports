@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<String> login(String email, String password) async {
   var loginJson = {"username": email, "password": password};
   var response = await http.post(
-    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/login'),
+    Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/login'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode(loginJson),
   );

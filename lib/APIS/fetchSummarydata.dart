@@ -71,7 +71,7 @@ fetchSummarydata(String access_token,String dateFrom,String dateTo) async {
 
   var request = http.Request(
     'POST',
-    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/station-z-report'),
+    Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/station-z-report'),
   );
 
   request.body = json.encode({

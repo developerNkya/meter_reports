@@ -68,7 +68,7 @@ Future<String?> single_z(String access_token, String toDate,String z_id) async {
 
   var request = http.Request(
     'POST',
-    Uri.parse('http://162.250.125.124:8090/fummas_mobile/api/z-report'),
+    Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/z-report'),
   );
 
   request.body = json.encode({
