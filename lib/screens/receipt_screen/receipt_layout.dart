@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/handle_receipt.dart';
@@ -15,10 +16,10 @@ class Element {
   final String date;
   final String time;
   final String fuelGrade;
-  final int amount;
+  final String amount;
   final String dc;
   final String gc;
-  final String zNum;
+  final int zNum;
   final String rctvNum;
   final String qty;
   final String nozzle;
@@ -119,10 +120,13 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
       print(receipt_data['id']);
 
        concatenated_time = receipt_data['TIME'].replaceAll(":", "");
-       newDate = receipt_data['ZNUM'].replaceAll('-', '');
-       formattedAmount =  receipt_data['AMOUNT']! % 1 == 0
-          ? '${ receipt_data['AMOUNT']!.toStringAsFixed(0)}.00'
-          :  receipt_data['AMOUNT']!.toStringAsFixed(2);
+       // newDate = receipt_data['ZNUM'].replaceAll('-', '');
+      newDate = receipt_data['ZNUM'].toString();
+       // formattedAmount =  receipt_data['AMOUNT']! % 1 == 0
+       //    ? '${ receipt_data['AMOUNT']!.toStringAsFixed(0)}.00'
+       //    :  receipt_data['AMOUNT']!.toStringAsFixed(2);
+
+       formattedAmount =  receipt_data['AMOUNT'].toString();
 
       setState(() {
         Element element = Element(

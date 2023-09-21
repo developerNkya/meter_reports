@@ -39,10 +39,10 @@ class ReceiptScreen extends StatefulWidget {
   final String? date;
   final String? time;
   final String? fuelGrade;
-  final int? amount;
+  final String? amount;
   final String? dc;
   final String? gc;
-  final String? zNum;
+  final int? zNum;
   final String? rctvNum;
   final String? qty;
   final String? nozzle;
@@ -139,9 +139,11 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
 
                 String newDate = widget.zNum.toString().replaceAll('-', '');
-                String formattedAmount = widget.amount! % 1 == 0
-                    ? '${widget.amount!.toStringAsFixed(0)}.00'
-                    : widget.amount!.toStringAsFixed(2);
+                // String formattedAmount = widget.amount! % 1 == 0
+                //     ? '${widget.amount!.toStringAsFixed(0)}.00'
+                //     : widget.amount!.toStringAsFixed(2);
+
+                String formattedAmount =  widget.amount.toString();
 
                 // Generate PDF content
                 final pdf = pw.Document();
@@ -863,9 +865,11 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     img.Image? image = img.decodeImage(bytesImg);
 
     String newDate = widget.zNum.toString().replaceAll('-', '');
-    String formattedAmount = widget.amount! % 1 == 0
-        ? '${widget.amount!.toStringAsFixed(0)}.00'
-        : widget.amount!.toStringAsFixed(2);
+    // String formattedAmount = widget.amount! % 1 == 0
+    //     ? '${widget.amount!.toStringAsFixed(0)}.00'
+    //     : widget.amount!.toStringAsFixed(2);
+
+    String formattedAmount = widget.amount.toString();
 
 
     if (Platform.isIOS) {
