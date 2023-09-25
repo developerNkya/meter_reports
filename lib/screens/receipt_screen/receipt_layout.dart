@@ -101,6 +101,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   }
 
   void stationReceipt() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');

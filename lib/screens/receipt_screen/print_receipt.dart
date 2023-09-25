@@ -106,6 +106,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   final String imagePath = "assets/images/print2.jpg";
   VideoPlayerController controller = VideoPlayerController.asset('assets/animations/print3.mp4');
 
+
   @override
   void initState() {
     super.initState();
@@ -137,6 +138,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
             GestureDetector(
               onTap: () async {
 
+                final tra_logo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
 
                 String newDate = widget.zNum.toString().replaceAll('-', '');
                 // String formattedAmount = widget.amount! % 1 == 0
@@ -169,7 +171,18 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               ),
                               textAlign: pw.TextAlign.center,
                             ),
-                            pw.SizedBox(height: 16.0),
+                            pw.SizedBox(height: 12.0),
+                             //add image here
+                            // pw.Image(tra_logo)
+
+                            pw.Center(
+                              child:  pw.Container(
+                                height: 130.0,
+                                child: pw.Image(tra_logo,),
+                              ),
+                            ),
+
+                            pw.SizedBox(height: 12.0),
                             pw.Text(
                               '${widget.name ?? 'N/A'}\nMobile:${widget.mobile ?? 'N/A'}\nTin:${widget.tin ?? 'N/A'}\nVRN:${widget.vrn ?? 'N/A'}\nSERIAL NO:${widget.serial ?? 'N/A'}\nUIN:${widget.uin ?? 'N/A'}\nTAX OFFICE:${widget.taxOffice ?? 'N/A'}',
                               style: pw.TextStyle(
