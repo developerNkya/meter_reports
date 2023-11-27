@@ -222,7 +222,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.id ?? 'N/A'}',
+                                    '${widget.gc ?? 'N/A'}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -929,7 +929,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
       ),
       PosColumn(
-        text: '${widget.id ?? ''}',
+        text: '${widget.gc ?? ''}',
         width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
       ),

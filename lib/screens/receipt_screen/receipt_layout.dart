@@ -299,7 +299,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     _buildRowWithColumns(
                                       leftColumn: 'RECEIPT NUMBER:',
                                       rightColumn:
-                                          '${_elements[0].id ?? 'N/A'}',
+                                          '${_elements[0].gc ?? 'N/A'}',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'Z NO:',
