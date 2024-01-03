@@ -16,6 +16,14 @@ import 'package:intl/intl.dart';
 import '../../APIS/authentication.dart';
 import '../../APIS/station_receipts.dart';
 
+class FormattedAmount {
+  final int value;
+  final String formattedString;
+
+  FormattedAmount(this.value, this.formattedString);
+}
+
+
 class CategoryItemsScreen extends StatefulWidget {
   @override
   _CategoryItemsScreenState createState() => _CategoryItemsScreenState();
@@ -60,37 +68,56 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
 
       List<dynamic> dataList = parsedResponse['data'];
 
+      print(dataList);
+
       List<Map<String, dynamic>> objectsList = dataList.map((data) {
         String date = data['DATE'].toString();
         String time = data['TIME'].toString();
         String fuelGrade = data['FUEL_GRADE'].toString();
-
+        String litres = data['QTY'].toString();
         String unit = 'ltr';
-        //changed here
+
         int amount = 0;
+        FormattedAmount formattedAmount = FormattedAmount(0, '');
+
         int id = 0;
 
         try {
           amount = double.parse(data['AMOUNT'].toString()).toInt();
+
+          // Format the amount with comma separation based on the number of digits
+          String formattedAmountString = NumberFormat('#,##0').format(amount);
+
+          // Convert the formatted amount string to an int (preserve commas)
+          formattedAmount = FormattedAmount(amount, formattedAmountString);
+
+          // Now, `formattedAmount` contains both the int and formatted string
+          print(formattedAmount.value); // This is the integer value
+          print(formattedAmount.formattedString); // This is the formatted string
+
           id = double.parse(data['id'].toString()).toInt();
         } catch (e) {
           print('Invalid amount value: ${data['AMOUNT']}');
         }
+
+        print(formattedAmount.formattedString);
 
         return {
           'date': date,
           'time': time,
           'fuelGrade': fuelGrade,
           'unit': unit,
-          'amount': amount,
+          'amount': formattedAmount.value,
+          'formattedAmountString': formattedAmount.formattedString,
           'id': id,
+          'qty': litres
         };
       }).toList();
 
       setState(() {
         objectsList.forEach((obj) {
           Element element = Element(obj['date'], obj['time'], obj['fuelGrade'],
-              obj['unit'], obj['amount'], obj['id']);
+              obj['unit'], obj['amount'], obj['id'], obj['qty']);
 
           _elements.add(element);
         });
@@ -169,7 +196,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                               DataColumn(label: Text('Date')),
                               DataColumn(label: Text('Time')),
                               DataColumn(label: Text('Fuel Grade')),
-                              DataColumn(label: Text('Unit')),
+                              DataColumn(label: Text('Litres')),
                               DataColumn(label: Text('Amount')),
                             ],
                             rows: _elements.map((element) {
@@ -178,8 +205,8 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                                   DataCell(Text(element.date)),
                                   DataCell(Text(element.time)),
                                   DataCell(Text(element.fuelGrade)),
-                                  DataCell(Text(element.unit)),
-                                  DataCell(Text(element.amount.toString())),
+                                  DataCell(Text(element.qty.toString())),
+                                  DataCell(Text(NumberFormat('#,###').format(element.amount))),
                                 ],
                                 onSelectChanged: (selected) {
                                   if (selected != null && selected) {
@@ -297,12 +324,13 @@ class Element {
   final String unit;
   final int amount;
   final int id;
+  final String qty;
 
   Element(
-      this.date, this.time, this.fuelGrade, this.unit, this.amount, this.id);
+      this.date, this.time, this.fuelGrade, this.unit, this.amount, this.id,this.qty);
 
   @override
   String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount,$id)';
+    return '($qty,$date, $time, $fuelGrade, $unit, $amount,$id)';
   }
 }

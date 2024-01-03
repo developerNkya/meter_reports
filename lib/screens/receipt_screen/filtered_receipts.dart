@@ -16,6 +16,13 @@ import 'package:intl/intl.dart';
 import '../../APIS/authentication.dart';
 import '../../APIS/station_receipts.dart';
 
+class FormattedAmount {
+  final int value;
+  final String formattedString;
+
+  FormattedAmount(this.value, this.formattedString);
+}
+
 class FilteredReceipts extends StatefulWidget {
   final String? fromDate;
   final TimeOfDay? fromTime;
@@ -72,12 +79,23 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
             String date = data['DATE'].toString();
             String time = data['TIME'].toString();
             String fuelGrade = data['FUEL_GRADE'].toString();
-            int unit = 0;
+            String litres = data['QTY'].toString();
+            String unit = 'ltr';
+
+
             int amount = 0;
+            FormattedAmount formattedAmount = FormattedAmount(0, '');
             int id = 0;
 
             try {
               amount = double.parse(data['AMOUNT'].toString()).toInt();
+
+              // Format the amount with comma separation based on the number of digits
+              String formattedAmountString = NumberFormat('#,##0').format(amount);
+
+              // Convert the formatted amount string to an int (preserve commas)
+              formattedAmount = FormattedAmount(amount, formattedAmountString);
+
               id = double.parse(data['id'].toString()).toInt();
 
               print(id);
@@ -94,6 +112,7 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
               'unit': unit,
               'amount': amount,
               'id' : id,
+              'qty': litres
             };
           }).toList();
 
@@ -107,7 +126,8 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
                 obj['fuelGrade'],
                 obj['unit'],
                 obj['amount'],
-                obj['id']
+                obj['id'],
+                obj['qty']
               );
 
               _elements.add(element);
@@ -221,8 +241,9 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
                             DataCell(Text(element.date)),
                             DataCell(Text(element.time)),
                             DataCell(Text(element.fuelGrade)),
-                            DataCell(Text('ltr')),
-                            DataCell(Text(element.amount.toString())),
+                            DataCell(Text(element.qty.toString())),
+                            DataCell(Text(NumberFormat('#,###').format(element.amount))),
+
                           ],
                           onSelectChanged: (selected) {
                             if (selected != null && selected) {
@@ -344,14 +365,15 @@ class Element {
   final String date;
   final String time;
   final String fuelGrade;
-  final int unit;
+  final String unit;
   final int amount;
   final int id;
+  final String qty;
 
-  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount,this.id);
+  Element(this.date, this.time, this.fuelGrade, this.unit, this.amount,this.id,this.qty);
 
   @override
   String toString() {
-    return '($date, $time, $fuelGrade, $unit, $amount,$id)';
+    return '($qty,$date, $time, $fuelGrade, $unit, $amount,$id)';
   }
 }

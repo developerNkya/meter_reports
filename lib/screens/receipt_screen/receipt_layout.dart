@@ -35,6 +35,7 @@ class Element {
   final String? pump;
   final String? fuel_grade;
   final String? concatenated_time;
+  final String? price;
 
 
 
@@ -61,13 +62,14 @@ class Element {
     this.taxOffice,
     this.pump,
     this.fuel_grade,
-    this.concatenated_time
+    this.concatenated_time,
+    this.price
 
   );
 
   @override
   String toString() {
-    return 'Element(pump: $pump, id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
+    return 'Element(price:$price,pump: $pump, id: $id, date: $date, time: $time, fuelGrade: $fuelGrade, amount: $amount, dc: $dc, gc: $gc, zNum: $zNum, rctvNum: $rctvNum, qty: $qty, nozzle: $nozzle, name: $name, address: $address, mobile: $mobile, tin: $tin, vrn: $vrn, serial: $serial, uin: $uin, regid: $regid, taxOffice: $taxOffice)';
   }
 }
 
@@ -127,7 +129,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
        //    ? '${ receipt_data['AMOUNT']!.toStringAsFixed(0)}.00'
        //    :  receipt_data['AMOUNT']!.toStringAsFixed(2);
 
-       formattedAmount =  receipt_data['AMOUNT'].toString();
+      formattedAmount =  receipt_data['price'] != null ? receipt_data['price'].toString() : '';
 
       setState(() {
         Element element = Element(
@@ -153,7 +155,8 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
           receipt_data['taxoffice'],
           receipt_data['PUMP'],
           receipt_data['FUEL_GRADE'],
-          concatenated_time
+          concatenated_time,
+          formattedAmount
         );
 
         _elements.add(element);
@@ -215,7 +218,8 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                     regid: _elements[0].regid,
                     taxOffice: _elements[0].taxOffice,
                     pump: _elements[0].pump,
-                    concatenated_time: concatenated_time
+                    concatenated_time: concatenated_time,
+                    price: formattedAmount
                   ),
                 ),
               );
@@ -322,7 +326,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                       '',
                                     ),
                                     _buildRowWithColumns(
-                                      leftColumn: '${_elements[0].fuelGrade ?? 'N/A'} ${formattedAmount} X ${_elements[0].qty}',
+                                      leftColumn: '${_elements[0].fuelGrade ?? ''} ${formattedAmount != '' ? '$formattedAmount X ${_elements[0].qty}' : ''}',
                                       rightColumn: '',
                                     ),
                                     SizedBox(height: 15.0),
@@ -451,6 +455,7 @@ class _MyBlinkingButtonState extends State<MyBlinkingButton>
             icon: Image.asset('assets/icons/print_3.png'),
             color: Colors.black,
             onPressed: () {
+              // Moving to print receipt Page::
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -475,6 +480,7 @@ class _MyBlinkingButtonState extends State<MyBlinkingButton>
                     uin: widget.elements[0].uin,
                     regid: widget.elements[0].regid,
                     taxOffice: widget.elements[0].taxOffice,
+                    price: widget.elements[0].price,
                   ),
                 ),
               );

@@ -93,6 +93,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/images/grocery_images/
     - assets/icons/
     - assets/icons/account_icons/
     - assets/fonts/

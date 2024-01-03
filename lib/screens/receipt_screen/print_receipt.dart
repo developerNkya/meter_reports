@@ -58,6 +58,7 @@ class ReceiptScreen extends StatefulWidget {
   final String? pump;
   final String? fuel_grade;
   final String? concatenated_time;
+  final String? price;
 
   ReceiptScreen({
     this.id,
@@ -82,7 +83,8 @@ class ReceiptScreen extends StatefulWidget {
     this.taxOffice,
     this.pump,
     this.fuel_grade,
-    this.concatenated_time
+    this.concatenated_time,
+    this.price
   });
 
   @override
@@ -105,7 +107,6 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   List<String> options = ["58 mm", "80 mm"];
   final String imagePath = "assets/images/print2.jpg";
   VideoPlayerController controller = VideoPlayerController.asset('assets/animations/print3.mp4');
-
 
   @override
   void initState() {
@@ -145,7 +146,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                 //     ? '${widget.amount!.toStringAsFixed(0)}.00'
                 //     : widget.amount!.toStringAsFixed(2);
 
-                String formattedAmount =  widget.amount.toString();
+                String formattedAmount =  widget.price.toString();
 
                 // Generate PDF content
                 final pdf = pw.Document();
@@ -328,8 +329,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               children: <pw.Widget>[
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
-                                    style: pw.TextStyle(
+                                    // '${widget.fuelGrade ?? 'N/A'} ${widget.price != '' ? } X ${widget.qty}',
+                                    '${widget.fuelGrade ?? 'N/A'} ${formattedAmount != '' ? '$formattedAmount X ${widget.qty}' : ''}',
+                                  style: pw.TextStyle(
                                       fontSize: 14.0,
                                       fontWeight: pw.FontWeight.bold,
                                         font:ttf
