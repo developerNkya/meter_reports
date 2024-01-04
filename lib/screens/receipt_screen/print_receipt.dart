@@ -173,7 +173,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               ),
                               textAlign: pw.TextAlign.center,
                             ),
-                            pw.SizedBox(height: 12.0),
+                            pw.SizedBox(height: 3.0),
                              //add image here
                             // pw.Image(tra_logo)
 
@@ -184,7 +184,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               ),
                             ),
 
-                            pw.SizedBox(height: 12.0),
+                            pw.SizedBox(height: 3.0),
                             pw.Text(
                               '${widget.name ?? 'N/A'}\nMobile:${widget.mobile ?? 'N/A'}\nTin:${widget.tin ?? 'N/A'}\nVRN:${widget.vrn ?? 'N/A'}\nSERIAL NO:${widget.serial ?? 'N/A'}\nUIN:${widget.uin ?? 'N/A'}\nTAX OFFICE:${widget.taxOffice ?? 'N/A'}',
                               style: pw.TextStyle(
@@ -207,14 +207,26 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
 
                             // MySeparator(color: Colors.grey),
-                            // Build a row with two columns
+
+                            //Dublicate title:::
+                            pw.Text(
+                              'DUPLICATE RECEIPT',
+                              style: pw.TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: pw.FontWeight.bold,
+                                  font:ttf
+                              ),
+                              textAlign: pw.TextAlign.center,
+                            ),
+                            pw.SizedBox(height: 5.0),
+
                             pw.Row(
                               children: <pw.Widget>[
                                 pw.Expanded(
                                   child: pw.Text(
                                     'RECEIPT NUMBER:',
                                     style: pw.TextStyle(
-                                      fontSize: 18.0,
+                                      fontSize: 14.0,
                                       fontWeight: pw.FontWeight.bold,
                                         font:ttf
 
@@ -940,9 +952,6 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
             align: PosAlign.center),
       ),
     ]);
-
-    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
-      fontType: PosFontType.fontA,));
 
     bytes += generator.row([
       PosColumn(
