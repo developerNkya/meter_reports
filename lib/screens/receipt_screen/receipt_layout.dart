@@ -217,7 +217,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                     uin: _elements[0].uin,
                     regid: _elements[0].regid,
                     taxOffice: _elements[0].taxOffice,
-                    pump: _elements[0].pump,
+                    pump: _elements[0].pump ,
                     concatenated_time: concatenated_time,
                     price: formattedAmount
                   ),

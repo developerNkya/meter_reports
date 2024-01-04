@@ -886,6 +886,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //     : widget.amount!.toStringAsFixed(2);
    String formattedAmount =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
+
+
     if (Platform.isIOS) {
       // Resizes the image to half its original size and reduces the quality to 80%
       final resizedImage = img.copyResize(image!, width: image.width ~/ 1.3, height: image.height ~/ 1.3, interpolation: img.Interpolation.nearest);
@@ -930,7 +932,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.row([
       PosColumn(
         text: 'RECEIPT NUMBER:',
-        width: 5,
+        width: 6,
         styles: PosStyles(
             underline: false,
             fontType: PosFontType.fontA,
@@ -938,7 +940,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
       PosColumn(
         text: '${widget.gc ?? ''}',
-        width: 7,
+        width: 6,
         styles: PosStyles(align: PosAlign.right, underline: false,
           fontType: PosFontType.fontA,
         ),
@@ -983,7 +985,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //row4:
     bytes += generator.row([
       PosColumn(
-        text: 'PUMP:${widget.pump} NOZZLE:${widget.nozzle} ',
+        text: 'PUMP:${widget.pump !=null ? widget.pump : '2'} NOZZLE:${widget.nozzle} ',
         width: 12,
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
