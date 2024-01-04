@@ -931,6 +931,21 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //
     bytes += generator.row([
       PosColumn(
+        text: 'DUPLICATE RECEIPT:',
+        width: 12,
+        styles: PosStyles(
+            underline: false,
+            bold: true,
+            fontType: PosFontType.fontA,
+            align: PosAlign.center),
+      ),
+    ]);
+
+    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
+      fontType: PosFontType.fontA,));
+
+    bytes += generator.row([
+      PosColumn(
         text: 'RECEIPT NUMBER:',
         width: 6,
         styles: PosStyles(
@@ -1064,7 +1079,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       underline: false,
       fontType: PosFontType.fontA,
     ));
-
+    bytes += generator.text('', styles: PosStyles(align: PosAlign.center, underline: false,
+      fontType: PosFontType.fontA,));
     bytes += generator.text('${widget.rctvNum}', styles: PosStyles(align: PosAlign.center,
       underline: false,
       fontType: PosFontType.fontA,));
