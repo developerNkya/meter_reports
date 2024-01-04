@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -213,7 +214,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                   child: pw.Text(
                                     'RECEIPT NUMBER:',
                                     style: pw.TextStyle(
-                                      fontSize: 14.0,
+                                      fontSize: 18.0,
                                       fontWeight: pw.FontWeight.bold,
                                         font:ttf
 
@@ -883,9 +884,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // String formattedAmount = widget.amount! % 1 == 0
     //     ? '${widget.amount!.toStringAsFixed(0)}.00'
     //     : widget.amount!.toStringAsFixed(2);
-
-    String formattedAmount = widget.amount.toString();
-
+   String formattedAmount =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
     if (Platform.isIOS) {
       // Resizes the image to half its original size and reduces the quality to 80%
@@ -905,6 +904,10 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // bytes += generator.text('Reverse text', styles: PosStyles(reverse: true));
     // bytes += generator.text('Underlined text', styles: PosStyles(underline: true), linesAfter: 1);
     // bytes += generator.text('Align left', styles: PosStyles(align: PosAlign.left));
+
+
+
+
     bytes += generator.text('*** START OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center));
     bytes += generator.image(image!);
     bytes += generator.text('${widget.name}', styles: PosStyles(align: PosAlign.center));
@@ -927,13 +930,18 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.row([
       PosColumn(
         text: 'RECEIPT NUMBER:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        width: 5,
+        styles: PosStyles(
+            underline: false,
+            fontType: PosFontType.fontA,
+            align: PosAlign.left),
       ),
       PosColumn(
         text: '${widget.gc ?? ''}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        width: 7,
+        styles: PosStyles(align: PosAlign.right, underline: false,
+          fontType: PosFontType.fontA,
+        ),
       ),
     ]);
 
@@ -942,12 +950,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       PosColumn(
         text: 'Z NUMBER:',
         width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
         text: '${widget.dc ?? 'N/A'}/${newDate ?? ''}',
         width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -956,12 +964,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       PosColumn(
         text: 'DATE:${widget.date ?? ''}',
         width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
         text: 'TIME ${widget.time ?? ''}',
         width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -976,8 +984,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.row([
       PosColumn(
         text: 'PUMP:${widget.pump} NOZZLE:${widget.nozzle} ',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        width: 12,
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
 
     ]);
@@ -986,8 +994,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.row([
       PosColumn(
         text: '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        width: 12,
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -1004,12 +1012,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       PosColumn(
         text: 'TOTAL EXCL TAX:',
         width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
         text: '${formattedAmount ?? 'N/A'}',
         width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -1019,12 +1027,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       PosColumn(
         text: 'TOTAL TAX:',
         width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
         text: '0.00',
         width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -1033,12 +1041,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       PosColumn(
         text: 'TOTAL INCL TAX: ',
         width: 6,
-        styles: PosStyles(align: PosAlign.left, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
         text:  '${formattedAmount ?? 'N/A'}',
         width: 6,
-        styles: PosStyles(align: PosAlign.right, underline: false,fontType: PosFontType.fontB,),
+        styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
@@ -1050,13 +1058,30 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     );
 
-    bytes += generator.text('RECEIPT VERIFICATION CODE', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('RECEIPT VERIFICATION CODE', styles: PosStyles(align: PosAlign.center,
+      underline: false,
+      fontType: PosFontType.fontA,
+    ));
 
-    bytes += generator.text('${widget.rctvNum}', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('${widget.rctvNum}', styles: PosStyles(align: PosAlign.center,
+      underline: false,
+      fontType: PosFontType.fontA,));
+    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
+      fontType: PosFontType.fontA,));
     bytes += generator.qrcode('https://virtual.tra.go.tz/efdmsRctVerify/5D278B362_180039');
-    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center));
-    bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center));
+    bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
+      fontType: PosFontType.fontA,));
+    bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center,
+      underline: false,
+      fontType: PosFontType.fontA,));
+
+    // spaces left blank intentionally:::
+    bytes += generator.text('', styles: PosStyles(align: PosAlign.center,
+      underline: false,
+      fontType: PosFontType.fontA,));
+    bytes += generator.text('', styles: PosStyles(align: PosAlign.center,
+      underline: false,
+      fontType: PosFontType.fontA,));
 
 
     //

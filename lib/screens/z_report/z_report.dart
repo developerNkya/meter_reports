@@ -185,7 +185,7 @@ class _ZReportState extends State<ZReport> {
                           cells: [
                             DataCell(Text(element.znumber.toString())),
                             DataCell(Text(element.ticket.toString())),
-                            DataCell(Text(element.net_amount.toString())),
+                            DataCell(Text(NumberFormat('#,###').format(element.net_amount))),
                           ],
                           onSelectChanged: (selected) {
                             if (selected != null && selected) {

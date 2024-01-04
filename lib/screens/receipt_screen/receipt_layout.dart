@@ -275,7 +275,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                       CrossAxisAlignment.stretch,
                                   children: <Widget>[
                                     Text(
-                                      'START OF LEGAL RECEIPT',
+                                      '*** START OF LEGAL RECEIPT ***',
                                       style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.bold,
