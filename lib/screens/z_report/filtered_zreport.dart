@@ -60,9 +60,9 @@ class _filtered_zreportState extends State<filtered_zreport> {
 
     if (auth != null) {
 
-      var dateFrom = widget.fromDate.toString();
+       dateFrom = widget.fromDate.toString();
 
-      var dateTo = widget.toDate.toString();
+       dateTo = widget.toDate.toString();
 
       print(dateFrom);
       //call receipt api:::

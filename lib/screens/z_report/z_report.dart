@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
@@ -27,7 +28,10 @@ class ZReport extends StatefulWidget {
 class _ZReportState extends State<ZReport> {
   List<Element> _elements = [];
   bool _isLoading = true;
+  bool zReportData = false;
   double _kSize = 100;
+  final String no_data_img = "assets/images/noData.png";
+
 
   var dateFrom = '',dateTo = '';
 
@@ -49,69 +53,81 @@ class _ZReportState extends State<ZReport> {
     String auth = await authentication(username!, password.toString());
 
     if (auth != null) {
-       dateFrom = "2021-10-11";
-      // Get the current date
+
+       //setting date from to  yesterday::
+      DateTime yesterday = DateTime.now().subtract(Duration(days:1));
+      DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+      String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
+      dateFrom = formattedYesterday;
+
+
        // Get the current date
        DateTime currentDate = DateTime.now();
-       // Set the time to the end of the day (23:59:59)
        DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-       // Format the end of day to match the desired format
        String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
-       // Assign the formatted date to the variable
        dateTo = formattedDate;
 
+
       //call receipt api:::
-      String user_zReport= await zReport(auth, dateFrom, dateTo);
-      // String userStations1 = await userStations(auth,user_id.toString() );
-      Map<String, dynamic> parsedResponse = json.decode(user_zReport);
+      String user_zReport= await zReport(auth, dateFrom, dateTo) != null ? zReport(auth, dateFrom, dateTo) : '';
+      _isLoading = false;
+      if (user_zReport != ''){
+        Map<String, dynamic> parsedResponse = json.decode(user_zReport);
+        List<dynamic> dataList = parsedResponse['data'];
 
-      List<dynamic> dataList = parsedResponse['data'];
+        List<Map<String, dynamic>> objectsList = dataList.map((data) {
+          // String znumber = data['znumber'].toString();
+          // String ticket = data['TICKETSFISCAL'].toString();
+          // String net_amount = data['NETTAMOUNT_E'].toString();
 
-      List<Map<String, dynamic>> objectsList = dataList.map((data) {
-        // String znumber = data['znumber'].toString();
-        // String ticket = data['TICKETSFISCAL'].toString();
-        // String net_amount = data['NETTAMOUNT_E'].toString();
+          int znumber = 0;
+          int ticket = 0;
+          int net_amount = 0;
 
-        int znumber = 0;
-        int ticket = 0;
-        int net_amount = 0;
+          int z_id = 0;
 
-        int z_id = 0;
+          try {
+            znumber = double.parse(data['znumber'].toString()).toInt();
+            ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
+            net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
 
-        try {
-          znumber = double.parse(data['znumber'].toString()).toInt();
-          ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
-          net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
-
-          z_id = double.parse(data['id'].toString()).toInt();
+            z_id = double.parse(data['id'].toString()).toInt();
 
 
-        } catch (e) {
-          print('Invalid amount value: ${data['AMOUNT']}');
-        }
+          } catch (e) {
+            print('Invalid amount value: ${data['AMOUNT']}');
+          }
 
-        return {
-          'znumber': znumber,
-          'ticket': ticket,
-          'net_amount': net_amount,
-          'z_id': z_id,
-        };
-      }).toList();
+          return {
+            'znumber': znumber,
+            'ticket': ticket,
+            'net_amount': net_amount,
+            'z_id': z_id,
+          };
+        }).toList();
 
-      setState(() {
-        objectsList.forEach((obj) {
-          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
-          );
-          _elements.add(element);
+        setState(() {
+          objectsList.forEach((obj) {
+            Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
+            );
+            _elements.add(element);
+          });
+          zReportData = false;
+          _isLoading = false;
         });
-
-        _isLoading = false;
-      });
+      }else{
+        setState(() {
+          zReportData = false;
+          _isLoading = false;
+        });
+      }
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -163,84 +179,129 @@ class _ZReportState extends State<ZReport> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-//
           : Column(
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    DataTable(
-                      showCheckboxColumn: false,
-                      columns: [
-                        DataColumn(label: Text('znumber')),
-                        DataColumn(label: Text('ticket')),
-                        DataColumn(label: Text('net_amount')),
-                      ],
-                      rows: _elements.map((element) {
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(element.znumber.toString())),
-                            DataCell(Text(element.ticket.toString())),
-                            DataCell(Text(NumberFormat('#,###').format(element.net_amount))),
-                          ],
-                          onSelectChanged: (selected) {
-                            if (selected != null && selected) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  // builder: (context) => ReceiptScreen(),
-                                  builder: (context) =>
-                                      z_report_summary(id: element.z_id,dateTo:dateTo,dateFrom:dateFrom.toString()),
-                                ),
-                              );
+          if (!zReportData) ...[
+            Padding(
+              padding: EdgeInsets.only(left: 16.0, top: height/4),
+              child: Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                          no_data_img,
+                          height:99
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                          'No data Found from ${dateFrom} To ${dateTo}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                     ElevatedButton(onPressed:(){
+                     Navigator.pushReplacement(
+                     context,
+                     // MaterialPageRoute(builder: (context) => choose_receiptScreen()),
+                     MaterialPageRoute(builder: (context) => zreport_date()),
+                     );
+                     },
 
-                            }
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ],
+                       style: ElevatedButton.styleFrom(
+                           primary: Colors.blue,
+                           shape: RoundedRectangleBorder(
+                             borderRadius: BorderRadius.circular(30),
+                           ),
+                         ),
+                         child: Text(
+                           "Filter Dates",
+                           style: TextStyle(fontSize: 19),
+                         ),)
+                    ],
+                  ),
+
+                // child: Center(
+                   //   child: Text('No data available from ${dateFrom} - ${dateTo}'),
+                   // ),
+                 ),
+            )
+            ] else if(zReportData)...[
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      DataTable(
+                        showCheckboxColumn: false,
+                        columns: [
+                          DataColumn(label: Text('znumber')),
+                          DataColumn(label: Text('ticket')),
+                          DataColumn(label: Text('net_amount')),
+                        ],
+                        rows: _elements.map((element) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Text(element.znumber.toString())),
+                              DataCell(Text(element.ticket.toString())),
+                              DataCell(Text(NumberFormat('#,###').format(element.net_amount))),
+                            ],
+                            onSelectChanged: (selected) {
+                              if (selected != null && selected) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    // builder: (context) => ReceiptScreen(),
+                                    builder: (context) =>
+                                        z_report_summary(id: element.z_id,dateTo:dateTo,dateFrom:dateFrom.toString()),
+                                  ),
+                                );
+
+
+
+                              }
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          BottomAppBar(
-            child: Container(
-              height: 60,
-              child: BottomAppBar(
-                color: Colors.black54,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.attach_money,
-                          color: Colors.green
+            BottomAppBar(
+              child: Container(
+                height: 60,
+                child: BottomAppBar(
+                  color: Colors.black54,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.attach_money,
+                            color: Colors.green
+                        ),
+                        onPressed: () {},
                       ),
-                      onPressed: () {},
-                    ),
-                    Text(
-                      'Total Amount:',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
+                      Text(
+                        'Total Amount:',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
                       ),
-                    ),
-                    Text(
-                      NumberFormat('#,###').format(calculateTotalAmount()),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
+                      Text(
+                        NumberFormat('#,###').format(calculateTotalAmount()),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
+               ],
         ],
       ),
 

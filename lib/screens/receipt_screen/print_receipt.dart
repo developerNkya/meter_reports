@@ -147,7 +147,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                 //     ? '${widget.amount!.toStringAsFixed(0)}.00'
                 //     : widget.amount!.toStringAsFixed(2);
 
-                String formattedAmount =  widget.price.toString();
+                String? formattedAmount =  widget.price;
+                String? formattedTax =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+
 
                 // Generate PDF content
                 final pdf = pw.Document();
@@ -376,7 +378,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${formattedAmount ?? 'N/A'}',
+                                    '${formattedTax ?? 'N/A'}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -428,7 +430,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 ),
                                 pw.Expanded(
                                   child: pw.Text(
-                                    '${formattedAmount ?? 'N/A'}',
+                                    '${formattedTax ?? 'N/A'}',
                                     style: pw.TextStyle(
                                       fontSize: 14.0,
                                         font:ttf
@@ -896,7 +898,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // String formattedAmount = widget.amount! % 1 == 0
     //     ? '${widget.amount!.toStringAsFixed(0)}.00'
     //     : widget.amount!.toStringAsFixed(2);
-   String formattedAmount =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+
+    String formattedTax =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+    String formattedAmount =  widget.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
 
 
@@ -1019,8 +1023,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //row5::
     bytes += generator.row([
       PosColumn(
-        text: '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
-        width: 12,
+        // text: '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
+        text:  '${widget.fuelGrade ?? ''} ${formattedAmount != '' ? '$formattedAmount X ${widget.qty}' : ''}',
+      width: 12,
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
@@ -1041,7 +1046,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
-        text: '${formattedAmount ?? 'N/A'}',
+        text: '${formattedTax ?? 'N/A'}',
         width: 6,
         styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),

@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/handle_receipt.dart';
 import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,6 +96,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
   late String concatenated_time;
   late String? newDate;
   late String? formattedAmount;
+  late String? formattedTAX;
 
   @override
   void initState() {
@@ -125,11 +127,15 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
        concatenated_time = receipt_data['TIME'].replaceAll(":", "");
        // newDate = receipt_data['ZNUM'].replaceAll('-', '');
       newDate = receipt_data['ZNUM'].toString();
-       // formattedAmount =  receipt_data['AMOUNT']! % 1 == 0
-       //    ? '${ receipt_data['AMOUNT']!.toStringAsFixed(0)}.00'
-       //    :  receipt_data['AMOUNT']!.toStringAsFixed(2);
+
+      //formatting the Price::
+      String originalAmount = receipt_data['AMOUNT'];
+      double amount = double.parse(originalAmount);
+      NumberFormat formatter = NumberFormat("#,##0.00", "en_US");
+      formattedTAX= formatter.format(amount);
 
       formattedAmount =  receipt_data['price'] != null ? receipt_data['price'].toString() : '';
+
 
       setState(() {
         Element element = Element(
@@ -193,36 +199,37 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
           GestureDetector(
             onTap: () {
               // Move to set date page
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReceiptScreen(
-                    id: _elements[0].id,
-                    date: _elements[0].date,
-                    time: _elements[0].time,
-                    fuelGrade: _elements[0].fuelGrade,
-                    amount: _elements[0].amount,
-                    dc: _elements[0].dc,
-                    gc: _elements[0].gc,
-                    zNum: _elements[0].zNum,
-                    rctvNum: _elements[0].rctvNum,
-                    qty: _elements[0].qty,
-                    nozzle: _elements[0].nozzle,
-                    name: _elements[0].name,
-                    address: _elements[0].address,
-                    mobile: _elements[0].mobile,
-                    tin: _elements[0].tin,
-                    vrn: _elements[0].vrn,
-                    serial: _elements[0].serial,
-                    uin: _elements[0].uin,
-                    regid: _elements[0].regid,
-                    taxOffice: _elements[0].taxOffice,
-                    pump: _elements[0].pump ,
-                    concatenated_time: concatenated_time,
-                    price: formattedAmount
-                  ),
-                ),
-              );
+              print('test');
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => ReceiptScreen(
+              //       id: _elements[0].id,
+              //       date: _elements[0].date,
+              //       time: _elements[0].time,
+              //       fuelGrade: _elements[0].fuelGrade,
+              //       amount: _elements[0].amount,
+              //       dc: _elements[0].dc,
+              //       gc: _elements[0].gc,
+              //       zNum: _elements[0].zNum,
+              //       rctvNum: _elements[0].rctvNum,
+              //       qty: _elements[0].qty,
+              //       nozzle: _elements[0].nozzle,
+              //       name: _elements[0].name,
+              //       address: _elements[0].address,
+              //       mobile: _elements[0].mobile,
+              //       tin: _elements[0].tin,
+              //       vrn: _elements[0].vrn,
+              //       serial: _elements[0].serial,
+              //       uin: _elements[0].uin,
+              //       regid: _elements[0].regid,
+              //       taxOffice: _elements[0].taxOffice,
+              //       pump: _elements[0].pump ,
+              //       concatenated_time: concatenated_time,
+              //       price: formattedAmount
+              //     ),
+              //   ),
+              // );
             },
             child: Container(
               padding: EdgeInsets.only(right: 25),
@@ -334,7 +341,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     SizedBox(height: 15.0),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL EXCL TAX: ',
-                                      rightColumn: '${formattedAmount ?? 'N/A'}',
+                                      rightColumn: '${formattedTAX ?? 'N/A'}',
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL TAX:',
@@ -342,7 +349,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     ),
                                     _buildRowWithColumns(
                                       leftColumn: 'TOTAL INCL TAX:',
-                                      rightColumn: '${formattedAmount ?? 'N/A'}',
+                                      rightColumn: '${formattedTAX ?? 'N/A'}',
                                     ),
                                     SizedBox(height: 15.0),
                                     const MySeparator(color: Colors.grey),
@@ -456,6 +463,16 @@ class _MyBlinkingButtonState extends State<MyBlinkingButton>
             color: Colors.black,
             onPressed: () {
               // Moving to print receipt Page::
+              //new logic:::::
+
+              //formatting the TAX::
+              String originalAmount = widget.elements[0].amount;
+              double amount = double.parse(originalAmount);
+              NumberFormat formatter = NumberFormat("#,##0.00", "en_US");
+              String formattedTAX= formatter.format(amount);
+              print(formattedTAX);
+
+
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -464,7 +481,7 @@ class _MyBlinkingButtonState extends State<MyBlinkingButton>
                     date: widget.elements[0].date,
                     time: widget.elements[0].time,
                     fuelGrade: widget.elements[0].fuelGrade,
-                    amount: widget.elements[0].amount,
+                    amount: formattedTAX,
                     dc: widget.elements[0].dc,
                     gc: widget.elements[0].gc,
                     zNum: widget.elements[0].zNum,

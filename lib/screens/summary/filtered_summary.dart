@@ -55,6 +55,10 @@ class _filtered_summaryState extends State<filtered_summary> {
   double _kSize = 100;
   final String tra_img = "assets/images/tra_img3.png";
 
+  bool summaryData = false;
+  final String no_data_img = "assets/images/noData.png";
+
+
   late String fromValue;
   late String toValue,mobile,dateFrom,to;
   late String name,address,tin,vrn,serial,uin,taxoffice;
@@ -118,6 +122,12 @@ class _filtered_summaryState extends State<filtered_summary> {
 
       setState(() {
         _isLoading = false;
+        summaryData = true;
+      });
+    }else{
+      setState(() {
+        summaryData = false;
+        _isLoading = false;
       });
     }
 
@@ -126,6 +136,7 @@ class _filtered_summaryState extends State<filtered_summary> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -173,204 +184,248 @@ class _filtered_summaryState extends State<filtered_summary> {
         ),
       ),
       body: _isLoading ? Center(child: CircularProgressIndicator())
-          :Material(
-        child: Container(
-          color: Colors.black54,
-          child: Center(
-            child: Container(
-              height: 600,
-              width: 400,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          :Column(
+            children: [
+          if (!summaryData) ...[
+            Padding(
+              padding: EdgeInsets.only(left: 16.0, top: height/4),
+              child: Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                        no_data_img,
+                        height:99
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      'No data Found from ${widget.fromDate.toString()} To ${widget.toDate.toString()}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(onPressed:(){
+                      Navigator.pushReplacement(
+                        context,
+                        // MaterialPageRoute(builder: (context) => choose_receiptScreen()),
+                        MaterialPageRoute(builder: (context) => change_summary_date()),
+                      );
+                    },
+
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        "Filter Dates",
+                        style: TextStyle(fontSize: 19),
+                      ),)
+                  ],
+                ),
               ),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Container(
-                          padding: EdgeInsets.all(16.0),
-                          width:
-                          400, // Set a fixed width for horizontal scrolling
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              SizedBox(height: 16.0),
-                              Image.asset(
-                                  tra_img,
-                                  height:120
-                              ),
-                              SizedBox(height: 16.0),
-                              Text(
-                                '${name} \nP.O.O BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  fontFamily: 'Receipt',
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 15.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'CURRENT DATE TIME',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
-                              ),
-                              SizedBox(height: 10.0),
-                              _buildRowWithColumns(
-                                leftColumn: '${actualDate}',
-                                rightColumn: '${actualTime}',
-                              ),
+            )
+            ]else if(summaryData)...[
+              Material(
+        child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: Container(
+                  height: 600,
+                  width: 400,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Container(
+                              padding: EdgeInsets.all(16.0),
+                              width:
+                              400, // Set a fixed width for horizontal scrolling
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  SizedBox(height: 16.0),
+                                  Image.asset(
+                                      tra_img,
+                                      height:120
+                                  ),
+                                  SizedBox(height: 16.0),
+                                  Text(
+                                    '${name} \nP.O.O BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontFamily: 'Receipt',
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 15.0),
+                                  const MySeparator(color: Colors.grey),
+                                  SizedBox(height: 10.0),
+                                  Text(
+                                    'CURRENT DATE TIME',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                  _buildRowWithColumns(
+                                    leftColumn: '${actualDate}',
+                                    rightColumn: '${actualTime}',
+                                  ),
 
-                              SizedBox(height: 15.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'REPORT BY DATE',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
-                              ),
-                              SizedBox(height: 10.0),
-                              _buildRowWithColumns(
-                                leftColumn: 'FROM',
-                                rightColumn: '${fromValue}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TO',
-                                rightColumn: '${toValue}',
-                              ),
+                                  SizedBox(height: 15.0),
+                                  const MySeparator(color: Colors.grey),
+                                  SizedBox(height: 10.0),
+                                  Text(
+                                    'REPORT BY DATE',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'FROM',
+                                    rightColumn: '${fromValue}',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TO',
+                                    rightColumn: '${toValue}',
+                                  ),
 
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
+                                  SizedBox(height: 8.0),
+                                  const MySeparator(color: Colors.grey),
+                                  SizedBox(height: 10.0),
 
-                              Text(
-                                'DEFAUT TAX RATES',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
-                              ),
-                              SizedBox(height: 10.0),
-                              _buildRowWithColumns(
-                                leftColumn: 'A:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'B:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'C:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'D:',
-                                rightColumn: '0',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'E:',
-                                rightColumn: '0',
-                              ),
-                              SizedBox(height: 8.0),
-                              const MySeparator(color: Colors.grey),
-                              SizedBox(height: 10.0),
-                              Text(
-                                'TURNOERS',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
-                              ),
-                              SizedBox(height: 10.0),
+                                  Text(
+                                    'DEFAUT TAX RATES',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
+                                  SizedBox(height: 10.0),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'A:',
+                                    rightColumn: '0',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'B:',
+                                    rightColumn: '0',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'C:',
+                                    rightColumn: '0',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'D:',
+                                    rightColumn: '0',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'E:',
+                                    rightColumn: '0',
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  const MySeparator(color: Colors.grey),
+                                  SizedBox(height: 10.0),
+                                  Text(
+                                    'TURNOERS',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
+                                  SizedBox(height: 10.0),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL *A:',
-                                rightColumn: '0.00',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER TOTAL *A:',
+                                    rightColumn: '0.00',
+                                  ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX *A:',
-                                rightColumn: '0.00',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TAX *A:',
+                                    rightColumn: '0.00',
+                                  ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL *B:',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX *B:',
-                                rightColumn: '0.00',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER TOTAL *B:',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TAX *B:',
+                                    rightColumn: '0.00',
+                                  ),
 
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL *C:',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX *C:',
-                                rightColumn: '0.00',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER TOTAL *C:',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TAX *C:',
+                                    rightColumn: '0.00',
+                                  ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL *D:',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX *D:',
-                                rightColumn: '0.00',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER TOTAL *D:',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TAX *D:',
+                                    rightColumn: '0.00',
+                                  ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER TOTAL *E:',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TAX *E:',
-                                rightColumn: '${totalAmountSum}',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER TOTAL *E:',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TAX *E:',
+                                    rightColumn: '${totalAmountSum}',
+                                  ),
 
-                              _buildRowWithColumns(
-                                leftColumn: 'NET(A+B+C+D+E):',
-                                rightColumn: '${totalAmountSum}',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER(EX):',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'TURNOVER(S.R):',
-                                rightColumn: '0.00',
-                              ),
-                              _buildRowWithColumns(
-                                leftColumn: 'LEGAL RECEIPT:',
-                                rightColumn: '${dataListLength}',
-                              ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'NET(A+B+C+D+E):',
+                                    rightColumn: '${totalAmountSum}',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER(EX):',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'TURNOVER(S.R):',
+                                    rightColumn: '0.00',
+                                  ),
+                                  _buildRowWithColumns(
+                                    leftColumn: 'LEGAL RECEIPT:',
+                                    rightColumn: '${dataListLength}',
+                                  ),
 
-                              SizedBox(height: 20.0),
+                                  SizedBox(height: 20.0),
 
-                              Text(
-                                '***END OF ZREPORT***',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  Text(
+                                    '***END OF ZREPORT***',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
+
+                                  SizedBox(height: 60.0),
+
+                                ],
                               ),
-
-                              SizedBox(height: 60.0),
-
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
         ),
       ),
+    ],
+            ],
+          ),
     );
   }
 

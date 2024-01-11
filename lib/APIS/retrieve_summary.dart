@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SummaryObject {
@@ -59,11 +60,12 @@ class SummaryObject {
   }
 }
 
-Future<String?> retrieve_summary(String access_token, String toDate) async {
+Future<String?> retrieve_summary(String access_token, String toDate,String fromDate) async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var stationId = prefs.getString('stationId');
   var company_id = prefs.getString('company_id');
+
 
 
   var headers = {
@@ -77,10 +79,11 @@ Future<String?> retrieve_summary(String access_token, String toDate) async {
     Uri.parse('http://67.217.56.19:8090/fummas_mobile/api/station-z-report'),
   );
 
+
   request.body = json.encode({
     "company_id": company_id,
     "station_id": stationId,
-    "date_from": "2021-10-11",
+    "date_from": "${fromDate}",
     "date_to": "$toDate"
   });
 

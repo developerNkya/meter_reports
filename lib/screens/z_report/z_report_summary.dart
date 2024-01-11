@@ -32,6 +32,7 @@ class z_report_summary extends StatefulWidget {
   final String? dateTo;
   final String? dateFrom;
 
+
   z_report_summary({
     this.id,
     this.dateTo,
@@ -48,7 +49,7 @@ class _z_report_summaryState extends State<z_report_summary> {
 
   List<Element> _elements = [];
   bool _isLoading = true;
-  var receipt_data;
+  var receipt_data,dateTo;
   double _kSize = 100;
   late double displayed_summary;
 
@@ -59,7 +60,7 @@ class _z_report_summaryState extends State<z_report_summary> {
   late int dataListLength=0;
   late int ticket =0;
   late String amount='';
-
+  var actualTime,actualDate,ZNUMBER;
 
 
 
@@ -76,20 +77,23 @@ class _z_report_summaryState extends State<z_report_summary> {
 
     // Getting the auth key
     String auth = await authentication(username!, password.toString());
+    var now = DateTime.now();
+    var formatterDate = DateFormat('dd-MM-yy');
+    ZNUMBER = DateFormat('dd MM yy');
+    var formatterTime = DateFormat('hh:mm:ss');
+    actualDate = formatterDate.format(now);
+    actualTime = formatterTime.format(now);
 
     if (auth != null) {
+
       DateTime currentDate = DateTime.now();
-      // Format the current date to match the desired format
-      // Set the time to the end of the day (23:59:59)
       DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-
-      // Format the end of day to match the desired format
       String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+      dateTo = formattedDate;
 
-      // Assign the formatted date to the variable
-      var dateTo = formattedDate;
       String userSummary = await single_z(auth, dateTo,widget.id.toString()) ?? '';
 // Decode the JSON string back into a ma
+
 
       Map<String, dynamic> summaryMap = json.decode(userSummary);
 
@@ -119,8 +123,8 @@ class _z_report_summaryState extends State<z_report_summary> {
       double totalAmountSum = double.parse(dailyTotalAmount);
 
 // Set other values
-      String fromValue = "2021-10-11"; // Replace with your actual 'from' value if available
-      String toValue = 'to'; // Assuming 'toDate' is defined elsewhere
+      String fromValue = "${widget.dateFrom}"; // Replace with your actual 'from' value if available
+      String toValue = '${widget.dateTo}'; // Assuming 'toDate' is defined elsewhere
       int dataListLength = 1; // Since you are processing a single record, the length is 1
 
 // Print the extracted values
@@ -257,8 +261,8 @@ class _z_report_summaryState extends State<z_report_summary> {
                                 style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                               ),
                               _buildRowWithColumns(
-                                leftColumn: '${widget.dateFrom?? ''}',
-                                rightColumn: '',
+                                leftColumn: '${actualDate}',
+                                rightColumn: '${actualTime}',
                               ),
                               SizedBox(height: 15.0),
                               const MySeparator(color: Colors.grey),

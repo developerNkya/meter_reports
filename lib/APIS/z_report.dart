@@ -35,23 +35,4 @@ zReport(String access_token,String dateFrom,String dateTo) async {
   else {
     print(response.reasonPhrase);
   }
-  // var request = http.Request('POST', Uri.parse(
-  //     'http://67.217.56.19:8090/fummas_mobile/api/station-z-report'));
-  // request.body = json.encode({
-  //   "company_id": company_id,
-  //   "station_id": stationId,
-  //   "date_from": "$dateFrom",
-  //   "date_to": "$dateTo"
-  // });
-  // request.headers.addAll(headers);
-  //
-  // http.StreamedResponse response = await request.send();
-  //
-  // if (response.statusCode == 200) {
-  //   String zReport= await response.stream.bytesToString();
-  //   return zReport;
-  // }
-  // else {
-  //   print(response.reasonPhrase);
-  // }
 }
