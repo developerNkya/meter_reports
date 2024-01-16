@@ -1,19 +1,24 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:grocery_app/APIS/handle_receipt.dart';
 import 'package:grocery_app/APIS/single_z_report.dart';
 import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:grocery_app/screens/summary/change_summary_date.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../APIS/authentication.dart';
 import '../../../common_widgets/app_text.dart';
 import '../../APIS/retrieve_summary.dart';
-
+import 'package:pdf/widgets.dart' as pw;
 class Element {
   final int summary;
 
@@ -184,6 +189,771 @@ class _z_report_summaryState extends State<z_report_summary> {
         ),
         actions: [
           GestureDetector(
+            onTap: () async {
+
+              final tra_logo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
+
+              String newDate =  ZNUMBER.toString().replaceAll('-', '');
+              // String formattedAmount = widget.amount! % 1 == 0
+              //     ? '${widget.amount!.toStringAsFixed(0)}.00'
+              //     : widget.amount!.toStringAsFixed(2);
+
+              String? formattedAmount =  '';
+              String? formattedTax =  '';
+
+
+              // Generate PDF content
+              final pdf = pw.Document();
+              //add new font::
+              final font = await rootBundle.load("assets/fonts/FAKERECE.ttf");
+              final ttf = pw.Font.ttf(font);
+              pdf.addPage(
+                pw.Page(
+                  pageFormat: PdfPageFormat(14 * PdfPageFormat.cm, 30 * PdfPageFormat.cm, marginAll: 0.5 * PdfPageFormat.cm),
+                  build: (pw.Context context) {
+                    return pw.Container(
+                      padding: pw.EdgeInsets.all(16.0),
+                      width: 400,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                        children: <pw.Widget>[
+                          pw.SizedBox(height: 3.0),
+                          pw.Center(
+                            child:  pw.Container(
+                              height: 130.0,
+                              child: pw.Image(tra_logo,),
+                            ),
+                          ),
+
+                          pw.SizedBox(height: 3.0),
+                          pw.Text(
+                            '${name ?? 'N/A'}\nMobile:${mobile ?? 'N/A'}\nTin:${tin ?? 'N/A'}\nVRN:${vrn ?? 'N/A'}\nSERIAL NO:${serial ?? 'N/A'}\nUIN:${uin ?? 'N/A'}\nTAX OFFICE:${taxoffice ?? 'N/A'}',
+                            style: pw.TextStyle(
+                                fontSize: 16.0,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+                          pw.SizedBox(height: 08.0),
+                          // Create a dotted line separator
+                          pw.Divider(
+                            height: 1.0,
+                            color: PdfColors.grey,
+                            // dash: 2,
+                          ),
+
+                          // pw.Container(
+                          //   child: MySeparator(color: Colors.grey),
+                          // ),
+
+
+                          // MySeparator(color: Colors.grey),
+
+                          //Dublicate title:::
+                          pw.Text(
+                            'CURRENT DATE TIME',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+                          pw.SizedBox(height: 5.0),
+
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                '${actualDate ?? 'N/A'}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${actualTime ?? 'N/A'}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          //z-no
+
+                          pw.SizedBox(height: 15.0),
+                          pw.Divider(
+                            height: 1.0,
+                            color: PdfColors.grey,
+                            // dash: 2,
+                          ),
+                          pw.Text(
+                            'REPORT BY DATE',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+                          pw.SizedBox(height: 5.0),
+                          // pw.SizedBox(height: 15.0),
+                          //pump
+                          pw.Row(
+                            children: <pw.Widget>[
+
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'FROM',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${widget.dateFrom?? ''}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                    // fontFami: 'Receipt',
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TO',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${widget.dateTo ?? ''}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                    // fontFami: 'Receipt',
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.SizedBox(height: 15.0),
+                          pw.Divider(
+                            height: 1.0,
+                            color: PdfColors.grey,
+                            // dash: 2,
+                          ),
+                          pw.SizedBox(height: 15.0),
+
+                          pw.Text(
+                            'DEFAULT TAX RATES',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+                          pw.SizedBox(height: 5.0),
+
+                          //excl
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'A',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'B',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'C',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'D',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'E',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+                                  ),
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          pw.SizedBox(height: 15.0),
+                          pw.Divider(
+                            height: 1.0,
+                            color: PdfColors.grey,
+                            // dash: 2,
+                          ),
+                          pw.SizedBox(height: 15.0),
+                          pw.Text(
+                            'TURNOVERS',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+                          pw.SizedBox(height: 5.0),
+
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER TOTAL *A',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TAX *A',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER TAX *B',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TAX *B',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER TOTAL *C',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TAX *C',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER TOTAL *D',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TAX *D',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER TOTAL *E',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TAX *E',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${amount}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'NET(A+B+C+D+E)',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${amount}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER(EX)',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'TURNOVER(SR)',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '0.00',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+                          pw.Row(
+                            children: <pw.Widget>[
+                              pw.Expanded(
+                                child: pw.Text(
+                                  'LEGAL RECEIPT',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: pw.FontWeight.bold,
+                                      font:ttf
+
+                                  ),
+
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Text(
+                                  '${ticket}',
+                                  style: pw.TextStyle(
+                                      fontSize: 14.0,
+                                      font:ttf
+                                  ),
+                                  textAlign: pw.TextAlign.right,
+                                  // fontFamily: 'Receipt',
+                                ),
+                              ),
+
+                            ],
+                          ),
+
+
+                          //THE BOUNDARY:::
+                          // ... Continue adding other widgets ...
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+
+
+
+
+
+              // Save the PDF to a temporary file
+              final output = await getTemporaryDirectory();
+              final file = File('${output.path}/receipt.pdf');
+              await file.writeAsBytes(await pdf.save());
+
+              // Open share dialog
+              Share.shareFiles(['${file.path}'],
+                  text: 'Share Receipt PDF',
+                  subject: 'Receipt PDF');
+            },
+            child: Container(
+              padding: EdgeInsets.only(right: 25),
+              child: Icon(
+                Icons.share,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          GestureDetector(
             onTap: () {
               // Move to set date page
               Navigator.pushReplacement(
@@ -206,7 +976,7 @@ class _z_report_summaryState extends State<z_report_summary> {
           child: AppText(
             text: "Z-Report Summary",
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 19,
           ),
         ),
       ),
@@ -245,7 +1015,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               SizedBox(height: 16.0),
                               Text(
-                                '${name} \nP.O.O BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
+                                '${name} \nP.O.BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontFamily: 'Receipt',

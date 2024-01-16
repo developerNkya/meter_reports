@@ -101,13 +101,18 @@ class _SummaryState extends State<Summary> {
       String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
       date_From = formattedYesterday;
 
+      // date_From = '2023-01-15 23:59:59';
 
-      String userSummary = await retrieve_summary(auth, dateTo,date_From) ?? '';
+
+      String? userSummary = await retrieve_summary(auth, dateTo,date_From);
+
+
 // Decode the JSON string back into a map
-
-      if(userSummary != ''){
+      _isLoading = false;
+      if(userSummary != null){
       Map<String, dynamic> summaryMap = json.decode(userSummary);
 // Access the 'from' value from the map
+
 
       var formatter = NumberFormat('#,###,000');
 
@@ -132,6 +137,7 @@ class _SummaryState extends State<Summary> {
 
 
       setState(() {
+        summaryData = true;
         _isLoading = false;
       });
       }else{

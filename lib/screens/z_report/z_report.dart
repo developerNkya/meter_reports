@@ -60,18 +60,19 @@ class _ZReportState extends State<ZReport> {
       String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
       dateFrom = formattedYesterday;
 
-
+      // dateFrom = '2023-01-15 23:59:59';
        // Get the current date
        DateTime currentDate = DateTime.now();
        DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
        String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
        dateTo = formattedDate;
 
+       print(dateFrom);
 
       //call receipt api:::
-      String user_zReport= await zReport(auth, dateFrom, dateTo) != null ? zReport(auth, dateFrom, dateTo) : '';
+      String? user_zReport= await zReport(auth, dateFrom, dateTo);
       _isLoading = false;
-      if (user_zReport != ''){
+      if (user_zReport != null){
         Map<String, dynamic> parsedResponse = json.decode(user_zReport);
         List<dynamic> dataList = parsedResponse['data'];
 
@@ -112,7 +113,7 @@ class _ZReportState extends State<ZReport> {
             );
             _elements.add(element);
           });
-          zReportData = false;
+          zReportData = true;
           _isLoading = false;
         });
       }else{
