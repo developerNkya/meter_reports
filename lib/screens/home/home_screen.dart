@@ -1,26 +1,14 @@
-import 'dart:async';
 import 'dart:convert';
 
-import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/APIS/authentication.dart';
 import 'package:grocery_app/APIS/userStations.dart';
-import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/home/cartegories_station.dart';
-import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:grocery_app/screens/product_details/view_stations_page.dart';
-import 'package:grocery_app/styles/colors.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
-import 'package:grocery_app/widgets/search_bar_widget.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
-import 'grocery_featured_Item_widget.dart';
 import 'home_banner_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:scaled_list/scaled_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -47,37 +35,34 @@ class _HomeScreenState extends State<HomeScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-    var user_id = prefs.getString('user_id');
+    var userId = prefs.getString('user_id');
 
     //getting the auth key
     String auth = await authentication(username!, password.toString());
 
-    if (auth != null) {
-      String userStations1 = await userStations(auth, user_id.toString());
-      Map<String, dynamic> response = jsonDecode(userStations1);
-      List<dynamic> stations = response['stations'];
+    String userStations1 = await userStations(auth, userId.toString());
+    Map<String, dynamic> response = jsonDecode(userStations1);
+    List<dynamic> stations = response['stations'];
 
-      List<String> stationNames = stations.map((station) => station['name'].toString()).toList();
-      List<String> stationId = stations.map((station) => station['id'].toString()).toList();
+    List<String> stationNames = stations.map((station) => station['name'].toString()).toList();
+    List<String> stationId = stations.map((station) => station['id'].toString()).toList();
 
-      print(stationNames[0]);
-      print(stationId[0]);
+    print(stationNames[0]);
+    print(stationId[0]);
 
-      //set the stations values to shared preferences:::
-      SharedPreferences prefs =
-      await SharedPreferences.getInstance();
-      await prefs.setString('stationName',stationNames[0] );
-      await prefs.setString('stationId',stationId[0] );
+    //set the stations values to shared preferences:::
 
-      // adding to element
-      setState(() {
-        for (String stationName in stationNames) {
-          _elements.add(Element(stationName, Icons.local_gas_station));
-        }
-      });
+    await prefs.setString('stationName',stationNames[0] );
+    await prefs.setString('stationId',stationId[0] );
+
+    // adding to element
+    setState(() {
+      for (String stationName in stationNames) {
+        _elements.add(Element(stationName, Icons.local_gas_station));
+      }
+    });
 
     }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -319,6 +304,7 @@ class Element {
 //     @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
+//       backgroundColor: Colors.white,
 //       body: Column(
 //         crossAxisAlignment: CrossAxisAlignment.stretch,
 //         children: [

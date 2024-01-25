@@ -3,21 +3,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:grocery_app/APIS/handle_receipt.dart';
 import 'package:grocery_app/APIS/single_z_report.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:grocery_app/screens/summary/change_summary_date.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../APIS/authentication.dart';
 import '../../../common_widgets/app_text.dart';
-import '../../APIS/retrieve_summary.dart';
 import 'package:pdf/widgets.dart' as pw;
 class Element {
   final int summary;
@@ -89,62 +84,60 @@ class _z_report_summaryState extends State<z_report_summary> {
     actualDate = formatterDate.format(now);
     actualTime = formatterTime.format(now);
 
-    if (auth != null) {
+    DateTime currentDate = DateTime.now();
+    DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+    dateTo = formattedDate;
 
-      DateTime currentDate = DateTime.now();
-      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
-      dateTo = formattedDate;
-
-      String userSummary = await single_z(auth, dateTo,widget.id.toString()) ?? '';
+    String userSummary = await single_z(auth, dateTo,widget.id.toString()) ?? '';
 // Decode the JSON string back into a ma
 
 
-      Map<String, dynamic> summaryMap = json.decode(userSummary);
+    Map<String, dynamic> summaryMap = json.decode(userSummary);
 
 // Extract values from the 'data' field
-      Map<String, dynamic> data = summaryMap['data'];
-      int id = data['id'];
-      String dailyTotalAmount = data['DAILYTOTALAMOUNT'];
-      int ticketCount = data['TICKETSFISCAL'];
-      double grossAmount = double.parse(data['GROSS']);
-      double nettAmount = double.parse(data['NETTAMOUNT_E']);
-      double taxAmount = double.parse(data['TAXAMOUNT_E']);
-      String znumber = data['znumber'];
+    Map<String, dynamic> data = summaryMap['data'];
+    int id = data['id'];
+    String dailyTotalAmount = data['DAILYTOTALAMOUNT'];
+    int ticketCount = data['TICKETSFISCAL'];
+    double grossAmount = double.parse(data['GROSS']);
+    double nettAmount = double.parse(data['NETTAMOUNT_E']);
+    double taxAmount = double.parse(data['TAXAMOUNT_E']);
+    String znumber = data['znumber'];
 
 // Extract other values
-        name = data['name'];
-      address = data['address'];
-       tin = data['tin'];
-       vrn = data['vrn'];
-       serial = data['serial'];
-       uin = data['uin'];
-       taxoffice = data['taxoffice'];
-       mobile = data['mobile'];
-       ticket = data['TICKETSFISCAL'];
-        amount = data['DAILYTOTALAMOUNT'];
+      name = data['name'];
+    address = data['address'];
+     tin = data['tin'];
+     vrn = data['vrn'];
+     serial = data['serial'];
+     uin = data['uin'];
+     taxoffice = data['taxoffice'];
+     mobile = data['mobile'];
+     ticket = data['TICKETSFISCAL'];
+      amount = data['DAILYTOTALAMOUNT'];
 
 // Calculate the total amount sum
-      double totalAmountSum = double.parse(dailyTotalAmount);
+    double totalAmountSum = double.parse(dailyTotalAmount);
 
 // Set other values
-      String fromValue = "${widget.dateFrom}"; // Replace with your actual 'from' value if available
-      String toValue = '${widget.dateTo}'; // Assuming 'toDate' is defined elsewhere
-      int dataListLength = 1; // Since you are processing a single record, the length is 1
+    String fromValue = "${widget.dateFrom}"; // Replace with your actual 'from' value if available
+    String toValue = '${widget.dateTo}'; // Assuming 'toDate' is defined elsewhere
+    int dataListLength = 1; // Since you are processing a single record, the length is 1
 
 // Print the extracted values
-      print('from: $fromValue');
-      print('to: $toValue');
-      print('name: $name');
-      print('address: $address');
-      print('tin: $tin');
-      print('vrn: $vrn');
-      print('serial: $serial');
-      print('uin: $uin');
-      print('taxoffice: $taxoffice');
-      print('totalAmountSum: $totalAmountSum');
-      print('dataListLength: $dataListLength');
-      print('mobile: $mobile');
+    print('from: $fromValue');
+    print('to: $toValue');
+    print('name: $name');
+    print('address: $address');
+    print('tin: $tin');
+    print('vrn: $vrn');
+    print('serial: $serial');
+    print('uin: $uin');
+    print('taxoffice: $taxoffice');
+    print('totalAmountSum: $totalAmountSum');
+    print('dataListLength: $dataListLength');
+    print('mobile: $mobile');
 // Access the 'from' value from the map
 //       fromValue = '${fromValue}';
 //       toValue = summaryMap['to'];
@@ -160,16 +153,16 @@ class _z_report_summaryState extends State<z_report_summary> {
 //       mobile = summaryMap['mobile'];
 
 
-      setState(() {
-        _isLoading = false;
-      });
+    setState(() {
+      _isLoading = false;
+    });
 
     }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -191,7 +184,7 @@ class _z_report_summaryState extends State<z_report_summary> {
           GestureDetector(
             onTap: () async {
 
-              final tra_logo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
+              final traLogo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
 
               String newDate =  ZNUMBER.toString().replaceAll('-', '');
               // String formattedAmount = widget.amount! % 1 == 0
@@ -221,7 +214,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                           pw.Center(
                             child:  pw.Container(
                               height: 130.0,
-                              child: pw.Image(tra_logo,),
+                              child: pw.Image(traLogo,),
                             ),
                           ),
 
@@ -796,7 +789,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '${amount}',
+                                  '$amount',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -824,7 +817,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '${amount}',
+                                  '$amount',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -908,7 +901,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '${ticket}',
+                                  '$ticket',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -1015,7 +1008,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               SizedBox(height: 16.0),
                               Text(
-                                '${name} \nP.O.BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
+                                '$name \nP.O.BOX:$address  \nMobile:$mobile\nTin $tin\nVRN:$vrn\nSERIAL NO:$serial\nUIN:$uin\nTAX OFFICE:$taxoffice',
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontFamily: 'Receipt',
@@ -1031,8 +1024,8 @@ class _z_report_summaryState extends State<z_report_summary> {
                                 style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                               ),
                               _buildRowWithColumns(
-                                leftColumn: '${actualDate}',
-                                rightColumn: '${actualTime}',
+                                leftColumn: '$actualDate',
+                                rightColumn: '$actualTime',
                               ),
                               SizedBox(height: 15.0),
                               const MySeparator(color: Colors.grey),
@@ -1126,11 +1119,11 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'TAX  *E',
-                                rightColumn: '${amount}',
+                                rightColumn: '$amount',
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'NET(A+B+C+D+E)',
-                                rightColumn: '${amount}',
+                                rightColumn: '$amount',
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'TURNOVER(EX)',
@@ -1142,7 +1135,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'LEGAL RECEIPT',
-                                rightColumn: '${ticket}',
+                                rightColumn: '$ticket',
                               ),
 
                               // SizedBox(height: 20.0), // Add some space between the summary and the image

@@ -1,20 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:grocery_app/screens/z_report/z_report_summary.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
 import '../../APIS/authentication.dart';
-import '../../APIS/station_receipts.dart';
 import '../../APIS/z_report.dart';
 import 'choose_zreport_date.dart';
 
@@ -53,23 +46,23 @@ class _filtered_zreportState extends State<filtered_zreport> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-    var user_id = prefs.getString('user_id');
+    var userId = prefs.getString('user_id');
 
     //getting the auth key:::
     String auth = await authentication(username!, password.toString());
 
-    if (auth != null) {
+    dateFrom = widget.fromDate.toString();
 
-       dateFrom = widget.fromDate.toString();
+    dateTo = widget.toDate.toString();
 
-       dateTo = widget.toDate.toString();
+    print(dateFrom);
+    //call receipt api:::
+    var userZreport = await zReport(auth, dateFrom, dateTo);
+    print(userZreport);
 
-      print(dateFrom);
-      //call receipt api:::
-      var user_zReport= await zReport(auth, dateFrom, dateTo);
-      print(user_zReport);
+    if (userZreport != null) {
       // String userStations1 = await userStations(auth,user_id.toString() );
-      Map<String, dynamic> parsedResponse = json.decode(user_zReport);
+      Map<String, dynamic> parsedResponse = json.decode(userZreport);
 
       List<dynamic> dataList = parsedResponse['data'];
 
@@ -80,15 +73,14 @@ class _filtered_zreportState extends State<filtered_zreport> {
 
         int znumber = 0;
         int ticket = 0;
-        int net_amount = 0;
-        int z_id = 0;
+        int netAmount = 0;
+        int zId = 0;
 
         try {
           znumber = double.parse(data['znumber'].toString()).toInt();
           ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
-          net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
-          z_id = double.parse(data['id'].toString()).toInt();
-
+          netAmount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
+          zId = double.parse(data['id'].toString()).toInt();
         } catch (e) {
           print('Invalid amount value: ${data['AMOUNT']}');
         }
@@ -96,19 +88,26 @@ class _filtered_zreportState extends State<filtered_zreport> {
         return {
           'znumber': znumber,
           'ticket': ticket,
-          'net_amount': net_amount,
-          'z_id': z_id,
+          'net_amount': netAmount,
+          'z_id': zId,
         };
       }).toList();
 
       setState(() {
         objectsList.forEach((obj) {
-          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
+          Element element = Element(
+              obj['znumber'], obj['ticket'], obj['net_amount'], obj['z_id']
           );
           _elements.add(element);
         });
 
         _isLoading = false;
+      });
+    }else {
+      // Error occurred while fetching userReceipts, handle the error
+      setState(() {
+        _isLoading = false;
+        _elements.clear(); // Clear the elements list
       });
     }
   }
@@ -116,6 +115,7 @@ class _filtered_zreportState extends State<filtered_zreport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

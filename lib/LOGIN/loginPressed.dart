@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +17,7 @@ Future<String> login(String email, String password) async {
     final username = responseJson['username'];
     final accessToken = responseJson['access_token']['access_token'];
     final userId = responseJson['user_id'];
-    final company_id = responseJson['company_id'];
+    final companyId = responseJson['company_id'];
 
     // Getting SharedPreferences instance
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,7 +28,7 @@ Future<String> login(String email, String password) async {
     await prefs.setString('user_id', userId.toString());
     await prefs.setString('user_password', password);
 
-    await prefs.setString('company_id',company_id.toString());
+    await prefs.setString('company_id',companyId.toString());
 
     return 'Login success';
   } else {

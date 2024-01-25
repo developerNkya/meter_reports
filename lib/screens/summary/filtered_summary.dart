@@ -1,21 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/fetchSummarydata.dart';
-import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:grocery_app/screens/summary/change_summary_date.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
-import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
-import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
 import '../../APIS/authentication.dart';
-import '../../APIS/station_receipts.dart';
 
 
 class Element {
@@ -93,13 +84,13 @@ class _filtered_summaryState extends State<filtered_summary> {
     var dateTo = widget.toDate.toString();
 
 
-    String filtered_summary = await fetchSummarydata(auth, dateFrom, dateTo) ?? '';
+    String filteredSummary = await fetchSummarydata(auth, dateFrom, dateTo) ?? '';
 
-    if (filtered_summary  != ''){
-      Map<String, dynamic> summaryMap = json.decode(filtered_summary);
+    if (filteredSummary  != ''){
+      Map<String, dynamic> summaryMap = json.decode(filteredSummary);
 
-      String value_from_api = summaryMap['from'];
-      DateTime fromDate = DateTime.parse(value_from_api);
+      String valueFromApi = summaryMap['from'];
+      DateTime fromDate = DateTime.parse(valueFromApi);
 
       var formatter = NumberFormat('#,###,000');
 
@@ -138,6 +129,7 @@ class _filtered_summaryState extends State<filtered_summary> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -211,7 +203,7 @@ class _filtered_summaryState extends State<filtered_summary> {
                     },
 
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
+                        backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -258,7 +250,7 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   ),
                                   SizedBox(height: 16.0),
                                   Text(
-                                    '${name} \nP.O.O BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
+                                    '$name \nP.O.O BOX:$address  \nMobile:$mobile\nTin $tin\nVRN:$vrn\nSERIAL NO:$serial\nUIN:$uin\nTAX OFFICE:$taxoffice',
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       fontFamily: 'Receipt',
@@ -275,8 +267,8 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   ),
                                   SizedBox(height: 10.0),
                                   _buildRowWithColumns(
-                                    leftColumn: '${actualDate}',
-                                    rightColumn: '${actualTime}',
+                                    leftColumn: '$actualDate',
+                                    rightColumn: '$actualTime',
                                   ),
 
                                   SizedBox(height: 15.0),
@@ -290,11 +282,11 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   SizedBox(height: 10.0),
                                   _buildRowWithColumns(
                                     leftColumn: 'FROM',
-                                    rightColumn: '${fromValue}',
+                                    rightColumn: '$fromValue',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'TO',
-                                    rightColumn: '${toValue}',
+                                    rightColumn: '$toValue',
                                   ),
 
                                   SizedBox(height: 8.0),
@@ -381,12 +373,12 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'TAX *E:',
-                                    rightColumn: '${totalAmountSum}',
+                                    rightColumn: '$totalAmountSum',
                                   ),
 
                                   _buildRowWithColumns(
                                     leftColumn: 'NET(A+B+C+D+E):',
-                                    rightColumn: '${totalAmountSum}',
+                                    rightColumn: '$totalAmountSum',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'TURNOVER(EX):',
@@ -398,7 +390,7 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'LEGAL RECEIPT:',
-                                    rightColumn: '${dataListLength}',
+                                    rightColumn: '$dataListLength',
                                   ),
 
                                   SizedBox(height: 20.0),

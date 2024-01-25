@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_glow/flutter_glow.dart';
-import 'package:grocery_app/styles/colors.dart';
 
 class AppButton extends StatelessWidget {
 

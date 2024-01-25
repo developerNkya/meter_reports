@@ -6,6 +6,7 @@ class OrderAcceptedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         width: double.maxFinite,
         padding: EdgeInsets.symmetric(horizontal: 25),

@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:grocery_app/common_widgets/app_button.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/screens/explore_screen.dart';
-import 'package:grocery_app/screens/station_cartegories.dart';
-import 'package:grocery_app/widgets/item_counter_widget.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:anim_search_bar/anim_search_bar.dart';
 
 import '../../STATION_LIST/Station.dart';
 import '../home/cartegories_station.dart';
@@ -45,6 +39,7 @@ class _ViewStationsPageState extends State<ViewStationsPage> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[

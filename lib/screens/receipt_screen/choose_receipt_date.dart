@@ -1,34 +1,18 @@
-import 'dart:ui';
 
 import 'package:cool_alert/cool_alert.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_fast_forms/flutter_fast_forms.dart';
 import 'package:grocery_app/screens/receipt_screen/filtered_receipts.dart';
 import 'package:intl/intl.dart';
 
 
-import 'package:lottie/lottie.dart';
 
-import '../../LOGIN/login_page.dart';
 import '../../common_widgets/app_text.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 
-import 'package:flutter/material.dart';
 import 'package:gsform/gs_form/core/form_style.dart';
-import 'package:gsform/gs_form/enums/field_status.dart';
-import 'package:gsform/gs_form/enums/required_check_list_enum.dart';
-import 'package:gsform/gs_form/model/data_model/check_data_model.dart';
 import 'package:gsform/gs_form/model/data_model/date_data_model.dart';
-import 'package:gsform/gs_form/model/data_model/radio_data_model.dart';
-import 'package:gsform/gs_form/model/data_model/spinner_data_model.dart';
-import 'package:gsform/gs_form/model/fields_model/image_picker_model.dart';
 import 'package:gsform/gs_form/widget/field.dart';
 import 'package:gsform/gs_form/widget/form.dart';
-import 'package:gsform/gs_form/widget/section.dart';
-import 'package:lottie/lottie.dart';
 
 
 
@@ -54,6 +38,7 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -221,12 +206,15 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
                     flex: 1,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black45, // Background color
+                        backgroundColor: Colors.black45, // Background color
                       ),
                       onPressed: () {
                         _submitForm();
                       },
-                      child: const Text('Submit'),
+                      child: const Text('Submit',
+                          style: TextStyle(
+                              color: Colors.white
+                          )),
                     ),
                   ),
                 ],
@@ -293,18 +281,18 @@ class _SingleSectionFormState extends State<SingleSectionForm> {
       // print('Selected Date Range: ${fromDate.toString()} ${fromTime!.format(context)} - ${toDate.toString()} ${toTime!.format(context)}');
       String formattedFromDate = fromDate.toString().substring(0,10);
       String formattedTime = timeConverter(fromTime);
-     String resulting_from_date = formattedFromDate + ' ' + formattedTime;
+     String resultingFromDate = formattedFromDate + ' ' + formattedTime;
 
       String formattedToDate = toDate.toString().substring(0,10);
       String formattedToTime = timeConverter(toTime);
-      String resulting_to_date = formattedToDate + ' ' + formattedToTime;
+      String resultingToDate = formattedToDate + ' ' + formattedToTime;
 
       // Convert TimeOfDay to DateTime
 
       //  pass to filtered receipts::
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>FilteredReceipts(fromDate: resulting_from_date,fromTime: fromTime,toDate:resulting_to_date,toTime: toTime)),
+        MaterialPageRoute(builder: (context) =>FilteredReceipts(fromDate: resultingFromDate,fromTime: fromTime,toDate:resultingToDate,toTime: toTime)),
       );
 
     } else {

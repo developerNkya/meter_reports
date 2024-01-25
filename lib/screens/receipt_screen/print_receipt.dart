@@ -1,32 +1,18 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
-import 'package:cool_alert/cool_alert.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/widgets.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:image/image.dart' as img;
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../LOGIN/login_page.dart';
 import '../../common_widgets/app_text.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
 
-import '../summary/filtered_summary.dart';
 
 
 
@@ -140,7 +126,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
             GestureDetector(
               onTap: () async {
 
-                final tra_logo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
+                final traLogo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
 
                 String newDate = widget.zNum.toString().replaceAll('-', '');
                 // String formattedAmount = widget.amount! % 1 == 0
@@ -182,7 +168,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             pw.Center(
                               child:  pw.Container(
                                 height: 130.0,
-                                child: pw.Image(tra_logo,),
+                                child: pw.Image(traLogo,),
                               ),
                             ),
 
@@ -672,7 +658,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black54,
+                        backgroundColor: Colors.black54,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -692,6 +678,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                           ),
                           SizedBox(width: 5),
                           Text(_progress ? _msjprogress : "Search",
+                               style:TextStyle(color:Colors.white),
+
 
                           ),
                         ],
@@ -699,7 +687,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black54,
+                        backgroundColor: Colors.black54,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -709,7 +697,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black54,
+                        backgroundColor: Colors.black54,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),

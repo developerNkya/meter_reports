@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:grocery_app/APIS/date_converter.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,8 +7,6 @@ import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
 import '../../APIS/authentication.dart';
@@ -161,6 +157,7 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

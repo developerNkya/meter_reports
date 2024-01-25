@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
-import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:grocery_app/splash_screen/splash_screen.dart';
 import 'package:grocery_app/styles/theme.dart';
 

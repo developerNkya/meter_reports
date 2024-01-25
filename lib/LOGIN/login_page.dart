@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_app/LOGIN/loginPressed.dart';
@@ -125,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                                 height: MediaQuery.of(context).size.height / 14.7,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.black45,
+                                    backgroundColor: Colors.black45,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     ),
@@ -176,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ? CircularProgressIndicator()
                                       : Text(
                                     "Login",
-                                    style: TextStyle(fontSize: 19),
+                                    style: TextStyle(fontSize: 19,color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -246,7 +244,7 @@ Widget hSize() {
 }
 
 Widget customTextEditingController(
-    String hint_text, Icon prefix_icon, TextEditingController emailController1) {
+    String hintText, Icon prefixIcon, TextEditingController emailController1) {
   return TextFormField(
     validator: (value) {
       if (value!.isEmpty) {
@@ -263,9 +261,9 @@ Widget customTextEditingController(
     controller: emailController1,
     style: TextStyle(color: Style.black),
     decoration: InputDecoration(
-      hintText: hint_text,
+      hintText: hintText,
       hintStyle: TextStyle(color: Style.grey),
-      prefixIcon: prefix_icon,
+      prefixIcon: prefixIcon,
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Style.grey),
         borderRadius: BorderRadius.circular(20.0),
@@ -287,7 +285,7 @@ Widget customTextEditingController(
 }
 
 Widget passwordController(
-    String hint_text, Icon prefix_icon, TextEditingController passwordController1) {
+    String hintText, Icon prefixIcon, TextEditingController passwordController1) {
   return TextFormField(
     validator: (value) {
       if (value!.isEmpty) {
@@ -299,9 +297,9 @@ Widget passwordController(
     controller: passwordController1,
     style: TextStyle(color: Style.black),
     decoration: InputDecoration(
-      hintText: hint_text,
+      hintText: hintText,
       hintStyle: TextStyle(color: Style.grey),
-      prefixIcon: prefix_icon,
+      prefixIcon: prefixIcon,
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Style.grey),
         borderRadius: BorderRadius.circular(20.0),

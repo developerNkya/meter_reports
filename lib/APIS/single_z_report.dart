@@ -53,16 +53,16 @@ class SummaryObject {
   }
 }
 
-Future<String?> single_z(String access_token, String toDate,String z_id) async {
+Future<String?> single_z(String accessToken, String toDate,String zId) async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var stationId = prefs.getString('stationId');
-  var company_id = prefs.getString('company_id');
+  var companyId = prefs.getString('company_id');
 
 
   var headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer $access_token',
+    'Authorization': 'Bearer $accessToken',
     'Cookie': '_csrf-backend=d02273b7fb9811d2f426d7de25cf7a7c65aabcc1324b1f41a70d9a8e6a89fd32a%3A2%3A%7Bi%3A0%3Bs%3A13%3A%22_csrf-backend%22%3Bi%3A1%3Bs%3A32%3A%22YkgWgJNwFuG_6RFQL8EWge-jj1frtrWf%22%3B%7D'
   };
 
@@ -72,7 +72,7 @@ Future<String?> single_z(String access_token, String toDate,String z_id) async {
   );
 
   request.body = json.encode({
-    "zreport_id":z_id
+    "zreport_id":zId
   });
 
   request.headers.addAll(headers);
@@ -80,9 +80,10 @@ Future<String?> single_z(String access_token, String toDate,String z_id) async {
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    String station_summary = await response.stream.bytesToString();
+    String stationSummary = await response.stream.bytesToString();
 
-    return station_summary;
+    return stationSummary;
 
   }
+  return null;
 }

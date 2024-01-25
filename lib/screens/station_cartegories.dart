@@ -3,7 +3,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/category_item.dart';
 import 'package:grocery_app/widgets/category_item_card_widget.dart';
-import 'package:grocery_app/widgets/search_bar_widget.dart';
 
 import 'receipt_screen/category_items_screen.dart';
 
@@ -22,6 +21,7 @@ class station_cartegories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         body: SafeArea(
       child: Column(
         children: [

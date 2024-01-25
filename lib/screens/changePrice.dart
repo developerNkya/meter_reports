@@ -1,21 +1,14 @@
-import 'dart:convert';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:grocery_app/APIS/z_report.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:grocery_app/widgets/grocery_item_card_widget.dart';
 import 'package:gsform/gs_form/core/form_style.dart';
 import 'package:gsform/gs_form/widget/field.dart';
 import 'package:gsform/gs_form/widget/form.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../APIS/authentication.dart';
 import '../APIS/changePrice.dart';
-import '../APIS/station_receipts.dart';
-import 'filter_screen.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //z_report section
@@ -48,6 +41,7 @@ class changePriceState extends State<changePrice> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -348,7 +342,7 @@ class changePriceState extends State<changePrice> {
                     flex: 1,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.black45, // Background color
+                        backgroundColor: Colors.black45, // Background color
                       ),
                       onPressed: () {
                         // _submitForm();
@@ -401,7 +395,11 @@ class changePriceState extends State<changePrice> {
 
                         //  check if any fiels is empty:::
                       },
-                      child: const Text('Submit'),
+                      child: const Text('Submit',
+                          style: TextStyle(
+                          color: Colors.white
+                      )
+                      ),
                     ),
                   ),
                 ],
@@ -453,36 +451,34 @@ class changePriceState extends State<changePrice> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-    var user_id = prefs.getString('user_id');
+    var userId = prefs.getString('user_id');
 
     //getting the auth key:::
     String auth = await authentication(username!, password.toString());
 
     print('auth: ' + auth);
-    if (auth != null) {
-      //call receipt api:::
-      changePrice2(
-        auth,
-        unleaded,
-        diesel,
-        kerosene,
-        cng,
-      );
+    //call receipt api:::
+    changePrice2(
+      auth,
+      unleaded,
+      diesel,
+      kerosene,
+      cng,
+    );
 
-      print(unleaded);
-      //  show message:::
-      CoolAlert.show(
-        context: context,
-        type: CoolAlertType.success,
-        title: 'Success...',
-        text: 'Price updated successfully',
-        loopAnimation: false,
-        onConfirmBtnTap: () {
-          //clearing the textfields:::
-        },
-      );
-    }
-
+    print(unleaded);
+    //  show message:::
+    CoolAlert.show(
+      context: context,
+      type: CoolAlertType.success,
+      title: 'Success...',
+      text: 'Price updated successfully',
+      loopAnimation: false,
+      onConfirmBtnTap: () {
+        //clearing the textfields:::
+      },
+    );
+  
     //getting the station names:::
   }
 

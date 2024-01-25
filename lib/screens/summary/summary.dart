@@ -1,12 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:grocery_app/APIS/handle_receipt.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
 import 'package:grocery_app/screens/summary/change_summary_date.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../APIS/authentication.dart';
@@ -85,74 +81,73 @@ class _SummaryState extends State<Summary> {
      actualTime = formatterTime.format(now);
 
 
-    if (auth != null) {
-      // Get the current date
-      DateTime currentDate = DateTime.now();
-      // Set the time to the end of the day (23:59:59)
-      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-      // Format the end of day to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
-      // Assign the formatted date to the variable
-       dateTo = formattedDate;
+    // Get the current date
+    DateTime currentDate = DateTime.now();
+    // Set the time to the end of the day (23:59:59)
+    DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+    // Format the end of day to match the desired format
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+    // Assign the formatted date to the variable
+     dateTo = formattedDate;
 
-      //setting date from to  yesterday::
-      DateTime yesterday = DateTime.now().subtract(Duration(days:1));
-      DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
-      String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
-      date_From = formattedYesterday;
+    //setting date from to  yesterday::
+    DateTime yesterday = DateTime.now().subtract(Duration(days:1));
+    DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+    String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
+    date_From = formattedYesterday;
 
-      // date_From = '2023-01-15 23:59:59';
+    // date_From = '2023-01-15 23:59:59';
 
 
-      String? userSummary = await retrieve_summary(auth, dateTo,date_From);
+    String? userSummary = await retrieve_summary(auth, dateTo,date_From);
 
 
 // Decode the JSON string back into a map
-      _isLoading = false;
-      if(userSummary != null){
-      Map<String, dynamic> summaryMap = json.decode(userSummary);
+    _isLoading = false;
+    if(userSummary != null){
+    Map<String, dynamic> summaryMap = json.decode(userSummary);
 // Access the 'from' value from the map
 
 
-      var formatter = NumberFormat('#,###,000');
+    var formatter = NumberFormat('#,###,000');
 
-      fromValue = summaryMap['from'];
-      toValue = summaryMap['to'];
-      name = summaryMap['name'];
-      address = summaryMap['address'];
-      tin = summaryMap['tin'];
-      vrn = summaryMap['vrn'];
-      serial = summaryMap['serial'];
-      uin = summaryMap['uin'];
-      taxoffice = summaryMap['taxoffice'];
+    fromValue = summaryMap['from'];
+    toValue = summaryMap['to'];
+    name = summaryMap['name'];
+    address = summaryMap['address'];
+    tin = summaryMap['tin'];
+    vrn = summaryMap['vrn'];
+    serial = summaryMap['serial'];
+    uin = summaryMap['uin'];
+    taxoffice = summaryMap['taxoffice'];
 
-      totalAmountSum = formatter.format(summaryMap['totalAmountSum']);
-      dataListLength = summaryMap['length'];
-      mobile = summaryMap['mobile'];
-      id = summaryMap['id'];
+    totalAmountSum = formatter.format(summaryMap['totalAmountSum']);
+    dataListLength = summaryMap['length'];
+    mobile = summaryMap['mobile'];
+    id = summaryMap['id'];
 
-      dateFrom = summaryMap['dateFrom'];
-      // dateTo = summaryMap['dateTo'];
-      to = summaryMap['dateTo'];
+    dateFrom = summaryMap['dateFrom'];
+    // dateTo = summaryMap['dateTo'];
+    to = summaryMap['dateTo'];
 
 
+    setState(() {
+      summaryData = true;
+      _isLoading = false;
+    });
+    }else{
       setState(() {
-        summaryData = true;
+        summaryData = false;
         _isLoading = false;
       });
-      }else{
-        setState(() {
-          summaryData = false;
-          _isLoading = false;
-        });
-      }
     }
-  }
+    }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -213,7 +208,7 @@ class _SummaryState extends State<Summary> {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      'No data Found from ${date_From} To ${dateTo}',
+                      'No data Found from $date_From To $dateTo',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
@@ -226,14 +221,16 @@ class _SummaryState extends State<Summary> {
                     },
 
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
+                        backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                       child: Text(
                         "Filter Dates",
-                        style: TextStyle(fontSize: 19),
+                        style: TextStyle(fontSize: 19,
+                          color: Colors.white
+                        ),
                       ),)
                   ],
                 ),
@@ -273,7 +270,7 @@ class _SummaryState extends State<Summary> {
     ),
     SizedBox(height: 16.0),
     Text(
-    '${name} \nP.O.O BOX:${address}  \nMobile:${mobile}\nTin ${tin}\nVRN:${vrn}\nSERIAL NO:${serial}\nUIN:${uin}\nTAX OFFICE:${taxoffice}',
+    '$name \nP.O.O BOX:$address  \nMobile:$mobile\nTin $tin\nVRN:$vrn\nSERIAL NO:$serial\nUIN:$uin\nTAX OFFICE:$taxoffice',
     style: TextStyle(
     fontSize: 16.0,
     fontFamily: 'Receipt',
@@ -290,8 +287,8 @@ class _SummaryState extends State<Summary> {
     ),
     SizedBox(height: 10.0),
     _buildRowWithColumns(
-    leftColumn: '${actualDate}',
-    rightColumn: '${actualTime}',
+    leftColumn: '$actualDate',
+    rightColumn: '$actualTime',
     ),
 
     SizedBox(height: 15.0),
@@ -305,11 +302,11 @@ class _SummaryState extends State<Summary> {
     SizedBox(height: 10.0),
     _buildRowWithColumns(
     leftColumn: 'FROM',
-    rightColumn: '${dateFrom}',
+    rightColumn: '$dateFrom',
     ),
     _buildRowWithColumns(
     leftColumn: 'TO',
-    rightColumn: '${to}',
+    rightColumn: '$to',
     ),
 
     SizedBox(height: 8.0),
@@ -396,12 +393,12 @@ class _SummaryState extends State<Summary> {
     ),
     _buildRowWithColumns(
     leftColumn: 'TAX *E:',
-    rightColumn: '${totalAmountSum}',
+    rightColumn: '$totalAmountSum',
     ),
 
     _buildRowWithColumns(
     leftColumn: 'NET(A+B+C+D+E):',
-    rightColumn: '${totalAmountSum}',
+    rightColumn: '$totalAmountSum',
     ),
     _buildRowWithColumns(
     leftColumn: 'TURNOVER(EX):',
@@ -413,7 +410,7 @@ class _SummaryState extends State<Summary> {
     ),
     _buildRowWithColumns(
     leftColumn: 'LEGAL RECEIPT:',
-    rightColumn: '${dataListLength}',
+    rightColumn: '$dataListLength',
     ),
 
     SizedBox(height: 20.0),

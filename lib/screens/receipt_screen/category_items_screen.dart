@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
 import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
 import '../../APIS/authentication.dart';
@@ -33,6 +28,9 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
   List<Element> _elements = [];
   bool _isLoading = true;
   double _kSize = 100;
+  String? yesterday_day;
+  String? today_day;
+  late DateTime currentDate;
 
   @override
   void initState() {
@@ -44,92 +42,116 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-    var user_id = prefs.getString('user_id');
+    var userId = prefs.getString('user_id');
 
     //getting the auth key:::
     String auth = await authentication(username!, password.toString());
 
-    if (auth != null) {
-      var dateFrom = "2021-10-11";
-      // Get the current date
-      DateTime currentDate = DateTime.now();
-      // Set the time to the end of the day (23:59:59)
-      DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-      // Format the end of day to match the desired format
-      String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
-      // Assign the formatted date to the variable
-      var dateTo = formattedDate;
+    DateTime yesterdayDate = DateTime.now().subtract(Duration(days:2));
+    // Set the time to the end of the day (23:59:59)
+    DateTime endOfYesterDay = DateTime(yesterdayDate.year, yesterdayDate.month, yesterdayDate.day, 00, 00, 00);
+    // Format the end of day to match the desired format
+    String formatted_Yesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterDay);
+    // Assign the formatted date to the variable
+    yesterday_day = DateFormat('yyyy-MM-dd').format(endOfYesterDay);
+    var dateFrom = formatted_Yesterday;
 
-      //call receipt api:::
-      String userReceipts =
-          await fetchStationReceiptReport(auth, dateFrom, dateTo);
-      // String userStations1 = await userStations(auth,user_id.toString() );
-      Map<String, dynamic> parsedResponse = json.decode(userReceipts);
 
-      List<dynamic> dataList = parsedResponse['data'];
+    print('---esterday::');
+    print(dateFrom);
+    // Get the current date
+        currentDate = DateTime.now();
+    // Set the time to the end of the day (23:59:59)
+    DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+    // Format the end of day to match the desired format
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+    // Assign the formatted date to the variable
+    today_day = DateFormat('yyyy-MM-dd').format(endOfDay);
 
-      print(dataList);
+    var dateTo = formattedDate;
 
-      List<Map<String, dynamic>> objectsList = dataList.map((data) {
-        String date = data['DATE'].toString();
-        String time = data['TIME'].toString();
-        String fuelGrade = data['FUEL_GRADE'].toString();
-        String litres = data['QTY'].toString();
-        String unit = 'ltr';
+    //call receipt api:::
+    var userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
 
-        int amount = 0;
-        FormattedAmount formattedAmount = FormattedAmount(0, '');
+    if(userReceipts != null){
+        // String userStations1 = await userStations(auth,user_id.toString() );
+        Map<String, dynamic> parsedResponse = json.decode(userReceipts);
 
-        int id = 0;
+        List<dynamic> dataList = parsedResponse['data'];
 
-        try {
-          amount = double.parse(data['AMOUNT'].toString()).toInt();
+        print('--------------------------------');
+        print(dataList);
 
-          // Format the amount with comma separation based on the number of digits
-          String formattedAmountString = NumberFormat('#,##0').format(amount);
+        print(dataList);
 
-          // Convert the formatted amount string to an int (preserve commas)
-          formattedAmount = FormattedAmount(amount, formattedAmountString);
+        List<Map<String, dynamic>> objectsList = dataList.map((data) {
+          String date = data['DATE'].toString();
+          String time = data['TIME'].toString();
+          String fuelGrade = data['FUEL_GRADE'].toString();
+          String litres = data['QTY'].toString();
+          String unit = 'ltr';
 
-          // Now, `formattedAmount` contains both the int and formatted string
-          print(formattedAmount.value); // This is the integer value
-          print(formattedAmount.formattedString); // This is the formatted string
+          int amount = 0;
+          FormattedAmount formattedAmount = FormattedAmount(0, '');
 
-          id = double.parse(data['id'].toString()).toInt();
-        } catch (e) {
-          print('Invalid amount value: ${data['AMOUNT']}');
-        }
+          int id = 0;
 
-        print(formattedAmount.formattedString);
+          try {
+            amount = double.parse(data['AMOUNT'].toString()).toInt();
 
-        return {
-          'date': date,
-          'time': time,
-          'fuelGrade': fuelGrade,
-          'unit': unit,
-          'amount': formattedAmount.value,
-          'formattedAmountString': formattedAmount.formattedString,
-          'id': id,
-          'qty': litres
-        };
-      }).toList();
+            // Format the amount with comma separation based on the number of digits
+            String formattedAmountString = NumberFormat('#,##0').format(amount);
 
-      setState(() {
-        objectsList.forEach((obj) {
-          Element element = Element(obj['date'], obj['time'], obj['fuelGrade'],
-              obj['unit'], obj['amount'], obj['id'], obj['qty']);
+            // Convert the formatted amount string to an int (preserve commas)
+            formattedAmount = FormattedAmount(amount, formattedAmountString);
 
-          _elements.add(element);
+            // Now, `formattedAmount` contains both the int and formatted string
+            print(formattedAmount.value); // This is the integer value
+            print(formattedAmount.formattedString); // This is the formatted string
+
+            id = double.parse(data['id'].toString()).toInt();
+          } catch (e) {
+            print('Invalid amount value: ${data['AMOUNT']}');
+          }
+
+          print(formattedAmount.formattedString);
+
+          return {
+            'date': date,
+            'time': time,
+            'fuelGrade': fuelGrade,
+            'unit': unit,
+            'amount': formattedAmount.value,
+            'formattedAmountString': formattedAmount.formattedString,
+            'id': id,
+            'qty': litres
+          };
+        }).toList();
+
+        setState(() {
+          objectsList.forEach((obj) {
+            Element element = Element(obj['date'], obj['time'], obj['fuelGrade'],
+                obj['unit'], obj['amount'], obj['id'], obj['qty']);
+
+            _elements.add(element);
+          });
+
+          _isLoading = false;
         });
-
+    }else {
+      // Error occurred while fetching userReceipts, handle the error
+      setState(() {
         _isLoading = false;
+        _elements.clear(); // Clear the elements list
       });
     }
-  }
+
+    }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -183,6 +205,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
 //
           : Column(
               children: [
+
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -190,6 +213,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                       scrollDirection: Axis.vertical,
                       child: Column(
                         children: [
+                          Text('Data from ${yesterday_day} to ${today_day}'),
                           DataTable(
                             showCheckboxColumn: false,
                             columns: [

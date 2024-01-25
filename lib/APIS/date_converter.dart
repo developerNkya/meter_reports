@@ -1,8 +1,7 @@
 
 //function to handle date conveter
-import 'package:intl/intl.dart';
 
-date_converter(String some_date){
+date_converter(String someDate){
 
   // var dateWithoutTime = some_date.substring(0, 10);
   //
@@ -14,6 +13,6 @@ date_converter(String some_date){
   // var combinedDateTime = '$dateWithoutTime $formattedTime';
   // return combinedDateTime;
 
-  return some_date;
+  return someDate;
 
 }

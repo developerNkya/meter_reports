@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SummaryObject {
@@ -60,17 +59,17 @@ class SummaryObject {
   }
 }
 
-Future<String?> retrieve_summary(String access_token, String toDate,String fromDate) async {
+Future<String?> retrieve_summary(String accessToken, String toDate,String fromDate) async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var stationId = prefs.getString('stationId');
-  var company_id = prefs.getString('company_id');
+  var companyId = prefs.getString('company_id');
 
 
 
   var headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer $access_token',
+    'Authorization': 'Bearer $accessToken',
     'Cookie': '_csrf-backend=d02273b7fb9811d2f426d7de25cf7a7c65aabcc1324b1f41a70d9a8e6a89fd32a%3A2%3A%7Bi%3A0%3Bs%3A13%3A%22_csrf-backend%22%3Bi%3A1%3Bs%3A32%3A%22YkgWgJNwFuG_6RFQL8EWge-jj1frtrWf%22%3B%7D'
   };
 
@@ -81,9 +80,9 @@ Future<String?> retrieve_summary(String access_token, String toDate,String fromD
 
 
   request.body = json.encode({
-    "company_id": company_id,
+    "company_id": companyId,
     "station_id": stationId,
-    "date_from": "${fromDate}",
+    "date_from": "$fromDate",
     "date_to": "$toDate"
   });
 
@@ -92,8 +91,8 @@ Future<String?> retrieve_summary(String access_token, String toDate,String fromD
   http.StreamedResponse response = await request.send();
 
   if (response.statusCode == 200) {
-    String station_summary = await response.stream.bytesToString();
-    Map<String, dynamic> jsonResponse = json.decode(station_summary);
+    String stationSummary = await response.stream.bytesToString();
+    Map<String, dynamic> jsonResponse = json.decode(stationSummary);
 
     List<dynamic> dataList = jsonResponse['data'];
 
@@ -154,4 +153,5 @@ Future<String?> retrieve_summary(String access_token, String toDate,String fromD
 
     return summaryObjectJson;
   }
+  return null;
 }

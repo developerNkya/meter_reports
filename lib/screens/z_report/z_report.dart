@@ -1,24 +1,15 @@
 import 'dart:convert';
-import 'dart:math';
-import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/z_report.dart';
-import 'package:grocery_app/screens/receipt_screen/receipt_layout.dart';
 import 'package:grocery_app/screens/z_report/choose_zreport_date.dart';
 import 'package:grocery_app/screens/z_report/z_report_summary.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grocery_app/common_widgets/app_text.dart';
 import 'package:grocery_app/models/grocery_item.dart';
-import 'package:grocery_app/screens/receipt_screen/choose_receipt_date.dart';
 import 'package:grocery_app/screens/product_details/product_details_screen.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:grocery_app/screens/receipt_screen/print_receipt.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:intl/intl.dart';
 
 import '../../../APIS/authentication.dart';
-import '../../../APIS/station_receipts.dart';
 
 class ZReport extends StatefulWidget {
   @override
@@ -47,89 +38,87 @@ class _ZReportState extends State<ZReport> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
-    var user_id = prefs.getString('user_id');
+    var userId = prefs.getString('user_id');
 
     //getting the auth key:::
     String auth = await authentication(username!, password.toString());
 
-    if (auth != null) {
+     //setting date from to  yesterday::
+    DateTime yesterday = DateTime.now().subtract(Duration(days:1));
+    DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+    String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
+    dateFrom = formattedYesterday;
 
-       //setting date from to  yesterday::
-      DateTime yesterday = DateTime.now().subtract(Duration(days:1));
-      DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
-      String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
-      dateFrom = formattedYesterday;
+    // dateFrom = '2023-01-15 23:59:59';
+     // Get the current date
+     DateTime currentDate = DateTime.now();
+     DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
+     String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
+     dateTo = formattedDate;
 
-      // dateFrom = '2023-01-15 23:59:59';
-       // Get the current date
-       DateTime currentDate = DateTime.now();
-       DateTime endOfDay = DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59);
-       String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfDay);
-       dateTo = formattedDate;
+     print(dateFrom);
 
-       print(dateFrom);
+    //call receipt api:::
+    String? userZreport= await zReport(auth, dateFrom, dateTo);
+    _isLoading = false;
+    if (userZreport != null){
+      Map<String, dynamic> parsedResponse = json.decode(userZreport);
+      List<dynamic> dataList = parsedResponse['data'];
 
-      //call receipt api:::
-      String? user_zReport= await zReport(auth, dateFrom, dateTo);
-      _isLoading = false;
-      if (user_zReport != null){
-        Map<String, dynamic> parsedResponse = json.decode(user_zReport);
-        List<dynamic> dataList = parsedResponse['data'];
+      List<Map<String, dynamic>> objectsList = dataList.map((data) {
+        // String znumber = data['znumber'].toString();
+        // String ticket = data['TICKETSFISCAL'].toString();
+        // String net_amount = data['NETTAMOUNT_E'].toString();
 
-        List<Map<String, dynamic>> objectsList = dataList.map((data) {
-          // String znumber = data['znumber'].toString();
-          // String ticket = data['TICKETSFISCAL'].toString();
-          // String net_amount = data['NETTAMOUNT_E'].toString();
+        int znumber = 0;
+        int ticket = 0;
+        int netAmount = 0;
 
-          int znumber = 0;
-          int ticket = 0;
-          int net_amount = 0;
+        int zId = 0;
 
-          int z_id = 0;
+        try {
+          znumber = double.parse(data['znumber'].toString()).toInt();
+          ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
+          netAmount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
 
-          try {
-            znumber = double.parse(data['znumber'].toString()).toInt();
-            ticket = double.parse(data['TICKETSFISCAL'].toString()).toInt();
-            net_amount = double.parse(data['NETTAMOUNT_E'].toString()).toInt();
-
-            z_id = double.parse(data['id'].toString()).toInt();
+          zId = double.parse(data['id'].toString()).toInt();
 
 
-          } catch (e) {
-            print('Invalid amount value: ${data['AMOUNT']}');
-          }
+        } catch (e) {
+          print('Invalid amount value: ${data['AMOUNT']}');
+        }
 
-          return {
-            'znumber': znumber,
-            'ticket': ticket,
-            'net_amount': net_amount,
-            'z_id': z_id,
-          };
-        }).toList();
+        return {
+          'znumber': znumber,
+          'ticket': ticket,
+          'net_amount': netAmount,
+          'z_id': zId,
+        };
+      }).toList();
 
-        setState(() {
-          objectsList.forEach((obj) {
-            Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
-            );
-            _elements.add(element);
-          });
-          zReportData = true;
-          _isLoading = false;
+      setState(() {
+        objectsList.forEach((obj) {
+          Element element = Element(obj['znumber'], obj['ticket'], obj['net_amount'],obj['z_id']
+          );
+          _elements.add(element);
         });
-      }else{
-        setState(() {
-          zReportData = false;
-          _isLoading = false;
-        });
-      }
+        zReportData = true;
+        _isLoading = false;
+      });
+    }else{
+      setState(() {
+        zReportData = false;
+        _isLoading = false;
+      });
     }
-  }
+    }
 
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -194,7 +183,7 @@ class _ZReportState extends State<ZReport> {
                       ),
                       SizedBox(height: 15),
                       Text(
-                          'No data Found from ${dateFrom} To ${dateTo}',
+                          'No data Found from $dateFrom To $dateTo',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10),
@@ -207,14 +196,14 @@ class _ZReportState extends State<ZReport> {
                      },
 
                        style: ElevatedButton.styleFrom(
-                           primary: Colors.blue,
+                           backgroundColor: Colors.blue,
                            shape: RoundedRectangleBorder(
                              borderRadius: BorderRadius.circular(30),
                            ),
                          ),
                          child: Text(
                            "Filter Dates",
-                           style: TextStyle(fontSize: 19),
+                           style: TextStyle(fontSize: 19,color: Colors.white),
                          ),)
                     ],
                   ),

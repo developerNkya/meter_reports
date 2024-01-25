@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:grocery_app/APIS/handle_receipt.dart';
@@ -113,71 +112,71 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
     // Getting the auth key
     String auth = await authentication(username!, password.toString());
 
-    if (auth != null) {
-      String userReceipts = await handle_receipt(auth, widget.id.toString());
+    String userReceipts = await handle_receipt(auth, widget.id.toString());
 
-      Map<String, dynamic> parsedResponse = json.decode(userReceipts);
-      // List<dynamic> dataList = parsedResponse['data'];
+    Map<String, dynamic> parsedResponse = json.decode(userReceipts);
+    // List<dynamic> dataList = parsedResponse['data'];
 
-      print('object');
+    print('object');
 
-      receipt_data = parsedResponse['data'];
-      print(receipt_data['id']);
+    receipt_data = parsedResponse['data'];
+    print(receipt_data['id']);
 
-       concatenated_time = receipt_data['TIME'].replaceAll(":", "");
-       // newDate = receipt_data['ZNUM'].replaceAll('-', '');
-      newDate = receipt_data['ZNUM'].toString();
+     concatenated_time = receipt_data['TIME'].replaceAll(":", "");
+     // newDate = receipt_data['ZNUM'].replaceAll('-', '');
+    newDate = receipt_data['ZNUM'].toString();
 
-      //formatting the Price::
-      String originalAmount = receipt_data['AMOUNT'];
-      double amount = double.parse(originalAmount);
-      NumberFormat formatter = NumberFormat("#,##0.00", "en_US");
-      formattedTAX= formatter.format(amount);
+    //formatting the Price::
+    String originalAmount = receipt_data['AMOUNT'];
+    double amount = double.parse(originalAmount);
+    NumberFormat formatter = NumberFormat("#,##0.00", "en_US");
+    formattedTAX= formatter.format(amount);
 
-      formattedAmount =  receipt_data['price'] != null ? receipt_data['price'].toString() : '';
+    formattedAmount =  receipt_data['PRICE'] != null ? receipt_data['PRICE'].toString() : '';
+
+    print('the formatted_amount::');
+    print(formattedAmount);
+
+    setState(() {
+      Element element = Element(
+        receipt_data['id'],
+        receipt_data['DATE'],
+        receipt_data['TIME'],
+        receipt_data['FUEL_GRADE'],
+        receipt_data['AMOUNT'],
+        receipt_data['DC'],
+        receipt_data['GC'],
+        receipt_data['ZNUM'],
+        receipt_data['RCTVNUM'],
+        receipt_data['QTY'],
+        receipt_data['NOSSEL'],
+        receipt_data['name'],
+        receipt_data['address'],
+        receipt_data['mobile'],
+        receipt_data['tin'],
+        receipt_data['vrn'],
+        receipt_data['serial'],
+        receipt_data['uin'],
+        receipt_data['regid'],
+        receipt_data['taxoffice'],
+        receipt_data['PUMP'],
+        receipt_data['FUEL_GRADE'],
+        concatenated_time,
+        formattedAmount
+      );
+
+      _elements.add(element);
 
 
-      setState(() {
-        Element element = Element(
-          receipt_data['id'],
-          receipt_data['DATE'],
-          receipt_data['TIME'],
-          receipt_data['FUEL_GRADE'],
-          receipt_data['AMOUNT'],
-          receipt_data['DC'],
-          receipt_data['GC'],
-          receipt_data['ZNUM'],
-          receipt_data['RCTVNUM'],
-          receipt_data['QTY'],
-          receipt_data['NOSSEL'],
-          receipt_data['name'],
-          receipt_data['address'],
-          receipt_data['mobile'],
-          receipt_data['tin'],
-          receipt_data['vrn'],
-          receipt_data['serial'],
-          receipt_data['uin'],
-          receipt_data['regid'],
-          receipt_data['taxoffice'],
-          receipt_data['PUMP'],
-          receipt_data['FUEL_GRADE'],
-          concatenated_time,
-          formattedAmount
-        );
 
-        _elements.add(element);
-
-        print('--------------------------------');
-        print(_elements);
-
-        _isLoading = false;
-      });
+      _isLoading = false;
+    });
     }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -376,7 +375,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     SizedBox(height: 32.0),
                                     Center(
                                       child: QrImageView(
-                                        data: 'https://virtual.tra.go.tz/efdmsRctVerify/${_elements[0].rctvNum}_${concatenated_time}',
+                                        data: 'https://virtual.tra.go.tz/efdmsRctVerify/${_elements[0].rctvNum}_$concatenated_time',
                                         version: QrVersions.auto,
                                         size: 200,
                                         gapless: false,
