@@ -375,7 +375,7 @@ class _CoolReceiptPageState extends State<CoolReceiptPage> {
                                     SizedBox(height: 32.0),
                                     Center(
                                       child: QrImageView(
-                                        data: 'https://virtual.tra.go.tz/efdmsRctVerify/${_elements[0].rctvNum}_$concatenated_time',
+                                        data: 'https://verify.tra.go.tz/${_elements[0].rctvNum}_$concatenated_time',
                                         version: QrVersions.auto,
                                         size: 200,
                                         gapless: false,
@@ -497,6 +497,7 @@ class _MyBlinkingButtonState extends State<MyBlinkingButton>
                     regid: widget.elements[0].regid,
                     taxOffice: widget.elements[0].taxOffice,
                     price: widget.elements[0].price,
+                    concatenated_time: widget.elements[0].concatenated_time,
                   ),
                 ),
               );

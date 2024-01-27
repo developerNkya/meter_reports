@@ -126,6 +126,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
             GestureDetector(
               onTap: () async {
 
+
                 final traLogo = pw.MemoryImage((await rootBundle.load('assets/images/tra_img3.png')).buffer.asUint8List(),);
 
                 String newDate = widget.zNum.toString().replaceAll('-', '');
@@ -137,6 +138,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                 String? formattedTax =  widget.amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
 
+                print(widget.rctvNum);
+                print(widget.concatenated_time);
                 // Generate PDF content
                 final pdf = pw.Document();
                 //add new font::
@@ -193,12 +196,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             //   child: MySeparator(color: Colors.grey),
                             // ),
 
-
-                            // MySeparator(color: Colors.grey),
-
                             //Dublicate title:::
                             pw.Text(
-                              'DUPLICATE RECEIPT',
+                              'DUPLICATE RECEIPT:',
                               style: pw.TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: pw.FontWeight.bold,
@@ -207,6 +207,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               textAlign: pw.TextAlign.center,
                             ),
                             pw.SizedBox(height: 5.0),
+
+
+                            // MySeparator(color: Colors.grey),
 
                             pw.Row(
                               children: <pw.Widget>[
@@ -468,7 +471,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             pw.SizedBox(height: 32.0),
                             pw.Center(
                               child: pw.BarcodeWidget(
-                                  data: 'https://virtual.tra.go.tz/efdmsRctVerify/${widget.rctvNum}_${widget.concatenated_time}',
+                                  data: 'https://verify.tra.go.tz/${widget.rctvNum}_${widget.concatenated_time}',
                                   barcode: pw.Barcode.qrCode(),
                                   width: 140,
                                   height: 100
@@ -1088,7 +1091,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       fontType: PosFontType.fontA,));
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
-    bytes += generator.qrcode('https://virtual.tra.go.tz/efdmsRctVerify/5D278B362_180039');
+    bytes += generator.qrcode('https://verify.tra.go.tz/5D278B362_180039');
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
     bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center,

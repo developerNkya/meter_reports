@@ -242,18 +242,6 @@ class _z_report_summaryState extends State<z_report_summary> {
 
                           // MySeparator(color: Colors.grey),
 
-                          //Dublicate title:::
-                          pw.Text(
-                            'CURRENT DATE TIME',
-                            style: pw.TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: pw.FontWeight.bold,
-                                font:ttf
-                            ),
-                            textAlign: pw.TextAlign.center,
-                          ),
-                          pw.SizedBox(height: 5.0),
-
                           pw.Row(
                             children: <pw.Widget>[
                               pw.Expanded(
