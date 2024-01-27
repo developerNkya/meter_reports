@@ -197,16 +197,16 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             // ),
 
                             //Dublicate title:::
-                            pw.Text(
-                              'DUPLICATE RECEIPT:',
-                              style: pw.TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: pw.FontWeight.bold,
-                                  font:ttf
-                              ),
-                              textAlign: pw.TextAlign.center,
-                            ),
-                            pw.SizedBox(height: 5.0),
+                            // pw.Text(
+                            //   'DUPLICATE RECEIPT:',
+                            //   style: pw.TextStyle(
+                            //       fontSize: 14.0,
+                            //       fontWeight: pw.FontWeight.bold,
+                            //       font:ttf
+                            //   ),
+                            //   textAlign: pw.TextAlign.center,
+                            // ),
+                            // pw.SizedBox(height: 5.0),
 
 
                             // MySeparator(color: Colors.grey),
@@ -936,17 +936,17 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
     // bytes += generator.text('Align right', styles: PosStyles(align: PosAlign.right), linesAfter: 1);
     //
-    bytes += generator.row([
-      PosColumn(
-        text: 'DUPLICATE RECEIPT:',
-        width: 12,
-        styles: PosStyles(
-            underline: false,
-            bold: true,
-            fontType: PosFontType.fontA,
-            align: PosAlign.center),
-      ),
-    ]);
+    // bytes += generator.row([
+    //   PosColumn(
+    //     text: 'DUPLICATE RECEIPT:',
+    //     width: 12,
+    //     styles: PosStyles(
+    //         underline: false,
+    //         bold: true,
+    //         fontType: PosFontType.fontA,
+    //         align: PosAlign.center),
+    //   ),
+    // ]);
 
     bytes += generator.row([
       PosColumn(
