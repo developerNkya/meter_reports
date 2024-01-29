@@ -86,6 +86,8 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
     "date_to": "$toDate"
   });
 
+
+
   request.headers.addAll(headers);
 
   http.StreamedResponse response = await request.send();
@@ -109,7 +111,7 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
 
 
     // Extract other required fields
-    String from = "2021-10-11"; // Replace this with the actual 'from' value if available
+    String from = fromDate; // Replace this with the actual 'from' value if available
     String to = toDate;
     String name = dataList.isNotEmpty ? dataList[0]['name'] : '';
     String address = dataList.isNotEmpty ? dataList[0]['address'] : '';
@@ -121,7 +123,7 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
     int id = dataList.isNotEmpty ? dataList[0]['id'] : '';
     int length = dataListLength;
     String mobile = dataList.isNotEmpty ? dataList[0]['mobile'] : '';
-    String dateFrom = '2021-10-11';
+    String dateFrom = '$fromDate';
     String dateTo = '$toDate';
 
 
