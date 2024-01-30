@@ -97,7 +97,7 @@ class _SummaryState extends State<Summary> {
      dateTo = formattedDate;
 
     //setting date from to  yesterday::
-    DateTime yesterday = DateTime.now().subtract(Duration(days:1));
+    DateTime yesterday = DateTime.now().subtract(Duration(days:50));
     DateTime endOfYesterday = DateTime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
     String formattedYesterday = DateFormat('yyyy-MM-dd HH:mm:ss').format(endOfYesterday);
     date_From = formattedYesterday;
@@ -938,7 +938,7 @@ class _SummaryState extends State<Summary> {
 
               // Save the PDF to a temporary file
               final output = await getTemporaryDirectory();
-              final file = File('${output.path}/receipt.pdf');
+              final file = File('${output.path}/z_report.pdf');
               await file.writeAsBytes(await pdf.save());
 
               // Open share dialog
