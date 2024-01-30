@@ -913,7 +913,7 @@ class _filtered_summaryState extends State<filtered_summary> {
 
               // Save the PDF to a temporary file
               final output = await getTemporaryDirectory();
-              final file = File('${output.path}/receipt.pdf');
+              final file = File('${output.path}/z_report.pdf');
               await file.writeAsBytes(await pdf.save());
 
               // Open share dialog

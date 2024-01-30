@@ -17,22 +17,22 @@ var demoItems = [
   station_cartegory(
       id: 1,
       name: "Receipts Reports",
-      description: "View Stations",
+      description: "View receipt Data",
       imagePath: "assets/images/grocery_images/receipts1.png"),
   station_cartegory(
       id: 2,
       name: "Z Report",
-      description: "All receipts",
+      description: "View z-report Data",
       imagePath: "assets/images/grocery_images/report_z.jpg"),
   station_cartegory(
       id: 3,
       name: "Change Price",
-      description: "view Z report summary",
+      description: "Change Prices easily",
       imagePath: "assets/images/grocery_images/receipts1.png"),
   station_cartegory(
       id: 4,
       name: "Summary",
-      description: "Manage profile settings",
+      description: "view Total Summary",
       imagePath: "assets/images/grocery_images/receipts1.png"),
 ];
 
