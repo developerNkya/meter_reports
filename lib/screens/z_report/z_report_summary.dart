@@ -14,6 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../APIS/authentication.dart';
 import '../../../common_widgets/app_text.dart';
 import 'package:pdf/widgets.dart' as pw;
+
+import 'choose_zreport_date.dart';
 class Element {
   final int summary;
 
@@ -121,10 +123,17 @@ class _z_report_summaryState extends State<z_report_summary> {
     double totalAmountSum = double.parse(dailyTotalAmount);
 
 // Set other values
-    String fromValue = "${widget.dateFrom}"; // Replace with your actual 'from' value if available
-    String toValue = '${widget.dateTo}'; // Assuming 'toDate' is defined elsewhere
+    String dateFrom = "${widget.dateFrom}"; // Replace with your actual 'from' value if available
+      fromValue = dateFrom.substring(0, dateFrom.indexOf(' '));
+    // print(result);
+
+    String dateUntil = "${widget.dateTo}"; // Replace with your actual 'from' value if available
+    toValue = dateUntil.substring(0, dateTo.indexOf(' '));
+
     int dataListLength = 1; // Since you are processing a single record, the length is 1
 
+
+    print('check  value: ' + fromValue);
 // Print the extracted values
     print('from: $fromValue');
     print('to: $toValue');
@@ -306,7 +315,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '${widget.dateFrom?? ''}',
+                                  '${fromValue ?? ''}',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -333,7 +342,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '${widget.dateTo ?? ''}',
+                                  '${toValue ?? ''}',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -919,7 +928,10 @@ class _z_report_summaryState extends State<z_report_summary> {
 
               // Save the PDF to a temporary file
               final output = await getTemporaryDirectory();
-              final file = File('${output.path}/receipt.pdf');
+              // final file = File('${output.path}/receipt.pdf');
+
+              final file = File('${output.path}/Z-REPORT FROM $fromValue TO $toValue.pdf');
+
               await file.writeAsBytes(await pdf.save());
 
               // Open share dialog
@@ -941,7 +953,7 @@ class _z_report_summaryState extends State<z_report_summary> {
               Navigator.pushReplacement(
                 context,
                 // MaterialPageRoute(builder: (context) => choose_receiptScreen()),
-                MaterialPageRoute(builder: (context) => change_summary_date()),
+                MaterialPageRoute(builder: (context) => zreport_date()),
               );
             },
             child: Container(
@@ -1026,11 +1038,11 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'FROM',
-                                rightColumn: '${widget.dateFrom?? ''}',
+                                rightColumn: '${fromValue?? ''}',
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'TO',
-                                rightColumn: '${widget.dateTo ?? ''}',
+                                rightColumn: '${toValue ?? ''}',
                               ),
 
                               SizedBox(height: 15.0),

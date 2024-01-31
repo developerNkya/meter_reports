@@ -938,7 +938,9 @@ class _SummaryState extends State<Summary> {
 
               // Save the PDF to a temporary file
               final output = await getTemporaryDirectory();
-              final file = File('${output.path}/z_report.pdf');
+
+              // Z-REPORT_20XX-XX-XX_TO_20XX_XX_XX
+              final file = File('${output.path}/Z-REPORT FROM $fromValue TO $toValue.pdf');
               await file.writeAsBytes(await pdf.save());
 
               // Open share dialog
