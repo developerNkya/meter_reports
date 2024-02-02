@@ -98,9 +98,18 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
 
     List<dynamic> dataList = jsonResponse['data'];
 
-    int dataListLength = dataList.length;
+    print(dataList[0]);
+
 
     double totalAmountSum = 0;
+    int length = 0;
+
+    //finding total number of receipts
+    for (var obj in dataList) {
+      int dailyTotalAmountString = obj['TICKETSFISCAL'];
+      int dailyTotalAmount = dailyTotalAmountString;
+      length += dailyTotalAmount;
+    }
 
     for (var obj in dataList) {
       String dailyTotalAmountString = obj['DAILYTOTALAMOUNT'];
@@ -121,7 +130,9 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
     String uin = dataList.isNotEmpty ? dataList[0]['uin'] : '';
     String taxoffice = dataList.isNotEmpty ? dataList[0]['taxoffice'] : '';
     int id = dataList.isNotEmpty ? dataList[0]['id'] : '';
-    int length = dataListLength;
+
+    int dataListLength =  dataList.isNotEmpty ? dataList[0]['TICKETSFISCAL'] : '';
+
     String mobile = dataList.isNotEmpty ? dataList[0]['mobile'] : '';
     String dateFrom = '$fromDate';
     String dateTo = '$toDate';
@@ -140,7 +151,7 @@ Future<String?> retrieve_summary(String accessToken, String toDate,String fromDa
       taxoffice: taxoffice,
       totalAmountSum: totalAmountSum,
       id: id,
-      length: dataListLength,
+      length: length,
       mobile:mobile,
       dateFrom: dateFrom,
       dateTo: dateTo

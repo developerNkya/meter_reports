@@ -210,6 +210,15 @@ class _SummaryState extends State<Summary> {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                         children: <pw.Widget>[
+                          pw.Text(
+                            '*** START OF ZREPORT ***',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
                           pw.SizedBox(height: 3.0),
                           pw.Center(
                             child:  pw.Container(
@@ -389,7 +398,7 @@ class _SummaryState extends State<Summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '18.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -415,7 +424,7 @@ class _SummaryState extends State<Summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '10.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -1056,6 +1065,11 @@ class _SummaryState extends State<Summary> {
     crossAxisAlignment:
     CrossAxisAlignment.stretch,
     children: <Widget>[
+      Text(
+        '***START OF ZREPORT***',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+      ),
     SizedBox(height: 16.0),
     Image.asset(
     tra_img,
@@ -1107,36 +1121,36 @@ class _SummaryState extends State<Summary> {
     SizedBox(height: 10.0),
 
     Text(
-    'DEFAUT TAX RATES',
+    'DEFAULT TAX RATES',
     textAlign: TextAlign.center,
     style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
     ),
     SizedBox(height: 10.0),
     _buildRowWithColumns(
     leftColumn: 'A:',
-    rightColumn: '0',
+    rightColumn: '18.00',
     ),
     _buildRowWithColumns(
     leftColumn: 'B:',
-    rightColumn: '0',
+    rightColumn: '10.00',
     ),
     _buildRowWithColumns(
     leftColumn: 'C:',
-    rightColumn: '0',
+    rightColumn: '0.00',
     ),
     _buildRowWithColumns(
     leftColumn: 'D:',
-    rightColumn: '0',
+    rightColumn: '0.00',
     ),
     _buildRowWithColumns(
     leftColumn: 'E:',
-    rightColumn: '0',
+    rightColumn: '0.00',
     ),
     SizedBox(height: 8.0),
     const MySeparator(color: Colors.grey),
     SizedBox(height: 10.0),
     Text(
-    'TURNOERS',
+    'TURNOVERS',
     textAlign: TextAlign.center,
     style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
     ),

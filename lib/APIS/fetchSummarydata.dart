@@ -92,10 +92,16 @@ fetchSummarydata(String accessToken,String dateFrom,String dateTo) async {
     List<dynamic> dataList = jsonResponse['data'];
 
     int dataListLength = dataList.length;
-
-    print(dataList);
-
     double totalAmountSum = 0;
+    int length = 0;
+
+    //finding total number of receipts
+    for (var obj in dataList) {
+      int dailyTotalAmountString = obj['TICKETSFISCAL'];
+      int dailyTotalAmount = dailyTotalAmountString;
+      length += dailyTotalAmount;
+    }
+
 
     for (var obj in dataList) {
       String dailyTotalAmountString = obj['DAILYTOTALAMOUNT'];
@@ -114,7 +120,6 @@ fetchSummarydata(String accessToken,String dateFrom,String dateTo) async {
     String uin = dataList.isNotEmpty ? dataList[0]['uin'] : '';
     String taxoffice = dataList.isNotEmpty ? dataList[0]['taxoffice'] : '';
     int id = dataList.isNotEmpty ? dataList[0]['id'] : '';
-    int length = dataListLength;
     String mobile = dataList.isNotEmpty ? dataList[0]['mobile']: '';
 
 
@@ -131,7 +136,7 @@ fetchSummarydata(String accessToken,String dateFrom,String dateTo) async {
         taxoffice: taxoffice,
         totalAmountSum: totalAmountSum,
         id: id,
-        length: dataListLength,
+        length: length,
         mobile: mobile,
     );
 
