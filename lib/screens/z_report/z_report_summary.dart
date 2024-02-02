@@ -220,10 +220,19 @@ class _z_report_summaryState extends State<z_report_summary> {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                         children: <pw.Widget>[
+                          pw.Text(
+                            '*** START OF ZREPORT ***',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
                           pw.SizedBox(height: 3.0),
                           pw.Center(
                             child:  pw.Container(
-                              height: 130.0,
+                              height: 90.0,
                               child: pw.Image(traLogo,),
                             ),
                           ),
@@ -251,7 +260,15 @@ class _z_report_summaryState extends State<z_report_summary> {
 
 
                           // MySeparator(color: Colors.grey),
-
+                          pw.Text(
+                            'CURRENT DATE TIME',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
                           pw.Row(
                             children: <pw.Widget>[
                               pw.Expanded(
@@ -388,7 +405,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '18.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -414,7 +431,7 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '10.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -912,6 +929,16 @@ class _z_report_summaryState extends State<z_report_summary> {
                             ],
                           ),
 
+                          pw.Text(
+                            '*** END OF ZREPORT ***',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
+
 
                           //THE BOUNDARY:::
                           // ... Continue adding other widgets ...
@@ -1001,7 +1028,11 @@ class _z_report_summaryState extends State<z_report_summary> {
                             crossAxisAlignment:
                             CrossAxisAlignment.stretch,
                             children: <Widget>[
-
+                              Text(
+                                '***START OF ZREPORT***',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                              ),
                               SizedBox(height: 16.0),
                               Image.asset(
                                   tra_img,
@@ -1055,11 +1086,11 @@ class _z_report_summaryState extends State<z_report_summary> {
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'A',
-                                rightColumn: '0.00',
+                                rightColumn: '18.00',
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'B',
-                                rightColumn: '0.00',
+                                rightColumn: '10.00',
                               ),
                               _buildRowWithColumns(
                                 leftColumn: 'C',
@@ -1139,6 +1170,15 @@ class _z_report_summaryState extends State<z_report_summary> {
                                 rightColumn: '$ticket',
                               ),
 
+                              SizedBox(height: 20.0),
+
+                              Text(
+                                '***END OF ZREPORT***',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                              ),
+
+                              SizedBox(height: 60.0),
                               // SizedBox(height: 20.0), // Add some space between the summary and the image
                               // Center(
                               //   child: Image.asset(

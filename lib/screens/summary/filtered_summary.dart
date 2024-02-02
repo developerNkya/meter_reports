@@ -70,6 +70,7 @@ class _filtered_summaryState extends State<filtered_summary> {
   }
 
   void stationReceipt() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var username = prefs.getString('username');
     var password = prefs.getString('user_password');
@@ -185,6 +186,15 @@ class _filtered_summaryState extends State<filtered_summary> {
                       child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                         children: <pw.Widget>[
+                          pw.Text(
+                            '*** START OF ZREPORT ***',
+                            style: pw.TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: pw.FontWeight.bold,
+                                font:ttf
+                            ),
+                            textAlign: pw.TextAlign.center,
+                          ),
                           pw.SizedBox(height: 3.0),
                           pw.Center(
                             child:  pw.Container(
@@ -364,7 +374,7 @@ class _filtered_summaryState extends State<filtered_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '18.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -390,7 +400,7 @@ class _filtered_summaryState extends State<filtered_summary> {
                               ),
                               pw.Expanded(
                                 child: pw.Text(
-                                  '0.00',
+                                  '10.00',
                                   style: pw.TextStyle(
                                       fontSize: 14.0,
                                       font:ttf
@@ -1026,6 +1036,11 @@ class _filtered_summaryState extends State<filtered_summary> {
                                 crossAxisAlignment:
                                 CrossAxisAlignment.stretch,
                                 children: <Widget>[
+                                  Text(
+                                    '***START OF ZREPORT***',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
+                                  ),
                                   SizedBox(height: 16.0),
                                   Image.asset(
                                       tra_img,
@@ -1077,36 +1092,36 @@ class _filtered_summaryState extends State<filtered_summary> {
                                   SizedBox(height: 10.0),
 
                                   Text(
-                                    'DEFAUT TAX RATES',
+                                    'DEFAULT TAX RATES',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                                   ),
                                   SizedBox(height: 10.0),
                                   _buildRowWithColumns(
                                     leftColumn: 'A:',
-                                    rightColumn: '0',
+                                    rightColumn: '18.00',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'B:',
-                                    rightColumn: '0',
+                                    rightColumn: '10.00',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'C:',
-                                    rightColumn: '0',
+                                    rightColumn: '0.00',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'D:',
-                                    rightColumn: '0',
+                                    rightColumn: '0.00',
                                   ),
                                   _buildRowWithColumns(
                                     leftColumn: 'E:',
-                                    rightColumn: '0',
+                                    rightColumn: '0.00',
                                   ),
                                   SizedBox(height: 8.0),
                                   const MySeparator(color: Colors.grey),
                                   SizedBox(height: 10.0),
                                   Text(
-                                    'TURNOERS',
+                                    'TURNOVERS',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 16.0, fontFamily: 'Receipt'),
                                   ),
