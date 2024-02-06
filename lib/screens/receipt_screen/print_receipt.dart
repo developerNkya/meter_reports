@@ -1066,7 +1066,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
       PosColumn(
-        text:  '${formattedAmount ?? 'N/A'}',
+        text:  '${formattedTax ?? 'N/A'}',
         width: 6,
         styles: PosStyles(align: PosAlign.right,underline: false,fontType: PosFontType.fontA,),
       ),
@@ -1091,7 +1091,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       fontType: PosFontType.fontA,));
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
-    bytes += generator.qrcode('https://verify.tra.go.tz/5D278B362_180039');
+    bytes += generator.qrcode('https://verify.tra.go.tz/${widget.rctvNum}_${widget.concatenated_time}');
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
     bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center,
