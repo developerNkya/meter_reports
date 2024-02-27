@@ -1,5 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +11,7 @@ import 'package:pdf/pdf.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:image/image.dart' as img;
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
 import 'package:video_player/video_player.dart';
 
@@ -94,6 +99,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   List<String> options = ["58 mm", "80 mm"];
   final String imagePath = "assets/images/print2.jpg";
   VideoPlayerController controller = VideoPlayerController.asset('assets/animations/print3.mp4');
+
+  final GlobalKey qrKey = GlobalKey();
 
   @override
   void initState() {
@@ -699,14 +706,24 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                       child: Text("Disconnect"),
                     ),
                     ElevatedButton(
+                      key: qrKey,
+                        child: Text("Print"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black54,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      onPressed: connected ? this.printTest : null,
-                      child: Text("Print"),
+                      // onPressed: connected ? this.printTest : null,
+                      onPressed: connected ? () async {
+                        String imagePath = await _captureAndSharePng('https://verify.tra.go.tz/${widget.rctvNum}_${widget.concatenated_time}');
+                        // Do something with imagePath if needed
+                        print('the path given');
+                        print(imagePath);
+                        //passing th print ticket
+                        printTest(imagePath);
+                      } : null,
+
                     ),
 
                   ],
@@ -835,7 +852,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   }
 
 
-  Future<void> printTest() async {
+  Future<void> printTest(qr_code) async {
 
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
     //print("connection status: $conexionStatus");
@@ -849,7 +866,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       //   loopAnimation: true,
       // );
 
-      List<int> ticket = await testTicket();
+      List<int> ticket = await testTicket(qr_code);
       final result = await PrintBluetoothThermal.writeBytes(ticket);
       print("print test result:  $result");
     } else {
@@ -873,7 +890,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     }
   }
 
-  Future<List<int>> testTicket() async {
+  Future<List<int>> testTicket(qr_code) async {
+
     List<int> bytes = [];
     // Using default profile
     final profile = await CapabilityProfile.load();
@@ -884,6 +902,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     final ByteData data = await rootBundle.load('assets/tra_img.png');
     final Uint8List bytesImg = data.buffer.asUint8List();
     img.Image? image = img.decodeImage(bytesImg);
+
+
+    //
+    File qrFile = File(qr_code);
+    List<int> qrBytes = await qrFile.readAsBytes();
+    img.Image? qr_image = img.decodeImage(Uint8List.fromList(qrBytes));
 
     String newDate = widget.zNum.toString().replaceAll('-', '');
     // String formattedAmount = widget.amount! % 1 == 0
@@ -915,8 +939,6 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     // bytes += generator.text('Align left', styles: PosStyles(align: PosAlign.left));
 
 
-
-
     bytes += generator.text('*** START OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center));
     bytes += generator.image(image!);
     bytes += generator.text('${widget.name}', styles: PosStyles(align: PosAlign.center));
@@ -926,6 +948,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bytes += generator.text('SERIAL NO:${widget.serial ?? ''}', styles: PosStyles(align: PosAlign.center));
     bytes += generator.text('UIN:${widget.uin ?? ''}', styles: PosStyles(align: PosAlign.center));
     bytes += generator.text('TAX OFFICE: ${widget.taxOffice ?? ''}', styles: PosStyles(align: PosAlign.center));
+
 
     bytes += generator.text(
       '------------------------------------------',
@@ -948,6 +971,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     //   ),
     // ]);
 
+
     bytes += generator.row([
       PosColumn(
         text: 'RECEIPT NUMBER:',
@@ -966,7 +990,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     ]);
 
-    //row 2::
+
+//row 2::
     bytes += generator.row([
       PosColumn(
         text: 'Z NUMBER:',
@@ -980,7 +1005,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     ]);
 
-    //row3:
+
+//row3:
     bytes += generator.row([
       PosColumn(
         text: 'DATE:${widget.date ?? ''}',
@@ -994,14 +1020,15 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     ]);
 
-    //divider
+
+//divider
     bytes += generator.text(
       '------------------------------------------',
       styles: PosStyles(
         fontType: PosFontType.fontB,
       ),
     );
-    //row4:
+//row4:
     bytes += generator.row([
       PosColumn(
         text: 'PUMP:${widget.pump !=null ? widget.pump : '2'} NOZZLE:${widget.nozzle} ',
@@ -1009,19 +1036,22 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
 
+
     ]);
 
-    //row5::
+
+//row5::
     bytes += generator.row([
       PosColumn(
         // text: '${widget.fuelGrade ?? 'N/A'} ${formattedAmount} X ${widget.qty}',
         text:  '${widget.fuelGrade ?? ''} ${formattedAmount != '' ? '$formattedAmount X ${widget.qty}' : ''}',
-      width: 12,
+        width: 12,
         styles: PosStyles(align: PosAlign.left,underline: false,fontType: PosFontType.fontA,),
       ),
     ]);
 
-    //divider::
+
+//divider::
     bytes += generator.text(
       '------------------------------------------',
       styles: PosStyles(
@@ -1029,7 +1059,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     );
 
-    //row6:
+
+//row6:
     bytes += generator.row([
       PosColumn(
         text: 'TOTAL EXCL TAX:',
@@ -1044,7 +1075,9 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     ]);
 
 
-    //row7:
+
+
+//row7:
     bytes += generator.row([
       PosColumn(
         text: 'TOTAL TAX:',
@@ -1058,7 +1091,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     ]);
 
-    //row8:
+
+//row8:
     bytes += generator.row([
       PosColumn(
         text: 'TOTAL INCL TAX: ',
@@ -1072,13 +1106,15 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       ),
     ]);
 
-    //divider::
+
+//divider::
     bytes += generator.text(
       '------------------------------------------',
       styles: PosStyles(
         fontType: PosFontType.fontB,
       ),
     );
+
 
     bytes += generator.text('RECEIPT VERIFICATION CODE', styles: PosStyles(align: PosAlign.center,
       underline: false,
@@ -1091,14 +1127,20 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       fontType: PosFontType.fontA,));
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
-    bytes += generator.qrcode('https://verify.tra.go.tz/${widget.rctvNum}_${widget.concatenated_time}');
+
+
+//pass qrcode as image::
+    bytes += generator.image(qr_image!);
+
+    // bytes += generator.qrcode('https://verify.tra.go.tz/${widget.rctvNum}_${widget.concatenated_time}');
     bytes += generator.text('\n', styles: PosStyles(align: PosAlign.center, underline: false,
       fontType: PosFontType.fontA,));
     bytes += generator.text('*** END OF LEGAL RECEIPT ***', styles: PosStyles(align: PosAlign.center,
       underline: false,
       fontType: PosFontType.fontA,));
 
-    // spaces left blank intentionally:::
+
+// spaces left blank intentionally:::
     bytes += generator.text('', styles: PosStyles(align: PosAlign.center,
       underline: false,
       fontType: PosFontType.fontA,));
@@ -1106,39 +1148,6 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
       underline: false,
       fontType: PosFontType.fontA,));
 
-
-    //
-    // //barcode
-    //
-    // final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
-    // bytes += generator.barcode(Barcode.upcA(barData));
-    //
-    // //QR code
-    // bytes += generator.qrcode('example.com');
-    //
-    // bytes += generator.text(
-    //   'Text size 50%',
-    //   styles: PosStyles(
-    //     fontType: PosFontType.fontB,
-    //   ),
-    // );
-    //
-    // bytes += generator.text(
-    //   'Text size 100%',
-    //   styles: PosStyles(
-    //     fontType: PosFontType.fontA,
-    //   ),
-    // );
-    // bytes += generator.text(
-    //   'Text size 200%',
-    //   styles: PosStyles(
-    //     height: PosTextSize.size2,
-    //     width: PosTextSize.size2,
-    //   ),
-    // );
-    //
-    // bytes += generator.feed(2);
-    //bytes += generator.cut();
     return bytes;
   }
 
@@ -1158,6 +1167,51 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         _msj = "no connected device";
       });
       print("no conectado");
+    }
+  }
+
+  Future<String> _captureAndSharePng(String url) async {
+    try {
+      // Generate QR code from the URL
+      final qrPainter = QrPainter(
+        data: url,
+        version: QrVersions.auto,
+      );
+
+      // Create a new PictureRecorder
+      final pictureRecorder = PictureRecorder();
+      // Create a Canvas and assign to the PictureRecorder
+      final canvas = Canvas(pictureRecorder);
+      // Paint the QR code onto the Canvas
+      qrPainter.paint(canvas, Size(200.0, 200.0));
+
+      // End the recording and create a Picture
+      final picture = pictureRecorder.endRecording();
+      // Convert the Picture to a ui.Image
+      final image = await picture.toImage(200, 200);
+
+      // Convert the ui.Image to ByteData (PNG format)
+      final ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+      if (byteData != null) {
+        // Convert ByteData to Uint8List
+        Uint8List pngBytes = byteData.buffer.asUint8List();
+
+        // Get temporary directory
+        final tempDir = await getTemporaryDirectory();
+        // Create a file to save the image
+        final file = File('${tempDir.path}/qrcode.png');
+        // Write the bytes to the file
+        await file.writeAsBytes(pngBytes);
+
+        // Return the path of the saved QR code image file
+        return file.path;
+      } else {
+        throw Exception("Failed to convert QR code image to byte data");
+      }
+    } catch (e) {
+      print("Error: $e");
+      // Handle error gracefully, e.g., show a snackbar or an alert dialog
+      rethrow; // Rethrow the exception to handle it outside this function if needed
     }
   }
 }
@@ -1265,6 +1319,7 @@ class MySeparator extends StatelessWidget {
       : super(key: key);
   final double height;
   final Color color;
+
 
   @override
   Widget build(BuildContext context) {
