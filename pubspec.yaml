@@ -50,7 +50,7 @@ dependencies:
   esc_pos_printer: ^4.0.0
 
   esc_pos_utils_plus:
-  print_bluetooth_thermal:
+  print_bluetooth_thermal: ^1.1.0
   flutter_html:
   flutter_dialogs:
   lottie:
