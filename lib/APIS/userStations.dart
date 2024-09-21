@@ -58,13 +58,4 @@ Future<String?> getAccessToken() async {
   return prefs.getString('accessToken');
 }
 
-void main() async {
-  // Example usage
-  String? storedAccessToken = await getAccessToken();
-  if (storedAccessToken != null) {
-    String stationData = await userStations(storedAccessToken, 'user_id');
-    print('Station Data: $stationData');
-  } else {
-    print('No access token stored.');
-  }
-}
+
