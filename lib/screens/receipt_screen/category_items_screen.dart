@@ -212,8 +212,12 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Data from ${yesterday_day} to ${today_day}'),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20.0), // Set marginX here
+                            child: Text('Data from ${yesterday_day} to ${today_day}'),
+                          ),
                           DataTable(
                             showCheckboxColumn: false,
                             columns: [

@@ -34,10 +34,16 @@ var demoItems = [
       name: "Summary",
       description: "view Total Summary",
       imagePath: "assets/images/grocery_images/receipts1.png"),
+  station_cartegory(
+      id: 5,
+      name: "Shift Management",
+      description: "View Shift report",
+      imagePath: "assets/images/grocery_images/receipts1.png"),
 ];
 
 var station_cartegory1= [demoItems[0],demoItems[1]];
 var station_cartegory2 = [demoItems[2],demoItems[3]];
+var station_cartegory3 = [demoItems[4]];
 
 
 

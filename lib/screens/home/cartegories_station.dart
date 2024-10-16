@@ -3,6 +3,7 @@ import 'package:grocery_app/models/station_list.dart';
 import 'package:grocery_app/screens/changePrice.dart';
 import 'package:grocery_app/screens/home/home_screen.dart';
 import 'package:grocery_app/screens/home/station_list_item_card_widget.dart';
+import 'package:grocery_app/screens/shift_management/set_receipts_range.dart';
 import 'package:grocery_app/screens/summary/summary.dart';
 import 'package:grocery_app/screens/z_report/z_report.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -45,6 +46,7 @@ class _cartegories_stationState extends State<cartegories_station> {
                     padded(subTitle("Cartegories")),
                     getHorizontalItemSlider(station_cartegory1),
                     getHorizontalItemSlider(station_cartegory2),
+                    getHorizontalItemSlider(station_cartegory3),
                   ],
                 ),
               ),
@@ -125,6 +127,14 @@ class _cartegories_stationState extends State<cartegories_station> {
           MaterialPageRoute(
               builder: (context) =>
                   Summary()
+          ));
+    }
+    else if (itemChosed == 5) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ChooseReceiptsDate()
           ));
     }
   }

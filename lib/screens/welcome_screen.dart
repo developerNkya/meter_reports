@@ -84,7 +84,7 @@ class WelcomeScreen extends StatelessWidget {
 
   Widget sloganText() {
     return AppText(
-      text: "The leading team in oil management",
+      text: "The leading team in oil management.",
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: Color(0xffFCFCFC).withOpacity(0.7),

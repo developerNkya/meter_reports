@@ -57,9 +57,6 @@ class _FilteredReceiptsState extends State<FilteredReceipts> {
 
 
     var dateFrom = widget.fromDate.toString();
-
-
-    // Assign the formatted date to the variable
     var dateTo = widget.toDate.toString();
     var userReceipts = await fetchStationReceiptReport(auth, dateFrom, dateTo);
 
