@@ -39,11 +39,16 @@ var demoItems = [
       name: "Shift Management",
       description: "View Shift report",
       imagePath: "assets/images/grocery_images/receipts1.png"),
+  station_cartegory(
+      id: 6,
+      name: "EWURA Reports",
+      description: "View reports",
+      imagePath: "assets/images/grocery_images/receipts1.png"),
 ];
 
 var station_cartegory1= [demoItems[0],demoItems[1]];
 var station_cartegory2 = [demoItems[2],demoItems[3]];
-var station_cartegory3 = [demoItems[4]];
+var station_cartegory3 = [demoItems[4],demoItems[5]];
 
 
 

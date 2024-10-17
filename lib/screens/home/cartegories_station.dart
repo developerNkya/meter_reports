@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_app/models/station_list.dart';
 import 'package:grocery_app/screens/changePrice.dart';
+import 'package:grocery_app/screens/ewura_reports/set_ewura_month.dart';
 import 'package:grocery_app/screens/home/home_screen.dart';
 import 'package:grocery_app/screens/home/station_list_item_card_widget.dart';
 import 'package:grocery_app/screens/shift_management/set_receipts_range.dart';
@@ -75,7 +76,7 @@ class _cartegories_stationState extends State<cartegories_station> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              onItemClicked(context, items[index]);
+               onItemClicked(context, items[index]);
             },
             child: station_cartegoryWidget(
               item: items[index],
@@ -135,6 +136,15 @@ class _cartegories_stationState extends State<cartegories_station> {
           MaterialPageRoute(
               builder: (context) =>
                   ChooseReceiptsDate()
+          ));
+    }
+    else if (itemChosed == 6) {
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ChooseEwuraMonth()
           ));
     }
   }
