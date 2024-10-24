@@ -41,7 +41,7 @@ var demoItems = [
       imagePath: "assets/images/grocery_images/receipts1.png"),
   station_cartegory(
       id: 6,
-      name: "EWURA Reports",
+      name: "Volume Reports",
       description: "View reports",
       imagePath: "assets/images/grocery_images/receipts1.png"),
 ];

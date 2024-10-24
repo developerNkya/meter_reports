@@ -61,7 +61,7 @@ class _ChooseEwuraMonthState extends State<ChooseEwuraMonth> {
         title: Container(
           padding: EdgeInsets.symmetric(horizontal: 25),
           child: AppText(
-            text: "Ewura Reports",
+            text: "Volume Reports",
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -337,6 +337,7 @@ class _ChooseEwuraMonthState extends State<ChooseEwuraMonth> {
         double volumeDiesel = response['volumeDiesel'];
         double volumeKerosene = response['volumeKerosene'];
 
+        String stationName = prefs.getString('stationName').toString();
         // Navigate to the results screen
         Navigator.push(
           context,
@@ -348,6 +349,7 @@ class _ChooseEwuraMonthState extends State<ChooseEwuraMonth> {
               volumeUnleaded: volumeUnleaded,
               volumeDiesel: volumeDiesel,
               volumeKerosene: volumeKerosene,
+              stationName: stationName,
             ),
           ),
         );

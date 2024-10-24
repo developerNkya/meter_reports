@@ -13,6 +13,7 @@ class FetchedEwuraReports extends StatelessWidget {
   final double volumeUnleaded;
   final double volumeDiesel;
   final double volumeKerosene;
+  final String stationName;
 
   FetchedEwuraReports({
     required this.dateFrom,
@@ -21,6 +22,7 @@ class FetchedEwuraReports extends StatelessWidget {
     required this.volumeUnleaded,
     required this.volumeDiesel,
     required this.volumeKerosene,
+    required this.stationName
   });
 
   // Function to format numbers with comma as thousands separator
@@ -50,7 +52,7 @@ class FetchedEwuraReports extends StatelessWidget {
           ),
         ),
         title: Text(
-          'EWURA Report',
+          'Volume Report',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -207,8 +209,13 @@ class FetchedEwuraReports extends StatelessWidget {
               crossAxisAlignment: pw.CrossAxisAlignment.stretch,
               children: <pw.Widget>[
                 pw.Text(
-                  'EWURA Report',
+                  'VOLUME REPORT',
                   style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, font: ttf),
+                ),
+                pw.SizedBox(height: 4),
+                pw.Text(
+                  stationName,
+                  style: pw.TextStyle(fontSize: 19, fontWeight: pw.FontWeight.bold, font: ttf),
                 ),
                 pw.SizedBox(height: 20),
                 pw.Text(
@@ -265,7 +272,7 @@ class FetchedEwuraReports extends StatelessWidget {
         pw.Padding(
           padding: const pw.EdgeInsets.all(8.0),
           child: pw.Text(
-            formatNumber(volume), // Use the format function here
+            formatNumber(volume)+' L', // Use the format function here
             style: pw.TextStyle(font: font),
           ),
         ),
