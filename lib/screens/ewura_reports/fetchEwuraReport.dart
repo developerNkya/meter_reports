@@ -37,14 +37,14 @@ Future<Map<String, dynamic>> fetchEwuraReport(String accessToken, DateTime start
     double volumeKerosene = 0.0;
 
     for (var receipt in jsonResponse['data']) {
-      totalVolume += double.tryParse(receipt['AMOUNT']) ?? 0.0;
+      totalVolume += double.tryParse(receipt['QTY']) ?? 0.0;
 
       if (receipt['FUEL_GRADE'] == 'UNLEADED') {
-        volumeUnleaded += double.tryParse(receipt['AMOUNT']) ?? 0.0;
+        volumeUnleaded += double.tryParse(receipt['QTY']) ?? 0.0;
       } else if (receipt['FUEL_GRADE'] == 'DIESEL') {
-        volumeDiesel += double.tryParse(receipt['AMOUNT']) ?? 0.0;
+        volumeDiesel += double.tryParse(receipt['QTY']) ?? 0.0;
       } else if (receipt['FUEL_GRADE'] == 'KEROSENE') {
-        volumeKerosene += double.tryParse(receipt['AMOUNT']) ?? 0.0;
+        volumeKerosene += double.tryParse(receipt['QTY']) ?? 0.0;
       }
     }
 

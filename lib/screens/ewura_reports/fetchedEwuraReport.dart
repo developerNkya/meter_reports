@@ -31,6 +31,7 @@ class FetchedEwuraReports extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -65,19 +66,21 @@ class FetchedEwuraReports extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.grey[200],
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDateRangeCard(),
-                SizedBox(height: 16),
-                _buildVolumeTable(),
-              ],
+      body: Center(
+        child: Container(
+          color: Colors.grey[200],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDateRangeCard(),
+                  SizedBox(height: 16),
+                  _buildVolumeTable(),
+                ],
+              ),
             ),
           ),
         ),
